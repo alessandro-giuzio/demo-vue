@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>{{ appTitle }}</h1>
+    <h1 ref="appTitleRef">{{ appTitle }}</h1>
     <h3>{{ counterData.title }}:</h3>
     <div>
       <button @click="decreaseCounter(1)" class="btn">-</button>
@@ -19,16 +19,19 @@
 <!-- Composition API New Script Setup -->
 <script setup>
 import {
+  ref,
   reactive,
   computed,
   watch,
   onBeforeMount,
   onMounted,
   onBeforeUnmount,
-  onUnmounted
+  onUnmounted,
+  nextTick
 } from 'vue'
 
 const appTitle = 'Vue 3 App'
+const appTitleRef = ref(null)
 /* const counter = ref(0),
   counterTitle = ref('My Counter') */
 
@@ -57,6 +60,9 @@ const oddOrEven = computed(() => {
 
 const increaseCounter = (amount) => {
   counterData.count += amount
+  nextTick(() => {
+    console.log('Counter updated')
+  })
 }
 const decreaseCounter = (decrease) => {
   counterData.count -= decrease
@@ -66,7 +72,7 @@ onBeforeMount(() => {
   console.log('Before Mount')
 })
 onMounted(() => {
-  console.log('Mounted')
+  appTitleRef.value.style.color = 'red'
 })
 onBeforeUnmount(() => {
   console.log('Before Unmount')
