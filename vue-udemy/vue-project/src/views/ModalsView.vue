@@ -1,30 +1,29 @@
 <script setup>
 import { ref } from 'vue'
-
+import Modal from '@/components/Modal.vue'
+import ModalDark from '@/components/ModalDark.vue'
 const showModal = ref(false)
+const showDarkModals = ref(false)
 </script>
 <template>
   <div class="modals">
     <h1>Modals</h1>
+    <div>
+      <label>
+        Show dark modals?
+        <input type="checkbox" v-model="showDarkModals" />
+      </label>
+    </div>
     <button @click="showModal = true">Show Modal</button>
-    <div class="modal" v-if="showModal">
-      <h1>This is a Modal</h1>
+    <component
+      :is="showDarkModals ? ModalDark : Modal"
+      title="Modal Title (via prop)"
+      v-model="showModal"
+    >
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Numquam dolorem, nobis dolore sit
         accusamus distinctio!
       </p>
-      <button @click="showModal = false">Hiding Modal</button>
-    </div>
+    </component>
   </div>
 </template>
-<style scoped>
-.modal {
-  background-color: bisque;
-  padding: 10px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>

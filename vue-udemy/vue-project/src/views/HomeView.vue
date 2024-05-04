@@ -18,68 +18,14 @@
 </template>
 <!-- Composition API New Script Setup -->
 <script setup>
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  onBeforeMount,
-  onMounted,
-  onBeforeUnmount,
-  onUnmounted,
-  nextTick
-} from 'vue'
+import { ref } from 'vue'
+import { useCounter } from '@/use/useCounter'
 
 const appTitle = 'Vue 3 App'
 const appTitleRef = ref(null)
 /* const counter = ref(0),
   counterTitle = ref('My Counter') */
-
-/* Reactive Object */
-const counterData = reactive({
-  count: 1,
-  title: 'My Counter1'
-})
-
-/* Watch */
-
-watch(
-  () => counterData.count,
-  (newCount, oldCount) => {
-    if (newCount === 20) {
-      alert('Counter is 20')
-    }
-  }
-)
-
-/* Computed Property */
-const oddOrEven = computed(() => {
-  if (counterData.count % 2 === 0) return 'even'
-  return 'odd'
-})
-
-const increaseCounter = (amount) => {
-  counterData.count += amount
-  nextTick(() => {
-    console.log('Counter updated')
-  })
-}
-const decreaseCounter = (decrease) => {
-  counterData.count -= decrease
-}
-/* Hooks */
-onBeforeMount(() => {
-  console.log('Before Mount')
-})
-onMounted(() => {
-  appTitleRef.value.style.color = 'red'
-})
-onBeforeUnmount(() => {
-  console.log('Before Unmount')
-})
-onUnmounted(() => {
-  console.log('Unmounted')
-})
+const { counterData, increaseCounter, decreaseCounter, oddOrEven } = useCounter()
 /* Custom Directives */
 const vAutoFocus = {
   mounted: (el) => {
