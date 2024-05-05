@@ -6,8 +6,8 @@ import { useOnline } from '@vueuse/core'
 
 /* user data */
 const userData = reactive({
-  name: 'Max',
-  username: 'max-schwarzmueller'
+  name: 'Alessandro',
+  username: 'AleGiuzio'
 })
 
 /* online status */
@@ -76,6 +76,7 @@ nav a:first-of-type {
   background-color: beige;
   padding: 10px;
   font-size: 12px;
+  color: black;
 }
 
 .off-line {

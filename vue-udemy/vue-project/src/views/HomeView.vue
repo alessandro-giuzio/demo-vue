@@ -1,37 +1,39 @@
 <template>
   <div class="home">
     <h1 ref="appTitleRef">{{ appTitle }}</h1>
-    <h3>{{ counterData.title }}:</h3>
+    <h3>{{ counter.title }}</h3>
     <div>
-      <button @click="decreaseCounter(1)" class="btn">-</button>
-      <button @click="decreaseCounter(10)" class="btn">--</button>
-      <span class="counter">{{ counterData.count }}</span>
-      <button @click="increaseCounter(1)" class="btn">+</button>
-      <button @click="increaseCounter(20)" class="btn">++</button>
+      <button @click="counter.decres(1)" class="btn">-</button>
+      <button @click="counter.decres(2)" class="btn">--</button>
+      <span class="counter">{{ counter.count }}</span>
+      <button @click="counter.increment(1)" class="btn">+</button>
+      <button @click="counter.increment(2)" class="btn">++</button>
     </div>
-    <p>This counter is {{ oddOrEven }}</p>
+    <p>This counter is: {{ counter.oddOrEven() }}</p>
     <div class="edit">
       <h4>Edit counter title:</h4>
-      <input v-autofocus v-model="counterData.title" type="text" />
+      <input v-autofocus v-model="counter.title" type="text" />
     </div>
   </div>
 </template>
 <!-- Composition API New Script Setup -->
 <script setup>
 import { ref } from 'vue'
-import { useCounter } from '@/use/useCounter'
+import { useCounterStore } from '@/stores/counter'
 
 const appTitle = 'Vue 3 App'
 const appTitleRef = ref(null)
 /* const counter = ref(0),
   counterTitle = ref('My Counter') */
-const { counterData, increaseCounter, decreaseCounter, oddOrEven } = useCounter()
+
 /* Custom Directives */
 const vAutoFocus = {
   mounted: (el) => {
     el.focus()
   }
 }
+
+const counter = useCounterStore()
 </script>
 
 <!-- Composition API -->

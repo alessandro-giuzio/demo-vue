@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useCounter } from '@/use/useCounter'
+import { useCounterStore } from '@/stores/counter'
 
 const posts = ref([
   { id: 'id1', title: 'Post 1', content: 'This is post 1' },
@@ -8,8 +8,8 @@ const posts = ref([
   { id: 'id3', title: 'Post 3', content: 'This is post 3' }
 ])
 
+const counter = useCounterStore()
 /* counter button */
-const { counterData, increaseCounter, oddOrEven } = useCounter()
 </script>
 <template>
   <div class="posts">
@@ -24,11 +24,11 @@ const { counterData, increaseCounter, oddOrEven } = useCounter()
   <textarea name="" id=""></textarea>
   <div>
     <button
-      @click="increaseCounter(1)"
+      @click="counter.increment(1)"
       class="counter-button"
-      :class="{ yellow: oddOrEven === 'odd' }"
+      :class="{ yellow: counter.oddOrEven === 'odd' }"
     >
-      {{ counterData.count }}
+      {{ counter.count }}
     </button>
   </div>
 </template>
