@@ -21,8 +21,22 @@
 
       <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': showMobileNav }">
         <div class="navbar-end">
-          <RouterLink to="/" class="navbar-item" active-class="is-active"> Notes </RouterLink>
-          <RouterLink to="/stats" class="navbar-item" active-class="is-active"> Stats </RouterLink>
+          <RouterLink
+            @click="showMobileNav = false"
+            to="/"
+            class="navbar-item"
+            active-class="is-active"
+          >
+            Notes
+          </RouterLink>
+          <RouterLink
+            @click="showMobileNav = false"
+            to="/stats"
+            class="navbar-item"
+            active-class="is-active"
+          >
+            Stats
+          </RouterLink>
         </div>
       </div>
     </div>
