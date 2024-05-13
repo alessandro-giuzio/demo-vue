@@ -1,3 +1,4 @@
 {
-  "splitHTMLAttributes.closingBracketOnNewLine": true
+  "splitHTMLAttributes.closingBracketOnNewLine": true,
+  "editor.wordWrap": "on"
 }
