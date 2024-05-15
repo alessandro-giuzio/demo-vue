@@ -51,8 +51,8 @@ export const useStoreNotes = defineStore('storeNotes', {
       return state.notes.length;
     },
     totalCharactersCount: (state) => {
-       let count= 0
-       state.notes.forEach(note => {
+      let count= 0
+      state.notes.forEach(note => {
         count += note.content.length
       });
       return count

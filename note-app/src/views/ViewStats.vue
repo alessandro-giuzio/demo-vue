@@ -17,10 +17,26 @@
       </tr>
     </tbody>
   </table>
+  <input
+    class="input"
+    placeholder="Do you love this note App?"
+    type="text"
+    v-autofocus
+    v-model="loveNoteApp"
+  />
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useStoreNotes } from '@/stores/storeNotes'
+import { vAutofocus } from '@/directives/vAutofocus'
+import { useWatchCharacters } from '@/use/useWatchCharacters'
 
+/* store */
 const storeNotes = useStoreNotes()
+
+/* love note app */
+const loveNoteApp = ref('')
+
+useWatchCharacters(loveNoteApp, 50)
 </script>
