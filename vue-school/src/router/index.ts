@@ -21,7 +21,7 @@ const router = createRouter({
     {
       path: '/school',
       name: 'school',
-      component: SchoolView
+      component: () => import  ('../views/SchoolView.vue')
     }
   ]
 })
