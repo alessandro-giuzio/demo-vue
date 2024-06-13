@@ -1,4 +1,7 @@
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
   line-height: 1.15;

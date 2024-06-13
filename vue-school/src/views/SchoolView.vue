@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import AppAlert from '@/components/AppAlert.vue'
+function handleClose() {
+  console.log('Alert closed')
+}
 const header = ref('Shopping List App')
 const editing = ref(false)
 const items = ref([
@@ -44,6 +48,14 @@ const doEdit = (e) => {
       </li>
     </ul>
     <p v-if="!items.length">Nothing to see here</p>
+  </div>
+  <div class="p-5">
+    <AppAlert type="info">New software update available.</AppAlert>
+    <AppAlert type="success">Your purchase has been confirmed!</AppAlert>
+    <AppAlert type="warning">Warning: Invalid email address!</AppAlert>
+    <AppAlert type="error" @closed="handleClose">
+      Error! Something went wrong. Please try again later.
+    </AppAlert>
   </div>
 </template>
 <style>
