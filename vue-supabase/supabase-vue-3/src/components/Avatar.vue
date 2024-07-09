@@ -39,6 +39,14 @@ const uploadAvatar = async evt => {
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
+    /* make the call to BioLinkProfile table */
+    /*
+    const { data, error } = await supabase
+  .from('BioLinkProfile')
+  .update({ other_column: 'otherValue' })
+  .eq('some_column', 'someValue')
+  .select()
+  */
     emit('update:path', filePath);
     emit('upload');
   } catch (error) {
@@ -65,7 +73,7 @@ watch(path, () => {
       :style="{ height: size + 'em', width: size + 'em' }" />
 
     <div :style="{ width: size + 'em' }">
-      <label class="button primary block" for="single">
+      <label class="block button primary" for="single">
         {{ uploading ? 'Uploading ...' : 'Upload' }}
       </label>
       <input
