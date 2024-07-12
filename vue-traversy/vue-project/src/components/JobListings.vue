@@ -13,10 +13,10 @@
     </div>
   </section>
   <section v-if="showButton" class="max-w-lg px-6 m-auto my-10">
-    <a
-      href="/jobs"
+    <RouterLink
+      to="/jobs"
       class="block px-6 py-4 text-center text-white bg-black rounded-xl hover:bg-gray-770"
-      >View All Jobs</a
+      >View All Jobs</RouterLink
     >
   </section>
 </template>
@@ -26,6 +26,7 @@
 import jobData from '@/jobs.json';
 import { ref, defineProps } from 'vue';
 import JobListing from './JobListing.vue';
+import { RouterLink } from 'vue-router';
 // props
 defineProps({
   limit: Number,

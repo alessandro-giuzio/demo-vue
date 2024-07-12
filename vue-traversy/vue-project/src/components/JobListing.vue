@@ -21,14 +21,14 @@
 
       <div class="flex flex-col justify-between mb-4 lg:flex-row">
         <div class="mb-3 text-orange-700">
-          <i class="text-lg fa-solid fa-location-dot"></i>
+          <i class="text-orange-700 pi pi-map-marker"></i>
           {{ job.location }}
         </div>
-        <a
-          :href="'/job/' + job.id"
+        <RouterLink
+          :to="'/jobs/' + job.id"
           class="h-[36px] bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-center text-sm">
           Read More
-        </a>
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -36,6 +36,7 @@
 
 <script setup>
 // imports
+import { RouterLink } from 'vue-router';
 import { defineProps, ref, computed } from 'vue';
 // props
 const props = defineProps({
