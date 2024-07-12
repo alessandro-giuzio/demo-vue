@@ -1,17 +1,12 @@
-<script>
-export default {
-  data() {
-    return {
-      name: 'Alessandro',
-      status: 'active',
-    };
-  },
-};
-</script>
-
 <template>
-  <h1>{{ name }}</h1>
-  <p v-if="status === 'active'">User is active</p>
-  <p v-else-if="status === 'pending'">User is pending</p>
-  <p v-else>User is inactive</p>
+  <NavBar />
+  <Hero />
+  <HomeCards />
+  <JobListings :limit="3" :showButton="true" />
 </template>
+<script setup>
+import NavBar from './components/NavBar.vue';
+import Hero from './components/Hero.vue';
+import HomeCards from './components/HomeCards.vue';
+import JobListings from './components/JobListings.vue';
+</script>
