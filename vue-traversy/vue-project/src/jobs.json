@@ -1,32 +1,18 @@
 {
   "jobs": [
     {
-      "id": "1",
-      "title": "Senior Vue Developer",
+      "title": "Front-End Engineer (Vue) AAA",
       "type": "Full-Time",
-      "description": "We are seeking a talented Front-End Developer to join our team in Boston, MA. The ideal candidate will have strong skills in HTML, CSS, and JavaScript, with experience working with modern JavaScript frameworks such as Vue or Angular.",
-      "location": "Boston, MA",
-      "salary": "$70K - $80K",
-      "company": {
-        "name": "NewTek Solutions",
-        "description": "NewTek Solutions is a leading technology company specializing in web development and digital solutions. We pride ourselves on delivering high-quality products and services to our clients while fostering a collaborative and innovative work environment.",
-        "contactEmail": "contact@teksolutions.com",
-        "contactPhone": "555-555-5555"
-      }
-    },
-    {
-      "id": "2",
-      "title": "Front-End Engineer (Vue)",
-      "type": "Full-Time",
-      "description": "Join our team as a Front-End Developer in sunny Miami, FL. We are looking for a motivated individual with a passion for crafting beautiful and responsive web applications. Experience with UI/UX design principles and a strong attention to detail are highly desirable.",
       "location": "Miami, FL",
+      "description": "Join our team as a Front-End Developer in sunny Miami, FL. We are looking for a motivated individual with a passion for crafting beautiful and responsive web applications. Experience with UI/UX design principles and a strong attention to detail are highly desirable.",
       "salary": "$70K - $80K",
       "company": {
         "name": "Veneer Solutions",
         "description": "Veneer Solutions is a creative agency specializing in digital design and development. Our team is dedicated to pushing the boundaries of creativity and innovation to deliver exceptional results for our clients.",
         "contactEmail": "contact@loremipsum.com",
         "contactPhone": "555-555-5555"
-      }
+      },
+      "id": "2"
     },
     {
       "id": "3",
@@ -110,6 +96,48 @@
         "description": "Beatty, Upton and Schumm",
         "contactEmail": "your.email+fakedata47121@gmail.com",
         "contactPhone": "293-331-1002"
+      }
+    },
+    {
+      "id": "2089",
+      "title": "Rashawn Nitzsche",
+      "type": "Part-Time",
+      "description": "",
+      "salary": "$70K - $80K",
+      "location": "Lowe, O'Connell and Bosco",
+      "company": {
+        "name": "Corwin - Abshire",
+        "description": "Hackett, Gorczany and Ortiz",
+        "contactEmail": "your.email+fakedata19207@gmail.com",
+        "contactPhone": "411-643-2527"
+      }
+    },
+    {
+      "id": "7d61",
+      "title": "Rashawn Nitzsche",
+      "type": "Part-Time",
+      "description": "",
+      "salary": "$70K - $80K",
+      "location": "Lowe, O'Connell and Bosco",
+      "company": {
+        "name": "Corwin - Abshire",
+        "description": "Hackett, Gorczany and Ortiz",
+        "contactEmail": "your.email+fakedata19207@gmail.com",
+        "contactPhone": "411-643-2527"
+      }
+    },
+    {
+      "id": "5618",
+      "title": "Rashawn Nitzsche",
+      "type": "Part-Time",
+      "description": "",
+      "salary": "$70K - $80K",
+      "location": "Lowe, O'Connell and Bosco",
+      "company": {
+        "name": "Corwin - Abshire",
+        "description": "Hackett, Gorczany and Ortiz",
+        "contactEmail": "your.email+fakedata19207@gmail.com",
+        "contactPhone": "411-643-2527"
       }
     }
   ]
