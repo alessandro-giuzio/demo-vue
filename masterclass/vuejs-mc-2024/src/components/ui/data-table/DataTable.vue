@@ -62,3 +62,12 @@ const table = useVueTable({
   getCoreRowModel: getCoreRowModel()
 })
 </script>
+<style scoped>
+td {
+  @apply p-0;
+}
+
+td > * {
+  @apply p-4;
+}
+</style>

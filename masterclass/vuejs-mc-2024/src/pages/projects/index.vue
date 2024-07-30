@@ -27,7 +27,10 @@ const columns: ColumnDef<Tables<'projects'>>[] = [
     cell: ({ row }) => {
       return h(
         RouterLink,
-        { to: `/projects/${row.original.slug}`, class: 'text-left font-medium' },
+        {
+          to: `/projects/${row.original.slug}`,
+          class: 'text-left font-medium hover:bg-muted block w-full'
+        },
         () => row.getValue('name')
       )
     }
