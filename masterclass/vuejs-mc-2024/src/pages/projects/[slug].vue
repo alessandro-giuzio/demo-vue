@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 // Import and initialize useRoute to access route parameters and metadata
-import { useRoute } from 'vue-router'
+
 
 const route = useRoute()
 </script>
