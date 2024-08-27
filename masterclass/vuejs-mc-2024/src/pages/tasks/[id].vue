@@ -13,11 +13,11 @@
     </TableRow>
     <TableRow>
       <TableHead> Assignee </TableHead>
-      <TableCell>{{ task.assignee }}</TableCell>
+      <TableCell>Lorem, ipsum dolor.</TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Project </TableHead>
-      <TableCell> Lorem ipsum. </TableCell>
+      <TableCell> {{ task.projects?.name }}</TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Status </TableHead>
@@ -29,8 +29,8 @@
         <div class="flex">
           <Avatar
             class="-mr-4 transition-transform border border-primary hover:scale-110"
-            v-for="n in 5"
-            :key="n"
+            v-for="collab in task.collaborators"
+            :key="collab"
           >
             <RouterLink class="flex items-center justify-center w-full h-full" to="">
               <AvatarImage src="" alt="" />
@@ -81,9 +81,16 @@ const route = useRoute('/tasks/[id]')
 // Create a ref to store the task data
 const task = ref<Task | null>(null)
 
+watch(
+  () => task.value?.name,
+  () => {
+    usePageStore().pageData.title = `Task: ${task.value?.name || ''}`
+  }
+)
+
 // Tech task data from the API
 const getTask = async () => {
-  const { data, error } = await taskQuery(Number(route.params.id))
+  const { data, error } = await taskQuery(route.params.id)
   if (error) {
     console.error(error)
   } else {
