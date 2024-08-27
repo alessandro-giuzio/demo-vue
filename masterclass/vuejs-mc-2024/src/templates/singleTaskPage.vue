@@ -1,19 +1,22 @@
 <template>
-  <!-- Main Table displaying task details -->
-  <Table v-if="task">
+  <Table>
     <TableRow>
       <TableHead> Name </TableHead>
-      <TableCell> {{ task.name }} </TableCell>
+      <TableCell> Lorem ipsum dolor sit amet. </TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Description </TableHead>
       <TableCell>
-        {{ task.description }}
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad iure qui tempora ex nihil, ab
+        reprehenderit dolorem sunt veritatis perferendis? Repudiandae quis velit quasi ab natus quia
+        ratione voluptas deserunt labore sed distinctio nam fuga fugit vero voluptates placeat
+        aperiam, saepe excepturi eos harum consectetur doloremque perspiciatis nesciunt! Incidunt,
+        modi.
       </TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Assignee </TableHead>
-      <TableCell>{{ task.assignee }}</TableCell>
+      <TableCell>Lorem ipsum</TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Project </TableHead>
@@ -21,7 +24,7 @@
     </TableRow>
     <TableRow>
       <TableHead> Status </TableHead>
-      <TableCell>{{ task.status }}</TableCell>
+      <TableCell>In progress</TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Collaborators </TableHead>
@@ -71,25 +74,3 @@
     </TableRow>
   </Table>
 </template>
-
-<script setup lang="ts">
-import { taskQuery } from '@/utils/supaQueries'
-import type { Task } from '@/utils/supaQueries'
-
-// Initialize useRoute to access route params
-const route = useRoute('/tasks/[id]')
-// Create a ref to store the task data
-const task = ref<Task | null>(null)
-
-// Tech task data from the API
-const getTask = async () => {
-  const { data, error } = await taskQuery(Number(route.params.id))
-  if (error) {
-    console.error(error)
-  } else {
-    task.value = data
-  }
-  task.value = data
-}
-await getTask()
-</script>

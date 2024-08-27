@@ -1,33 +1,31 @@
 <template>
-  <!-- Main Table displaying project details -->
-  <Table v-if="project">
-    <!-- Row displaying the project name -->
+  <Table>
     <TableRow>
       <TableHead> Name </TableHead>
-      <TableCell> {{ project.name }} </TableCell>
+      <TableCell> Lorem ipsum dolor sit amet. </TableCell>
     </TableRow>
-    <!-- Row displaying the project description -->
     <TableRow>
       <TableHead> Description </TableHead>
       <TableCell>
-        {{ project.description }}
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad iure qui tempora ex nihil, ab
+        reprehenderit dolorem sunt veritatis perferendis? Repudiandae quis velit quasi ab natus quia
+        ratione voluptas deserunt labore sed distinctio nam fuga fugit vero voluptates placeat
+        aperiam, saepe excepturi eos harum consectetur doloremque perspiciatis nesciunt! Incidunt,
+        modi.
       </TableCell>
     </TableRow>
-    <!-- Row displaying the project status -->
     <TableRow>
       <TableHead> Status </TableHead>
-      <TableCell>{{ project.status }}</TableCell>
+      <TableCell>In progress</TableCell>
     </TableRow>
-    <!-- Row displaying project collaborators -->
     <TableRow>
       <TableHead> Collaborators </TableHead>
       <TableCell>
         <div class="flex">
-          <!-- Avatar components for each collaborator -->
           <Avatar
             class="-mr-4 transition-transform border border-primary hover:scale-110"
-            v-for="collab in project.collaborators"
-            :key="collab"
+            v-for="n in 5"
+            :key="n"
           >
             <RouterLink class="flex items-center justify-center w-full h-full" to="">
               <AvatarImage src="" alt="" />
@@ -38,15 +36,13 @@
       </TableCell>
     </TableRow>
   </Table>
-  <!-- Section for displaying tasks and documents -->
-  <section v-if="project" class="flex flex-col justify-between gap-5 mt-10 md:flex-row grow">
-    <!-- Tasks section -->
+
+  <section class="flex flex-col justify-between gap-5 mt-10 md:flex-row grow">
     <div class="flex-1">
       <h2>Tasks</h2>
       <div class="table-container">
         <Table>
           <TableHeader>
-            <!-- Header for tasks table -->
             <TableRow>
               <TableHead> Name </TableHead>
               <TableHead> Status </TableHead>
@@ -54,21 +50,18 @@
             </TableRow>
           </TableHeader>
           <TableBody>
-            <!-- Rows for tasks data, looped for multiple tasks -->
-            <TableRow v-for="task in project.tasks" :key="task.id">
-              <TableCell> {{ task.name }} </TableCell>
-              <TableCell> {{ task.status }} </TableCell>
-              <TableCell> {{ task.due_date }}</TableCell>
+            <TableRow v-for="n in 5" :key="n">
+              <TableCell> Lorem ipsum dolor sit amet. </TableCell>
+              <TableCell> In progress </TableCell>
+              <TableCell> 22/08/2024 </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </div>
     </div>
-    <!-- Documents section -->
     <div class="flex-1">
       <h2>Documents</h2>
       <div class="table-container">
-        <!-- Message indicating no documents are available -->
         <p class="px-4 py-3 text-sm font-semibold text-muted-foreground">
           This project doesn't have documents yet...
         </p>
@@ -92,45 +85,15 @@
 </template>
 
 <style>
-/* Styling for table header cells */
 th {
   @apply w-[100px];
 }
 
-/* Styling for section headings */
 h2 {
   @apply mb-4 text-lg font-semibold w-fit;
 }
 
-/* Styling for the container of tables with overflow handling */
 .table-container {
   @apply overflow-hidden overflow-y-auto rounded-md bg-slate-900 h-80;
 }
 </style>
-
-<script setup lang="ts">
-import { projectQuery } from '@/utils/supaQueries'
-import type { Project } from '@/utils/supaQueries'
-
-// initialize useRoute to access route parameters and metadata
-const route = useRoute('/projects/[slug]')
-// Create a ref to hold the project data
-const project = ref<Project | null>(null)
-// Watch for changes to the project's name and update page title accordingly
-watch(
-  () => project.value?.name,
-  () => {
-    usePageStore().pageData.title = `Project: ${project.value?.name || ''}`
-  }
-)
-
-// Fetch project data from the API
-const getProject = async () => {
-  const { data, error } = await projectQuery(route.params.slug)
-  if (error) console.error(error)
-
-  project.value = data
-}
-// Fetch the project data when the component is mounted
-await getProject()
-</script>
