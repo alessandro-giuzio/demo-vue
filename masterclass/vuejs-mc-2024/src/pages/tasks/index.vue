@@ -7,15 +7,17 @@ import { tasksWithProjectsQuery } from '@/utils/supaQueries'
 import type { TasksWithProjects } from '@/utils/supaQueries'
 import { columns } from '@/utils/tableColumns/taskColumns'
 
-usePageStore().pageData.title = 'Tasks'
+usePageStore().pageData.title = 'My Tasks'
 
 const tasks = ref<TasksWithProjects | null>(null)
 const getTasks = async () => {
-  const { data, error } = await tasksWithProjectsQuery
-  if (error) console.error(error)
+  const { data, error, status } = await tasksWithProjectsQuery
+
+  if (error) useErrorStore().setError({ error, customCode: status })
 
   tasks.value = data
 }
 
 await getTasks()
+useErrorStore().setError({ error: Error('I am an uncaught error') })
 </script>

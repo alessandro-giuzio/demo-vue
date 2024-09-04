@@ -126,8 +126,8 @@ watch(
 
 // Fetch project data from the API
 const getProject = async () => {
-  const { data, error } = await projectQuery(route.params.slug)
-  if (error) console.error(error)
+  const { data, error, status } = await projectQuery(route.params.slug)
+  if (error) useErrorStore().setError({ error, customCode: status })
 
   project.value = data
 }

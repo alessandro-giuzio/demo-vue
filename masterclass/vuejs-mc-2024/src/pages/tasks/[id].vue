@@ -90,12 +90,9 @@ watch(
 
 // Tech task data from the API
 const getTask = async () => {
-  const { data, error } = await taskQuery(route.params.id)
-  if (error) {
-    console.error(error)
-  } else {
-    task.value = data
-  }
+  const { data, error, status } = await taskQuery(route.params.id)
+  if (error) useErrorStore().setError({ error, customCode: status })
+
   task.value = data
 }
 await getTask()
