@@ -37,3 +37,7 @@ if(typeof error === 'string') isCustomError.value = true
     clearError
   }
 })
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useErrorStore, import.meta.hot))
+}

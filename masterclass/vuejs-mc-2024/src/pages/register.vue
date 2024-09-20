@@ -92,7 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { register } from '@/utils/supaAuth'
 
 const formData = ref({
   username: '',
@@ -100,26 +102,14 @@ const formData = ref({
   lastName: '',
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmpassword: ''
 })
 
 const router = useRouter()
 
 const signup = async () => {
-  const { data, error } = await supabase.auth.signUp({
-    email: formData.value.email,
-    password: formData.value.password
-  })
-  if (error) return console.log(error)
+  const isRegistered = await register(formData.value)
 
-  if (data.user) {
-    const { error } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      username: formData.value.username,
-      full_name: formData.value.firstName.concat(' ', formData.value.lastName)
-    })
-    if (error) return console.log('Profiles err:', error)
-  }
-  router.push('/')
+  if (isRegistered !== undefined && isRegistered !== null) router.push('/')
 }
 </script>
