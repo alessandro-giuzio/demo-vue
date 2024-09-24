@@ -21,12 +21,10 @@
 </template>
 
 <script setup lang="ts">
-// Destructure the 'activeError' from the error store using 'storeToRefs'
-// 'storeToRefs' ensures that the reactive properties in the store are returned as refs,
-// making reactivity easier to manage in the template without losing reference to the store.
-
 const errorStore = useErrorStore()
 onErrorCaptured((error) => {
   errorStore.setError({ error })
 })
+
+onMounted(async () => {})
 </script>
