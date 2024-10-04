@@ -1,12 +1,12 @@
 <template>
   <h1>To Do list</h1>
   <main>
-    <TodoList />
+    <TodoMain />
   </main>
 </template>
 
 <script setup lang="ts">
-import TodoList from '../components/todo/TodoList.vue'
+import TodoMain from '../components/todo/TodoMain.vue'
 </script>
 
 <style scoped>

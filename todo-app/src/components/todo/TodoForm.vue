@@ -1,5 +1,5 @@
 <template>
-  <div>todo list</div>
+  <div>todo form</div>
 </template>
 
 <script setup lang="ts"></script>
