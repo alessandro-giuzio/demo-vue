@@ -76,7 +76,7 @@
               placeholder="*****"
               autocomplete
               required
-              v-model="formData.confirmPassword"
+              v-model="formData.confirmpassword"
             />
           </div>
           <Button type="submit" class="w-full"> Register </Button>

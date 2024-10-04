@@ -18,7 +18,7 @@
       </div>
 
       <div class="py-3 text-center border-y bg-background">
-        <SidebarLinks :links="accountLinks" />
+        <SidebarLinks :links="accountLinks" @actionClicked="executeAction" />
       </div>
     </nav>
   </aside>
@@ -36,4 +36,10 @@ const accountLinks = [
   { title: 'Settings', to: '/settings', icon: 'lucide:settings' },
   { title: 'Sign out', icon: 'lucide:log-out' }
 ]
+
+const executeAction = (linkTitle: string) => {
+  if (linkTitle === 'Sign out') {
+    //
+  }
+}
 </script>
