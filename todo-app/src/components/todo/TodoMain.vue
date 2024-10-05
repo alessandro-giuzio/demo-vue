@@ -1,14 +1,15 @@
 <template>
   <div class="todo-list">
-    <form @submit.prevent="addNote">
-      <label for="todo">Add a new todo:</label>
-      <textarea v-model="newNote" placeholder="Add a new note" />
-      <button :disabled="!newNote" @click="addNote" type="submit">Add</button>
-    </form>
+    <TodoForm @add-note="addNote" />
+
+    <!-- Loop through the `notes` array and display each note -->
     <div class="card" v-for="(note, index) in notes" :key="index">
+      <!-- Content of each note displayed inside the card -->
       <div class="card-content">
         <div class="content">{{ note.content }}</div>
       </div>
+
+      <!-- Footer with Edit and Delete actions -->
       <footer class="card-footer">
         <a href="#" class="card-footer-item">Edit</a>
         <a href="#" class="card-footer-item">Delete</a>
@@ -20,9 +21,10 @@
 <script setup lang="ts">
 // imports
 import { ref } from 'vue'
+import TodoForm from './TodoForm.vue'
 
 // data
-const newNote = ref('')
+
 const notes = ref([
   { content: 'Lorem ipsum dolor sit amet.' },
   { content: 'note 2' },
@@ -31,8 +33,8 @@ const notes = ref([
   { content: 'Ut enim ad minim veniam.' }
 ])
 
-const addNote = () => {
-  let note = { content: newNote.value }
+const addNote = (newNoteContent: string) => {
+  const note = { content: newNoteContent }
   notes.value.unshift(note)
 }
 </script>
@@ -95,7 +97,7 @@ button[type='submit']:hover {
   padding: 1rem;
   font-size: 1rem;
   color: black;
-  font: 700;
+  font-weight: 800;
 }
 
 .card-footer {
