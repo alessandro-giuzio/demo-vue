@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 // imports
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 
 // Ref for storing the new note input
 const newNote = ref('')

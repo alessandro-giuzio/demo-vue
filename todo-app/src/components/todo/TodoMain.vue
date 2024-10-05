@@ -1,20 +1,7 @@
 <template>
   <div class="todo-list">
     <TodoForm @add-note="addNote" />
-
-    <!-- Loop through the `notes` array and display each note -->
-    <div class="card" v-for="(note, index) in notes" :key="index">
-      <!-- Content of each note displayed inside the card -->
-      <div class="card-content">
-        <div class="content">{{ note.content }}</div>
-      </div>
-
-      <!-- Footer with Edit and Delete actions -->
-      <footer class="card-footer">
-        <a href="#" class="card-footer-item">Edit</a>
-        <a href="#" class="card-footer-item">Delete</a>
-      </footer>
-    </div>
+    <TodoList :notes="notes" @edit-note="editNote" @delete-note="deleteNote" />
   </div>
 </template>
 
@@ -22,9 +9,9 @@
 // imports
 import { ref } from 'vue'
 import TodoForm from './TodoForm.vue'
+import TodoList from './TodoList.vue'
 
 // data
-
 const notes = ref([
   { content: 'Lorem ipsum dolor sit amet.' },
   { content: 'note 2' },
@@ -33,9 +20,21 @@ const notes = ref([
   { content: 'Ut enim ad minim veniam.' }
 ])
 
+// Define the Note Type
+type Note = {
+  content: string
+}
+
+// Methods to add, edit, and delete notes
 const addNote = (newNoteContent: string) => {
   const note = { content: newNoteContent }
   notes.value.unshift(note)
+}
+const editNote = (index: number) => {
+  console.log('Editing note at index:', index)
+}
+const deleteNote = (index: number) => {
+  notes.value.splice(index, 1)
 }
 </script>
 
