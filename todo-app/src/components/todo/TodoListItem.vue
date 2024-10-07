@@ -15,7 +15,6 @@
 
 <script setup lang="ts">
 // Imports
-import { defineProps } from 'vue'
 
 // Define the Note Type
 type Note = {

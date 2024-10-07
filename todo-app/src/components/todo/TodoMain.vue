@@ -7,24 +7,43 @@
 
 <script setup lang="ts">
 // imports
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import TodoForm from './TodoForm.vue'
 import TodoList from './TodoList.vue'
-
-// data
-const notes = ref([
-  { content: 'Lorem ipsum dolor sit amet.' },
-  { content: 'note 2' },
-  { content: 'Sed do eiusmod tempor incididunt.' },
-  { content: 'Ut labore et dolore magna aliqua.' },
-  { content: 'Ut enim ad minim veniam.' }
-])
 
 // Define the Note Type
 type Note = {
   content: string
 }
+// Reactive array of notes (loasded from localStorage or default value)
+const notes = ref<Note[]>([])
 
+// LocalStorage Key
+const STORAGE_Key = 'notes'
+
+// Load notes from localStorage
+const loadNotes = () => {
+  const notesFromStorage = localStorage.getItem(STORAGE_Key)
+  if (notesFromStorage) {
+    notes.value = JSON.parse(notesFromStorage)
+  }
+}
+// Save notes to localStorage
+const saveNotes = () => {
+  localStorage.setItem(STORAGE_Key, JSON.stringify(notes.value))
+}
+// Watch for changes in the notes array and save them to localStorage
+watch(
+  notes,
+  () => {
+    saveNotes()
+  },
+  { deep: true }
+)
+// Load notes when the component is mounted
+onMounted(() => {
+  loadNotes()
+})
 // Methods to add, edit, and delete notes
 const addNote = (newNoteContent: string) => {
   const note = { content: newNoteContent }

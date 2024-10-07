@@ -1,6 +1,6 @@
 <template>
-  <h1>To Do list</h1>
   <main>
+    <h1>To Do list</h1>
     <TodoMain />
   </main>
 </template>
