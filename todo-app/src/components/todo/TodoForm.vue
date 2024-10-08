@@ -8,7 +8,7 @@
     <textarea v-model="newNote" placeholder="Add a new note"></textarea>
 
     <!-- Submit button, disabled if `newNote` is empty -->
-    <button :disabled="!newNote" type="submit">Add</button>
+    <button :disabled="!newNote" type="submit">Save</button>
   </form>
 </template>
 
