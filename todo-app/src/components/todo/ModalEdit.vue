@@ -7,7 +7,7 @@
       </header>
       <div class="modal-body">
         <!-- Input for editing the note content -->
-        <textarea name="" id="" rows="4"></textarea>
+        <textarea v-model="editedContent" name="" id="" rows="4"></textarea>
       </div>
       <footer class="modal-footer">
         <button @click="closeModal">Cancel</button>
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 /* Imports */
-
+import { ref } from 'vue'
 /* Props to recieve the current note content and modal visibility */
 const props = defineProps({
   modelValue: {
@@ -32,6 +32,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const editedContent = ref(props.noteContent)
 
 /* Emits to notify the parent component of modal visibility */
 const emit = defineEmits(['update:modelValue', 'save'])
