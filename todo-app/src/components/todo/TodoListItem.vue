@@ -15,7 +15,8 @@
 
 <script setup lang="ts">
 // Imports
-
+/* import { reactive } from 'vue'
+import ModalEdit from './ModalEdit.vue' */
 // Define the Note Type
 type Note = {
   content: string
@@ -36,4 +37,9 @@ const editNote = () => {
 const deleteNote = () => {
   emit('delete-note', props.index)
 }
+
+// modals
+/* const modals = reactive({
+  editNote: false
+}) */
 </script>
