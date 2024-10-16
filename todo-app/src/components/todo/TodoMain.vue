@@ -1,23 +1,15 @@
 <template>
   <div class="todo-list">
     <TodoForm @add-note="addNote" />
-    <TodoList :notes="notes" @edit-note="openEditModal" @delete-note="deleteNote" />
-    <!-- ModalEdit component -->
-    <ModalEdit
-      v-if="modals.editNote"
-      :modelValue="modals.editNote"
-      :noteContent="currentNoteContent"
-      @update:model-value="closeEditModal"
-    />
+    <TodoList :notes="notes" @edit-note="updateNote" @delete-note="deleteNote" />
   </div>
 </template>
 
 <script setup lang="ts">
 // imports
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import TodoForm from './TodoForm.vue'
 import TodoList from './TodoList.vue'
-import ModalEdit from './ModalEdit.vue'
 
 // Define the Note Type
 type Note = {
@@ -30,8 +22,8 @@ const notes = ref<Note[]>([])
 const STORAGE_Key = 'notes'
 
 // Current note being edited
-const currentNoteContent = ref('')
-let currentNoteIndex = ref<number | null>(null)
+/* const currentNoteContent = ref('')
+let currentNoteIndex = ref<number | null>(null) */
 
 // Load notes from localStorage
 const loadNotes = () => {
@@ -61,28 +53,19 @@ const addNote = (newNoteContent: string) => {
   const note = { content: newNoteContent }
   notes.value.unshift(note)
 }
-const openEditModal = (index: number) => {
-  // Set the content of the note being edited into `currentNoteContent`
-  // The `index` passed to the function helps identify which note to edit.
-  currentNoteContent.value = notes.value[index].content
-  // Store the index of the note being edited in `currentNoteIndex`
-  // This index will be used later when saving the edited note.
-  currentNoteIndex.value = index
-  modals.editNote = true
+const updateNote = ({ index, content }: { index: number; content: string }) => {
+  console.log('Updating note at index:', index, 'with content:', content)
+
+  if (notes.value[index]) {
+    notes.value[index].content = content // Update the note content
+  } else {
+    console.error('Note not found at index:', index)
+  }
 }
-const closeEditModal = () => {
-  modals.editNote = false
-}
+
 const deleteNote = (index: number) => {
   notes.value.splice(index, 1)
 }
-// modals
-// Create a reactive object to track the state of modals in the application
-const modals = reactive({
-  // The 'editNote' property controls the visibility of the edit modal
-  // Initially, the modal is not visible (editNote is set to false)
-  editNote: false
-})
 </script>
 
 <style>
