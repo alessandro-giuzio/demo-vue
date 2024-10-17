@@ -9,6 +9,8 @@
       <details>
         <summary>More Info</summary>
         <p><strong>ID:</strong> {{ note?.id }}</p>
+        <p><strong>Title:</strong> {{ note?.title }}</p>
+        <p><strong>Tags:</strong> {{ note?.tags }}</p>
       </details>
       <!-- <div v-else class="content">{{ note?.content }}</div> -->
     </div>

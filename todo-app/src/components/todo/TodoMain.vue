@@ -53,22 +53,38 @@ onMounted(() => {
   // Log all notes and their IDs when the component mounts
   console.log('Notes loaded from localStorage:')
   notes.value.forEach((note) => {
-    console.log(`ID: ${note.id}, Content: ${note.content}`)
+    const tags = note.tags ? note.tags.join(', ') : 'No tags' // Handle undefined tags
+    console.log(`ID: ${note.id}, Title: ${note.title}, Content: ${note.content}, Tags: ${tags}`)
   })
 })
-// Methods to add, edit, and delete notes
-const addNote = (newNoteContent: string) => {
-  const note = {
+// Method to add a new note, handling title, content, and tags
+const addNote = (newNote: { title: string; content: string; tags: string[] }) => {
+  const note: Note = {
     id: crypto.randomUUID(), // Generate a unique ID for the note
-    content: newNoteContent
+    title: newNote.title,
+    content: newNote.content,
+    tags: newNote.tags
   }
   notes.value.unshift(note)
 }
-const updateNote = ({ index, content }: { index: number; content: string }) => {
-  console.log('Updating note at index:', index, 'with content:', content)
+// Method to update an existing note
+const updateNote = ({
+  index,
+  title,
+  content,
+  tags
+}: {
+  index: number
+  title: string
+  content: string
+  tags: string[]
+}) => {
+  console.log('Updating note at index:', index)
 
   if (notes.value[index]) {
+    notes.value[index].title = title // Update the note title
     notes.value[index].content = content // Update the note content
+    notes.value[index].tags = tags // Update the tags
   } else {
     console.error('Note not found at index:', index)
   }
