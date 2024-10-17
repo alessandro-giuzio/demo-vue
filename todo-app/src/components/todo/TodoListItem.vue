@@ -1,5 +1,6 @@
 <template>
   <div class="card">
+    <RouterLink :to="`/todo-detail/${note.id}`">View Details</RouterLink>
     <div class="card-content">
       <div v-if="isEditing">
         <textarea v-model="editedContent" class="content"></textarea>
