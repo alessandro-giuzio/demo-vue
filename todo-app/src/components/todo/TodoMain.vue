@@ -11,9 +11,12 @@ import { ref, onMounted, watch } from 'vue'
 import TodoForm from './TodoForm.vue'
 import TodoList from './TodoList.vue'
 
-// Define the Note Type
+// Define the Note Type with UUID
 type Note = {
   content: string
+  id: string // Add a unique ID to each note
+  title: string
+  tags: string[]
 }
 // Reactive array of notes (loaded from localStorage or default value)
 const notes = ref<Note[]>([])
@@ -47,10 +50,18 @@ watch(
 // Load notes when the component is mounted
 onMounted(() => {
   loadNotes()
+  // Log all notes and their IDs when the component mounts
+  console.log('Notes loaded from localStorage:')
+  notes.value.forEach((note) => {
+    console.log(`ID: ${note.id}, Content: ${note.content}`)
+  })
 })
 // Methods to add, edit, and delete notes
 const addNote = (newNoteContent: string) => {
-  const note = { content: newNoteContent }
+  const note = {
+    id: crypto.randomUUID(), // Generate a unique ID for the note
+    content: newNoteContent
+  }
   notes.value.unshift(note)
 }
 const updateNote = ({ index, content }: { index: number; content: string }) => {

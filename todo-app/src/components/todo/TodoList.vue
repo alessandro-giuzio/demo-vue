@@ -13,7 +13,6 @@
 <script setup lang="ts">
 // Imports
 import TodoListItem from './TodoListItem.vue'
-import { defineProps, defineEmits } from 'vue'
 
 // Define the Note Type
 type Note = {

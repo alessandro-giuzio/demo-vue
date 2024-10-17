@@ -6,7 +6,11 @@
         <button @click="saveNote">Save</button>
         <button @click="cancelEdit">Cancel</button>
       </div>
-      <div v-else class="content">{{ note?.content }}</div>
+      <details>
+        <summary>More Info</summary>
+        <p><strong>ID:</strong> {{ note?.id }}</p>
+      </details>
+      <!-- <div v-else class="content">{{ note?.content }}</div> -->
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="editNote">Edit</a>
@@ -19,7 +23,10 @@
 import { ref } from 'vue'
 
 type Note = {
+  id: string
+  title: string
   content: string
+  tags: string[]
 }
 
 const props = defineProps<{
