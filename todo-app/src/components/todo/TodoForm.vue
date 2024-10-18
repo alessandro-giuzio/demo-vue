@@ -16,38 +16,77 @@
       <label for="tags">Tags (comma-separated):</label>
       <input type="text" v-model="newTags" placeholder="Enter tags" />
     </div>
-
-    <!-- Submit button, disabled if title or content is empty -->
-    <button :disabled="!newTitle || !newContent" type="submit">Save</button>
+    <!-- Submit button that switches between Save and Edit based on if it's a new or existing note-->
+    <button :disabled="!newTitle || !newContent" type="submit" class="btn-submit">
+      {{ isEditing ? 'Edit' : 'Save' }}
+    </button>
   </form>
 </template>
 
 <script setup lang="ts">
 // imports
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+
+// Props for the note being edited, or null if creating a new note
+const props = defineProps({
+  note: {
+    type: Object,
+    default: null // If no note is passed, it's a new note
+  }
+})
 
 // Ref for storing the new note input
 const newTitle = ref('')
 const newContent = ref('')
 const newTags = ref('')
+const isEditing = ref(false)
 
 // Emits the 'add-note' event to the parent component
-const emit = defineEmits(['add-note'])
+const emit = defineEmits(['add-note', 'edit-note'])
+
+// Watch for changes to the 'note' prop, which indicates editing an existing note
+watch(
+  () => props.note,
+  (newNote) => {
+    if (newNote && newNote.id) {
+      // If the note has an ID, it means we are editing
+      newTitle.value = newNote.title || ''
+      newContent.value = newNote.content || ''
+      newTags.value = newNote.tags ? newNote.tags.join(', ') : ''
+      isEditing.value = true
+    }
+  },
+  { immediate: true } // Run the watcher immediately in case the note is passed on mount
+)
 
 // Function to submit the note and emit the event
 const submitNote = () => {
   if (newTitle.value && newContent.value) {
     // Split the tags string into an array, trimming whitespace
     const tagsArray = newTags.value.split(',').map((tag) => tag.trim())
-
-    // Emit the new note with title, content, and tags to the parent component
-    emit('add-note', { title: newTitle.value, content: newContent.value, tags: tagsArray })
+    if (isEditing.value && props.note && props.note.id) {
+      // If there's an ID, we're editing, so emit 'edit-note'
+      emit('edit-note', {
+        id: props.note.id,
+        title: newTitle.value,
+        content: newContent.value,
+        tags: tagsArray
+      })
+    } else {
+      // Otherwise, we're adding a new note, so emit 'add-note'
+      emit('add-note', { title: newTitle.value, content: newContent.value, tags: tagsArray })
+    }
 
     // Clear the input fields after submission
-    newTitle.value = ''
-    newContent.value = ''
-    newTags.value = ''
+    clearForm()
   }
+}
+// Function to clear the form after saving or editing
+const clearForm = () => {
+  newTitle.value = ''
+  newContent.value = ''
+  newTags.value = ''
+  isEditing.value = false
 }
 </script>
 

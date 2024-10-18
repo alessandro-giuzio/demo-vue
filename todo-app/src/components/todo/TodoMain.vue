@@ -79,6 +79,7 @@ const updateNote = ({
   content: string
   tags: string[]
 }) => {
+  // Log the update process for debugging, showing which index is being updated
   console.log('Updating note at index:', index)
 
   if (notes.value[index]) {
