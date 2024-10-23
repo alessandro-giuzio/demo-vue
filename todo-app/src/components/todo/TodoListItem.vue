@@ -2,6 +2,8 @@
   <div class="card">
     <RouterLink :to="`/todo-detail/${note.id}`">View Details</RouterLink>
     <div class="card-content">
+      <p>{{ note.title }}</p>
+      <p>{{ note.content }}</p>
       <div v-if="isEditing">
         <textarea v-model="editedContent" class="content"></textarea>
         <button @click="saveNote">Save</button>
@@ -36,7 +38,7 @@ const props = defineProps<{
   note: Note
   index: number
 }>()
-
+// Emits events to notify the parent component of actions (edit & delete)
 const emit = defineEmits(['edit-note', 'delete-note'])
 
 const isEditing = ref(false)

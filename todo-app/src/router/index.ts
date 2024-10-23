@@ -29,6 +29,16 @@ const router = createRouter({
       component: TodoDetail,
       props: true
     },
+    {
+      path:'/note',
+      name: 'note',
+      component: () => import('../views/NoteView.vue')
+    },
+    {
+      path:'/edit-note/:id',
+      name: 'edit-note',
+      component: () => import('../views/EditNoteView.vue'),
+    },
   ]
 })
 

@@ -1,7 +1,7 @@
 <template>
   <div class="todo-list">
-    <TodoForm @add-note="addNote" />
-    <TodoList :notes="notes" @edit-note="updateNote" @delete-note="deleteNote" />
+    <TodoForm :current-note="currentNote" @save-note="saveNote" />
+    <TodoList :notes="notes" @edit-note="setCurrentNoteForEdit" @delete-note="deleteNote" />
   </div>
 </template>
 
@@ -14,7 +14,7 @@ import TodoList from './TodoList.vue'
 // Define the Note Type with UUID
 type Note = {
   content: string
-  id: string // Add a unique ID to each note
+  id: string | null // Null when adding a new note
   title: string
   tags: string[]
 }
@@ -24,9 +24,13 @@ const notes = ref<Note[]>([])
 // LocalStorage Key
 const STORAGE_Key = 'notes'
 
-// Current note being edited
-/* const currentNoteContent = ref('')
-let currentNoteIndex = ref<number | null>(null) */
+// Currentnote object
+const currentNote = ref<Note>({
+  id: null, // Set for editing, null for adding a new note
+  title: '',
+  content: '',
+  tags: []
+})
 
 // Load notes from localStorage
 const loadNotes = () => {
@@ -57,8 +61,38 @@ onMounted(() => {
     console.log(`ID: ${note.id}, Title: ${note.title}, Content: ${note.content}, Tags: ${tags}`)
   })
 })
+// Save a new note or update an existing one
+const saveNote = (note: Note) => {
+  if (note.id) {
+    // Editing an existing note
+    const index = notes.value.findIndex((n) => n.id === note.id)
+    if (index !== -1) {
+      notes.value[index] = { ...note }
+    }
+  } else {
+    // Adding a new note with a UUID
+    notes.value.push({ ...note, id: crypto.randomUUID() })
+  }
+  resetCurrentNote() // Clear after saving
+}
+
+// Set the current note for editing
+const setCurrentNoteForEdit = (note: Note) => {
+  currentNote.value = { ...note }
+}
+
+// Delete a note
+const deleteNote = (id: string) => {
+  notes.value = notes.value.filter((note) => note.id !== id)
+}
+
+// Reset the current note after saving or editing
+const resetCurrentNote = () => {
+  currentNote.value = { id: null, title: '', content: '', tags: [] }
+}
+
 // Method to add a new note, handling title, content, and tags
-const addNote = (newNote: { title: string; content: string; tags: string[] }) => {
+/* const addNote = (newNote: { title: string; content: string; tags: string[] }) => {
   const note: Note = {
     id: crypto.randomUUID(), // Generate a unique ID for the note
     title: newNote.title,
@@ -66,9 +100,9 @@ const addNote = (newNote: { title: string; content: string; tags: string[] }) =>
     tags: newNote.tags
   }
   notes.value.unshift(note)
-}
+} */
 // Method to update an existing note
-const updateNote = ({
+/* const updateNote = ({
   index,
   title,
   content,
@@ -89,11 +123,11 @@ const updateNote = ({
   } else {
     console.error('Note not found at index:', index)
   }
-}
+} */
 
-const deleteNote = (index: number) => {
+/* const deleteNote = (index: number) => {
   notes.value.splice(index, 1)
-}
+} */
 </script>
 
 <style>
