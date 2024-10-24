@@ -34,11 +34,11 @@ const router = createRouter({
       name: 'note',
       component: () => import('../views/NoteView.vue')
     },
-    {
+   /*  {
       path:'/edit-note/:id',
       name: 'edit-note',
       component: () => import('../views/EditNoteView.vue'),
-    },
+    }, */
   ]
 })
 
