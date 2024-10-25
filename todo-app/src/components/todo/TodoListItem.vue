@@ -2,7 +2,9 @@
   <div class="card">
     <!-- Content of each note displayed inside the card -->
     <div class="card-content">
-      <div class="content">{{ note?.content }}</div>
+      <div class="content">
+        {{ note?.content }}
+      </div>
     </div>
 
     <!-- Footer with Edit and Delete actions -->
