@@ -1,13 +1,9 @@
 <template>
   <div class="card">
-    <!-- Content of each note displayed inside the card -->
+    <RouterLink :to="`/todo-detail/${note.id}`">View Details</RouterLink>
     <div class="card-content">
-      <div class="content">
-        {{ note?.content }}
-      </div>
+      <div class="content">{{ note?.content }}</div>
     </div>
-
-    <!-- Footer with Edit and Delete actions -->
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="editNote">Edit</a>
       <a href="#" class="card-footer-item" @click.prevent="deleteNote">Delete</a>
@@ -16,32 +12,60 @@
 </template>
 
 <script setup lang="ts">
-// Imports
-/* import { reactive } from 'vue'
-import ModalEdit from './ModalEdit.vue' */
-// Define the Note Type
+import { ref } from 'vue'
+
 type Note = {
+  id: string
+  title: string
   content: string
+  tags: string[]
 }
-// Props to receive the note and its index from the parent component
+
 const props = defineProps<{
   note: Note
-  index: Number
+  index: number
 }>()
-
-//Emits events to notify the parent component of actions (edit & delete)
+// Emits events to notify the parent component of actions (edit & delete)
 const emit = defineEmits(['edit-note', 'delete-note'])
 
-//Methods to edit and delete notes
+const isEditing = ref(false)
+const editedContent = ref(props.note.content)
+
 const editNote = () => {
-  emit('edit-note', props.index)
+  isEditing.value = true
 }
+
+const saveNote = () => {
+  emit('edit-note', { index: props.index, content: editedContent.value }) // Emit both index and edited content
+  isEditing.value = false
+}
+
+const cancelEdit = () => {
+  editedContent.value = props.note.content // reset to original content
+  isEditing.value = false
+}
+
 const deleteNote = () => {
   emit('delete-note', props.index)
 }
-
-// modals
-/* const modals = reactive({
-  editNote: false
-}) */
 </script>
+
+<style scoped>
+.content {
+  white-space: pre-wrap;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.card {
+  margin-bottom: 1rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+</style>

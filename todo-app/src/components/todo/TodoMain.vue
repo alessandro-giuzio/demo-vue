@@ -1,27 +1,22 @@
 <template>
   <div class="todo-list">
-    <TodoForm @add-note="addNote" />
-    <TodoList :notes="notes" @edit-note="openEditModal" @delete-note="deleteNote" />
-    <!-- ModalEdit component -->
-    <ModalEdit
-      v-if="modals.editNote"
-      :modelValue="modals.editNote"
-      :noteContent="currentNoteContent"
-      @update:model-value="closeEditModal"
-    />
+    <TodoForm :current-note="currentNote" @save-note="saveNote" />
+    <TodoList :notes="notes" @edit-note="setCurrentNoteForEdit" @delete-note="deleteNote" />
   </div>
 </template>
 
 <script setup lang="ts">
 // imports
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import TodoForm from './TodoForm.vue'
 import TodoList from './TodoList.vue'
-import ModalEdit from './ModalEdit.vue'
 
-// Define the Note Type
+// Define the Note Type with UUID
 type Note = {
   content: string
+  id: string | null // Null when adding a new note
+  title: string
+  tags: string[]
 }
 // Reactive array of notes (loaded from localStorage or default value)
 const notes = ref<Note[]>([])
@@ -29,9 +24,13 @@ const notes = ref<Note[]>([])
 // LocalStorage Key
 const STORAGE_Key = 'notes'
 
-// Current note being edited
-const currentNoteContent = ref('')
-let currentNoteIndex = ref<number | null>(null)
+// Currentnote object
+const currentNote = ref<Note>({
+  id: null, // Set for editing, null for adding a new note
+  title: '',
+  content: '',
+  tags: []
+})
 
 // Load notes from localStorage
 const loadNotes = () => {
@@ -55,34 +54,80 @@ watch(
 // Load notes when the component is mounted
 onMounted(() => {
   loadNotes()
+  // Log all notes and their IDs when the component mounts
+  console.log('Notes loaded from localStorage:')
+  notes.value.forEach((note) => {
+    const tags = note.tags ? note.tags.join(', ') : 'No tags' // Handle undefined tags
+    console.log(`ID: ${note.id}, Title: ${note.title}, Content: ${note.content}, Tags: ${tags}`)
+  })
 })
-// Methods to add, edit, and delete notes
-const addNote = (newNoteContent: string) => {
-  const note = { content: newNoteContent }
+// Save a new note or update an existing one
+const saveNote = (note: Note) => {
+  if (note.id) {
+    // Editing an existing note
+    const index = notes.value.findIndex((n) => n.id === note.id)
+    if (index !== -1) {
+      notes.value[index] = { ...note }
+    }
+  } else {
+    // Adding a new note with a UUID
+    notes.value.push({ ...note, id: crypto.randomUUID() })
+  }
+  resetCurrentNote() // Clear after saving
+}
+
+// Set the current note for editing
+const setCurrentNoteForEdit = (note: Note) => {
+  currentNote.value = { ...note }
+}
+
+// Delete a note
+const deleteNote = (id: string) => {
+  notes.value = notes.value.filter((note) => note.id !== id)
+}
+
+// Reset the current note after saving or editing
+const resetCurrentNote = () => {
+  currentNote.value = { id: null, title: '', content: '', tags: [] }
+}
+
+// Method to add a new note, handling title, content, and tags
+/* const addNote = (newNote: { title: string; content: string; tags: string[] }) => {
+  const note: Note = {
+    id: crypto.randomUUID(), // Generate a unique ID for the note
+    title: newNote.title,
+    content: newNote.content,
+    tags: newNote.tags
+  }
   notes.value.unshift(note)
-}
-const openEditModal = (index: number) => {
-  // Set the content of the note being edited into `currentNoteContent`
-  // The `index` passed to the function helps identify which note to edit.
-  currentNoteContent.value = notes.value[index].content
-  // Store the index of the note being edited in `currentNoteIndex`
-  // This index will be used later when saving the edited note.
-  currentNoteIndex.value = index
-  modals.editNote = true
-}
-const closeEditModal = () => {
-  modals.editNote = false
-}
-const deleteNote = (index: number) => {
+} */
+// Method to update an existing note
+/* const updateNote = ({
+  index,
+  title,
+  content,
+  tags
+}: {
+  index: number
+  title: string
+  content: string
+  tags: string[]
+}) => {
+  // Log the update process for debugging, showing which index is being updated
+  console.log('Updating note at index:', index)
+
+  if (notes.value[index]) {
+    notes.value[index].title = title // Update the note title
+    notes.value[index].content = content // Update the note content
+    notes.value[index].tags = tags // Update the tags
+  } else {
+    console.error('Note not found at index:', index)
+  }
+} */
+
+/* const deleteNote = (index: number) => {
   notes.value.splice(index, 1)
-}
-// modals
-// Create a reactive object to track the state of modals in the application
-const modals = reactive({
-  // The 'editNote' property controls the visibility of the edit modal
-  // Initially, the modal is not visible (editNote is set to false)
-  editNote: false
-})
+} */
 </script>
 
 <style>

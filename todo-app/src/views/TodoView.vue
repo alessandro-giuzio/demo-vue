@@ -13,6 +13,7 @@ import TodoMain from '../components/todo/TodoMain.vue'
 h1 {
   text-align: center;
   margin-top: 2rem;
-  color: beige;
+  color: red;
+  font-weight: 700;
 }
 </style>

@@ -32,7 +32,7 @@ export default defineConfig({
     ],
       dts: true, // Generate TypeScript declaration files for auto-imports
       viteOptimizeDeps: true, // Optimize dependencies for faster builds
-      dirs: ['src/stores'] // Specify directories to include for auto-imports
+      dirs: ['src/stores/**','src/composables/**'] // Specify directories to include for auto-imports
   }),
     // Plugin for Vue Router, handles Vue Router setup
     VueRouter(),

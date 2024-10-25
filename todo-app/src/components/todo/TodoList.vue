@@ -28,9 +28,10 @@ const props = defineProps<{
 const emit = defineEmits(['edit-note', 'delete-note'])
 
 //Methods to edit and delete notes
-const editNote = (index: number) => {
-  emit('edit-note', index)
+const editNote = ({ index, content }: { index: number; content: string }) => {
+  emit('edit-note', { index, content })
 }
+
 const deleteNote = (index: number) => {
   emit('delete-note', index)
 }
