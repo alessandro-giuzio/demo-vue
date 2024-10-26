@@ -2,7 +2,7 @@
   <div class="card">
     <RouterLink :to="`/todo-detail/${note.id}`">View Details</RouterLink>
     <div class="card-content">
-      <div class="content">{{ note?.content }}</div>
+      <div class="content">{{ note.content }}</div>
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="editNote">Edit</a>
@@ -12,8 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
 type Note = {
   id: string
   title: string
@@ -25,47 +23,16 @@ const props = defineProps<{
   note: Note
   index: number
 }>()
-// Emits events to notify the parent component of actions (edit & delete)
+
 const emit = defineEmits(['edit-note', 'delete-note'])
 
-const isEditing = ref(false)
-const editedContent = ref(props.note.content)
-
+// Emit the full note for editing in the parent component
 const editNote = () => {
-  isEditing.value = true
+  emit('edit-note', props.note)
 }
 
-const saveNote = () => {
-  emit('edit-note', { index: props.index, content: editedContent.value }) // Emit both index and edited content
-  isEditing.value = false
-}
-
-const cancelEdit = () => {
-  editedContent.value = props.note.content // reset to original content
-  isEditing.value = false
-}
-
+// Emit the note’s ID for deletion
 const deleteNote = () => {
-  emit('delete-note', props.index)
+  emit('delete-note', props.note.id)
 }
 </script>
-
-<style scoped>
-.content {
-  white-space: pre-wrap;
-  padding: 0.75rem;
-  border-radius: 4px;
-  background-color: white;
-}
-
-.card {
-  margin-bottom: 1rem;
-}
-
-textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-</style>
