@@ -1,8 +1,12 @@
 <template>
   <div class="card">
-    <RouterLink :to="`/todo-detail/${note.id}`">View Details</RouterLink>
+    <RouterLink class="router-link" :to="`/todo-detail/${note.id}`">View Details</RouterLink>
     <div class="card-content">
-      <div class="content">{{ note.content }}</div>
+      <p class="title">Title: {{ note.title }}</p>
+      <div class="content">Content: {{ note.content }}</div>
+      <div class="tags">
+        <span class="tag" v-for="tag in note.tags" :key="tag">{{ tag }}</span>
+      </div>
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="editNote">Edit</a>
@@ -36,3 +40,34 @@ const deleteNote = () => {
   emit('delete-note', props.note.id)
 }
 </script>
+<style>
+.card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+}
+.router-link {
+  color: #007bff;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: color 0.3s ease;
+}
+.title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: blue;
+}
+.tag {
+  margin-right: 0.5rem;
+  color: black;
+}
+.content {
+  color: black;
+}
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

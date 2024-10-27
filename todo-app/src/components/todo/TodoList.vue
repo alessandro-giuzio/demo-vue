@@ -16,7 +16,10 @@ import TodoListItem from './TodoListItem.vue'
 
 // Define the Note Type
 type Note = {
+  id: string
+  title: string
   content: string
+  tags: string[]
 }
 
 // Props to receive the notes array from the parent component

@@ -2,11 +2,11 @@
   <form @submit.prevent="submitNote" class="note-form">
     <div class="form-group">
       <label for="title">Title:</label>
-      <input type="text" v-model="currentNote.title" placeholder="Enter the title" required />
+      <input type="text" v-model="localNote.title" placeholder="Enter the title" required />
     </div>
     <div class="form-group">
       <label for="content">Content:</label>
-      <textarea v-model="currentNote.content" placeholder="Enter the content" required></textarea>
+      <textarea v-model="localNote.content" placeholder="Enter the content" required></textarea>
     </div>
     <div class="form-group">
       <label for="tags">Tags (comma-separated):</label>
@@ -18,18 +18,19 @@
       />
     </div>
     <button
-      :disabled="!currentNote.title || !currentNote.content"
+      :disabled="!localNote.title || !localNote.content"
       type="submit"
-      :class="['btn-submit', currentNote.id ? 'edit-mode' : 'save-mode']"
+      :class="['btn-submit', localNote.id ? 'edit-mode' : 'save-mode']"
     >
-      {{ currentNote.id ? 'Edit' : 'Save' }}
+      {{ localNote.id ? 'Edit' : 'Save' }}
     </button>
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
+// Define props
 const props = defineProps({
   currentNote: {
     type: Object,
@@ -37,13 +38,28 @@ const props = defineProps({
   }
 })
 
+// Define emits
 const emit = defineEmits(['save-note'])
-const tagsInput = ref(props.currentNote.tags ? props.currentNote.tags.join(', ') : '')
 
-// Watch for changes in currentNote to update tags input field
+// Create a local reactive copy of currentNote to avoid mutating props
+const localNote = reactive({
+  id: props.currentNote.id,
+  title: props.currentNote.title,
+  content: props.currentNote.content,
+  tags: [...(props.currentNote.tags || [])] // Spread to avoid reference issues
+})
+
+// Reactive variable for tags input
+const tagsInput = ref(localNote.tags.join(', '))
+
+// Watch for changes in currentNote and update localNote accordingly
 watch(
   () => props.currentNote,
   (newNote) => {
+    localNote.id = newNote.id
+    localNote.title = newNote.title
+    localNote.content = newNote.content
+    localNote.tags = [...(newNote.tags || [])]
     tagsInput.value = newNote.tags ? newNote.tags.join(', ') : ''
   },
   { immediate: true }
@@ -52,7 +68,7 @@ watch(
 // Emit save-note with all data on submission
 const submitNote = () => {
   const tagsArray = tagsInput.value.split(',').map((tag) => tag.trim())
-  emit('save-note', { ...props.currentNote, tags: tagsArray })
+  emit('save-note', { ...localNote, tags: tagsArray })
 }
 </script>
 
