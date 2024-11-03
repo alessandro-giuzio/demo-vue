@@ -34,6 +34,17 @@ const router = createRouter({
       name: 'note',
       component: () => import('../views/NoteView.vue')
     },
+    {
+      path: '/users',
+      name: 'users',
+      component: () => import('../views/UsersView.vue'),
+      props: () => {
+        const storedUsers = localStorage.getItem('users')
+        return {
+          users: storedUsers ? JSON.parse(storedUsers) : []
+        }
+      }
+    },
    /*  {
       path:'/edit-note/:id',
       name: 'edit-note',

@@ -1,35 +1,69 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import CreateUser from './components/users/CreateUser.vue'
 
 import { ref, onMounted } from 'vue'
 
-const users = ref([])
+type User = {
+  id: string
+  name: string
+  email: string
+  password: string
+}
 
+const STORAGE_Key = 'users' // Define a key for localStorage
+
+const users = ref<User[]>([]) // Define users as a reactive ref array
+
+// Function to load users from localStorage or create a default user if none exist
 const loadUsersFromLocalStorage = () => {
-  const storedUsers = localStorage.getItem('users')
+  const storedUsers = localStorage.getItem(STORAGE_Key)
   if (storedUsers) {
     users.value = JSON.parse(storedUsers)
   } else {
-    createDefaultUser()
+    createDefaultUsers()
   }
 }
 
+// Function to save the users array to localStorage
 const saveUsersToLocalStorage = () => {
-  localStorage.setItem('users', JSON.stringify(users.value))
+  localStorage.setItem(STORAGE_Key, JSON.stringify(users.value))
 }
 
-const createDefaultUser = () => {
-  const defaultUser = {
-    id: crypto.randomUUID(), // Generate a unique ID
-    name: 'Default User',
-    email: 'default@example.com',
-    password: 'password123'
-  }
-  users.value.push(defaultUser)
+// Function to create a default user and save it to localStorage
+/* const createDefaultUsers = () => {
+  const defaultUsers = [
+    {
+      id: crypto.randomUUID(),
+      name: 'Default User 1',
+      email: 'user1@example.com',
+      password: 'password123'
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'Default User 2',
+      email: 'user2@example.com',
+      password: 'password123'
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'Default User 3',
+      email: 'user3@example.com',
+      password: 'password123'
+    }
+  ]
+  // Add all default users to the `users` array
+  users.value.push(...defaultUsers)
+  saveUsersToLocalStorage() // Save the updated users array to localStorage
+} */
+
+// Function to handle the userCreated event
+const handleUserCreated = (newUser: User) => {
+  users.value.push(newUser)
   saveUsersToLocalStorage()
 }
-
+// Load users from localStorage when the component mounts
 onMounted(() => {
   loadUsersFromLocalStorage()
 })
@@ -47,19 +81,9 @@ onMounted(() => {
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/todo">To-Do</RouterLink>
         <RouterLink to="/note">Note</RouterLink>
+        <RouterLink to="/users">Users</RouterLink>
       </nav>
-      <div class="p-6">
-        <h1 class="mb-4 text-2xl font-bold">User List</h1>
-        <div v-if="users.length">
-          <ul>
-            <li v-for="user in users" :key="user.id" class="mb-2">
-              <p><strong>ID:</strong> {{ user.id }}</p>
-              <p><strong>Name:</strong> {{ user.name }}</p>
-              <p><strong>Email:</strong> {{ user.email }}</p>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <CreateUser @new-user="handleUserCreated" />
     </div>
   </header>
 
