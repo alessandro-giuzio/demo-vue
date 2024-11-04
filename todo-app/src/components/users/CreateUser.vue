@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { defineEmits } from 'vue'
 
 const name = ref('')
 const email = ref('')
