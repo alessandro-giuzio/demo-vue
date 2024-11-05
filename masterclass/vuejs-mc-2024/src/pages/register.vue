@@ -1,3 +1,23 @@
+<script setup lang="ts">
+import { register } from '@/utils/supaAuth'
+
+const formData = ref({
+  username: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+const router = useRouter()
+
+const signup = async () => {
+  const isRegistered = await register(formData.value)
+
+  if (isRegistered) router.push('/')
+}
+</script>
+
 <template>
   <div
     class="mx-auto w-full flex justify-center items-center p-10 text-center -mt-10 min-h-[90vh] h-full"
@@ -76,7 +96,7 @@
               placeholder="*****"
               autocomplete
               required
-              v-model="formData.confirmpassword"
+              v-model="formData.confirmPassword"
             />
           </div>
           <Button type="submit" class="w-full"> Register </Button>
@@ -90,26 +110,3 @@
     </Card>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { register } from '@/utils/supaAuth'
-
-const formData = ref({
-  username: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmpassword: ''
-})
-
-const router = useRouter()
-
-const signup = async () => {
-  const isRegistered = await register(formData.value)
-
-  if (isRegistered !== undefined && isRegistered !== null) router.push('/')
-}
-</script>
