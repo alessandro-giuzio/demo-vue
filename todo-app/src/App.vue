@@ -32,7 +32,7 @@ const saveUsersToLocalStorage = () => {
 }
 
 // Function to create a default user and save it to localStorage
-/* const createDefaultUsers = () => {
+const createDefaultUsers = () => {
   const defaultUsers = [
     {
       id: crypto.randomUUID(),
@@ -56,7 +56,7 @@ const saveUsersToLocalStorage = () => {
   // Add all default users to the `users` array
   users.value.push(...defaultUsers)
   saveUsersToLocalStorage() // Save the updated users array to localStorage
-} */
+}
 
 // Function to handle the userCreated event
 const handleUserCreated = (newUser: User) => {
