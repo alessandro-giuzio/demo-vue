@@ -51,6 +51,12 @@ const createDefaultUsers = () => {
       name: 'Default User 3',
       email: 'user3@example.com',
       password: 'password123'
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'Default User 4',
+      email: 'user@email.com',
+      password: 'password123'
     }
   ]
   // Add all default users to the `users` array

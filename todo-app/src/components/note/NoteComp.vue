@@ -1,6 +1,7 @@
 <template>
   <div class="card">
     <div class="card-content">
+      <div class="title">{{ note.title }}</div>
       <div class="content">
         {{ note.content }}
       </div>

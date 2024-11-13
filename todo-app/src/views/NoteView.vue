@@ -2,6 +2,20 @@
   <div class="notes">
     <h1>Notes</h1>
     <div class="card">
+      <!-- User Selection Dropdown -->
+      <div class="field">
+        <label for="userSelect">Select User</label>
+        <select v-model="selectedUserId" class="select" id="userSelect">
+          <option value="" disabled>Select a user</option>
+          <option v-for="user in users" :key="user.id" :value="user.id">
+            {{ user.name }}
+          </option>
+        </select>
+      </div>
+      <!-- New Title Input Field -->
+      <div class="field">
+        <input type="text" v-model="newTitle" class="textarea" placeholder="Add a title" />
+      </div>
       <div class="field">
         <textarea
           ref="newNoteRef"
@@ -12,7 +26,9 @@
       </div>
 
       <div class="field grouped-right">
-        <button class="button" @click="addNote" :disabled="!newNote">Add New Note</button>
+        <button class="button" @click="addNote" :disabled="!newNote || !newTitle">
+          Add New Note
+        </button>
       </div>
     </div>
     <NoteComp
@@ -47,16 +63,28 @@ type Note = {
   id: string // Ensure id is always a string
   title: string
   tags: string[]
+  userId: string
+}
+// Define User and Note Types
+type User = {
+  id: string
+  name: string
+  email: string
+  password: string
 }
 
-// Reactive array of notes (loaded from localStorage or default value)
+// Reactive arrays for notes and users
 const notes = ref<Note[]>([])
+const users = ref<User[]>([])
 
-// LocalStorage Key
+// LocalStorage Keys
 const STORAGE_Key = 'notes'
+const USERS_Key = 'users'
 
-// Reactive variable for the new note
+// Reactive variables for the new note and title
 const newNote = ref('')
+const newTitle = ref('') // New title field
+const selectedUserId = ref<string | null>(null) // Track selected user ID
 
 // Reference to the new note textarea
 const newNoteRef = ref<HTMLTextAreaElement | null>(null)
@@ -68,32 +96,44 @@ const loadNotes = () => {
     notes.value = JSON.parse(notesFromStorage)
   }
 }
+// Load users from localStorage
+const loadUsers = () => {
+  const usersFromStorage = localStorage.getItem(USERS_Key)
+  if (usersFromStorage) {
+    users.value = JSON.parse(usersFromStorage)
+  }
+}
 
 // Save notes to localStorage
 const saveNotes = () => {
   localStorage.setItem(STORAGE_Key, JSON.stringify(notes.value))
 }
 
-// Add a new note
+// Add a new note associated with the selected user
 const addNote = () => {
-  if (newNote.value.trim()) {
-    // Add the note to the beginning of the array
+  if (newNote.value.trim() && newTitle.value.trim() && selectedUserId.value) {
     notes.value.unshift({
       content: newNote.value,
+      title: newTitle.value,
       id: crypto.randomUUID(),
-      title: '',
-      tags: []
+      tags: [],
+      userId: selectedUserId.value // Associate the note with the selected user
     })
 
-    newNote.value = '' // Clear the input
+    newNote.value = '' // Clear the note content
+    newTitle.value = '' // Clear the title
+    selectedUserId.value = null // Reset the user selection
     saveNotes() // Save the updated notes array to localStorage
-    newNoteRef.value?.focus() // Focus the input after adding a note
+    newNoteRef.value?.focus() // Focus the note input after adding
   }
 }
 
 // Edit a note
 const editNote = (index: number) => {
-  newNote.value = notes.value[index].content // Load the note content into the input for editing
+  const note = notes.value[index]
+  newNote.value = note.content // Load the note content into the input for editing
+  newTitle.value = note.title // Load the note title for editing
+  selectedUserId.value = note.userId // Pre-select the associated user
   deleteNote(index) // Delete the note so it can be replaced when saved
 }
 
@@ -108,6 +148,7 @@ const deleteNote = (index: number) => {
 onMounted(() => {
   loadNotes()
   // Log all notes and their IDs when the component mounts
+  loadUsers()
   console.log('Notes loaded from localStorage:')
   notes.value.forEach((note) => {
     const tags = note.tags ? note.tags.join(', ') : 'No tags' // Handle undefined tags
