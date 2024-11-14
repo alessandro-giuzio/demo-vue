@@ -1,6 +1,6 @@
-import type { ColumnDef } from "@tanstack/vue-table"
-import type { TasksWithProjects } from "../supaQueries"
-import { RouterLink } from "vue-router"
+import type { ColumnDef } from '@tanstack/vue-table'
+import type { TasksWithProjects } from '../supaQueries'
+import { RouterLink } from 'vue-router'
 
 export const columns: ColumnDef<TasksWithProjects[0]>[] = [
   {
@@ -21,14 +21,14 @@ export const columns: ColumnDef<TasksWithProjects[0]>[] = [
     accessorKey: 'status',
     header: () => h('div', { class: 'text-left' }, 'Status'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-left' }, row.getValue('status'))
+      return h('div', { class: 'text-left font-medium' }, row.getValue('status'))
     }
   },
   {
     accessorKey: 'due_date',
     header: () => h('div', { class: 'text-left' }, 'Due Date'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-left' }, row.getValue('due_date'))
+      return h('div', { class: 'text-left font-medium' }, row.getValue('due_date'))
     }
   },
   {
@@ -51,7 +51,11 @@ export const columns: ColumnDef<TasksWithProjects[0]>[] = [
     accessorKey: 'collaborators',
     header: () => h('div', { class: 'text-left' }, 'Collaborators'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-left' }, JSON.stringify(row.getValue('collaborators')))
+      return h(
+        'div',
+        { class: 'text-left font-medium' },
+        JSON.stringify(row.getValue('collaborators'))
+      )
     }
   }
 ]

@@ -109,13 +109,12 @@ h2 {
 </style>
 
 <script setup lang="ts">
-import { projectQuery } from '@/utils/supaQueries'
-import type { Project } from '@/utils/supaQueries'
-
 // initialize useRoute to access route parameters and metadata
-const route = useRoute('/projects/[slug]')
-// Create a ref to hold the project data
-const project = ref<Project | null>(null)
+const { slug } = useRoute('/projects/[slug]').params
+// Initialize the store
+const projectsLoader = useProjectsStore()
+const { project } = storeToRefs(projectsLoader)
+const { getProject } = projectsLoader
 // Watch for changes to the project's name and update page title accordingly
 watch(
   () => project.value?.name,
@@ -124,13 +123,6 @@ watch(
   }
 )
 
-// Fetch project data from the API
-const getProject = async () => {
-  const { data, error, status } = await projectQuery(route.params.slug)
-  if (error) useErrorStore().setError({ error, customCode: status })
-
-  project.value = data
-}
 // Fetch the project data when the component is mounted
-await getProject()
+await getProject(slug)
 </script>

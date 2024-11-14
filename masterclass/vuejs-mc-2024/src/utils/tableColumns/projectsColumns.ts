@@ -41,20 +41,20 @@ export const columns = (
     cell: ({ row }) => {
       return h(
         'div',
-        { class: 'text-left font-medium' },
+        { class: 'text-left font-medium h-20 flex items-center' },
         collabs.value[row.original.id]
           ? collabs.value[row.original.id].map((collab) => {
               return h(RouterLink, { to: `/users/${collab.username}` }, () => {
                 return h(
                   Avatar,
                   { class: 'hover:scale-110 transition-transform' },
-                  () => h(AvatarImage, { src: collab.avatar_url || 'path/to/default-avatar.png' })
+                  () => h(AvatarImage, { src: collab.avatar_url || '' })
                 )
               })
             })
           : row.original.collaborators.map(() => {
               return h(Avatar, { class: 'animate-pulse' }, () =>
-                h(AvatarFallback, 'No Image')
+                h(AvatarFallback)
               )
             })
       )
