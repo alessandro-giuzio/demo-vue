@@ -13,8 +13,6 @@ const { getGroupedCollabs, groupedCollabs } = useCollabs()
 
 getGroupedCollabs(projects.value)
 
-console.log('TEST :: ', groupedCollabs.value)
-
 const columnsWithCollabs = columns(groupedCollabs)
 </script>
 

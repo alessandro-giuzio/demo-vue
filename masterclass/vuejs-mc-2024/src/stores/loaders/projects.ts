@@ -7,7 +7,9 @@ export const useProjectsStore = defineStore('projects-store', () => {
   const project = ref<Project>()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const loadProjects = useMemoize(async (key: string) => await projectsQuery)
-  const loadProject = useMemoize(async (slug: string) => await projectQuery(slug))
+  const loadProject = useMemoize(
+    async (slug: string) => await projectQuery(slug)
+  )
 
   const validateCache = () => {
     if (projects.value?.length) {
@@ -16,7 +18,7 @@ export const useProjectsStore = defineStore('projects-store', () => {
           return
         } else {
           loadProjects.delete('projects')
-          if(!error && data) projects.value = data
+          if (!error && data) projects.value = data
         }
       })
     }
@@ -27,18 +29,18 @@ export const useProjectsStore = defineStore('projects-store', () => {
 
     if (error) useErrorStore().setError({ error, customCode: status })
 
-    if(data) projects.value = data
+    if (data) projects.value = data
 
     validateCache()
   }
 
-  // Fetch project data from the API
-const getProject = async (slug: string) => {
-  const { data, error, status } = await loadProject(slug)
-  if (error) useErrorStore().setError({ error, customCode: status })
+  const getProject = async (slug: string) => {
+    const { data, error, status } = await loadProject(slug)
 
-    if(data) project.value = data
-}
+    if (error) useErrorStore().setError({ error, customCode: status })
+
+    if (data) project.value = data
+  }
 
   return {
     projects,
