@@ -1,5 +1,6 @@
 <template>
   <div class="card">
+    <div class="user-id"><strong>User ID:</strong> {{ note.id }}</div>
     <div class="card-content">
       <div class="title">{{ note.title }}</div>
       <div class="content">

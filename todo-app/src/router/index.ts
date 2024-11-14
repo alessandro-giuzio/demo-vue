@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import CreateNoteView from '@/views/CreateNoteView.vue'
 import TodoDetail from '../components/todo/TodoDetail.vue'
 
 const router = createRouter({
@@ -33,6 +34,12 @@ const router = createRouter({
       path:'/note',
       name: 'note',
       component: () => import('../views/NoteView.vue')
+    },
+    {
+      path: '/note/create',
+      name: 'create-note',
+      component: CreateNoteView,
+      props: route => ({ users: JSON.parse(localStorage.getItem('users') || '[]') })
     },
     {
       path: '/users',

@@ -63,7 +63,7 @@ type Note = {
   id: string // Ensure id is always a string
   title: string
   tags: string[]
-  userId: string
+  userId: string | null
 }
 // Define User and Note Types
 type User = {
