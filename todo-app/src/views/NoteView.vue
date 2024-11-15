@@ -24,7 +24,18 @@
           placeholder="Add a new note"
         ></textarea>
       </div>
+      <!-- placeholder to insert tags -->
 
+      <div class="field">
+        <label for="tagsInput">Add Tags (comma-separated)</label>
+        <input
+          type="text"
+          v-model="newTags"
+          id="tagsInput"
+          class="textarea"
+          placeholder="Add tags"
+        />
+      </div>
       <div class="field grouped-right">
         <button class="button" @click="addNote" :disabled="!newNote || !newTitle">
           Add New Note
@@ -84,6 +95,7 @@ const USERS_Key = 'users'
 // Reactive variables for the new note and title
 const newNote = ref('')
 const newTitle = ref('') // New title field
+const newTags = ref('') // New tags field
 const selectedUserId = ref<string | null>(null) // Track selected user ID
 
 // Reference to the new note textarea
@@ -116,12 +128,13 @@ const addNote = () => {
       content: newNote.value,
       title: newTitle.value,
       id: crypto.randomUUID(),
-      tags: [],
+      tags: newTags.value.split(',').map((tag) => tag.trim()), // Split and trim tags
       userId: selectedUserId.value // Associate the note with the selected user
     })
 
     newNote.value = '' // Clear the note content
     newTitle.value = '' // Clear the title
+    newTags.value = '' // Clear the tags input
     selectedUserId.value = null // Reset the user selection
     saveNotes() // Save the updated notes array to localStorage
     newNoteRef.value?.focus() // Focus the note input after adding

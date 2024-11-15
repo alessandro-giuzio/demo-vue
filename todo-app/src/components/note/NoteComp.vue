@@ -6,6 +6,13 @@
       <div class="content">
         {{ note.content }}
       </div>
+      <div class="tags">
+        <strong>Tags:</strong>
+        <span v-if="note.tags && note.tags.length > 0">
+          <span class="tag" v-for="tag in note.tags" :key="tag">{{ tag }}</span>
+        </span>
+        <span v-else>No tags available</span>
+      </div>
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="handleEditClick(index)">Edit</a>
