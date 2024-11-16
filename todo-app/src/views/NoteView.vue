@@ -87,6 +87,7 @@ const newNote = ref('')
 const newTitle = ref('') // New title field
 const newTags = ref('') // New tags field
 const selectedUserId = ref<string | null>(null) // Track selected user ID
+const editingIndex = ref<number | null>(null) // Track the index of the note being edited
 
 // Reference to the new note textarea
 const newNoteRef = ref<HTMLTextAreaElement | null>(null)
@@ -114,20 +115,34 @@ const saveNotes = () => {
 // Add a new note associated with the selected user
 const addNote = () => {
   if (newNote.value.trim() && newTitle.value.trim() && selectedUserId.value) {
-    notes.value.unshift({
-      content: newNote.value,
-      title: newTitle.value,
-      id: crypto.randomUUID(),
-      tags: newTags.value.split(',').map((tag) => tag.trim()), // Split and trim tags
-      userId: selectedUserId.value // Associate the note with the selected user
-    })
+    if (editingIndex.value !== null) {
+      // Update the existing note
+      notes.value[editingIndex.value] = {
+        ...notes.value[editingIndex.value],
+        content: newNote.value,
+        title: newTitle.value,
+        userId: selectedUserId.value
+      }
+      editingIndex.value = null // Clear the editing index
+    } else {
+      // Add a new note
+      notes.value.unshift({
+        content: newNote.value,
+        title: newTitle.value,
+        id: crypto.randomUUID(),
+        tags: [],
+        userId: selectedUserId.value
+      })
+    }
 
-    newNote.value = '' // Clear the note content
-    newTitle.value = '' // Clear the title
+    // Clear the form fields
+    newNote.value = ''
+    newTitle.value = ''
     newTags.value = '' // Clear the tags input
-    selectedUserId.value = null // Reset the user selection
+    selectedUserId.value = null
+
     saveNotes() // Save the updated notes array to localStorage
-    newNoteRef.value?.focus() // Focus the note input after adding
+    newNoteRef.value?.focus() // Focus the note input after saving
   }
 }
 
@@ -137,7 +152,7 @@ const editNote = (index: number) => {
   newNote.value = note.content // Load the note content into the input for editing
   newTitle.value = note.title // Load the note title for editing
   selectedUserId.value = note.userId // Pre-select the associated user
-  deleteNote(index) // Delete the note so it can be replaced when saved
+  editingIndex.value = index // Set the index of the note being edited
 }
 
 // Delete a note
