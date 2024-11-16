@@ -90,6 +90,20 @@ onMounted(() => {
         <RouterLink to="/users">Users</RouterLink>
       </nav>
       <CreateUser @new-user="handleUserCreated" />
+      <!--Login Form -->
+      <div class="simple-form">
+        <form>
+          <div class="field">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+          <div class="field">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password" required />
+          </div>
+          <button type="submit" class="button">Login</button>
+        </form>
+      </div>
     </div>
   </header>
 
@@ -157,5 +171,43 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+.simple-form {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.field {
+  margin-bottom: 1rem;
+}
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #2f855a;
+}
+.field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #38a169;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.button:hover {
+  background-color: #2f855a;
 }
 </style>
