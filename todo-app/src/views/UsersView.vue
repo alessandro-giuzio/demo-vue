@@ -10,9 +10,7 @@
             <p><strong>Name:</strong> {{ user.name }}</p>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Password:</strong> {{ user.password }}</p>
-            <RouterLink :to="{ name: 'create-note', query: { userId: user.id } }">
-              Create New Note
-            </RouterLink>
+            <RouterLink :to="{ name: 'note' }"> Create New Note </RouterLink>
           </li>
         </ul>
       </div>
