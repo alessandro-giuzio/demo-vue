@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <div class="user-id"><strong>User ID:</strong> {{ note.id }}</div>
+    <div class="user-id"><strong>User:</strong> {{ userName }}</div>
     <div class="card-content">
       <div class="title">{{ note.title }}</div>
       <div class="content">
@@ -22,18 +22,33 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 // Define the Note Type
 type Note = {
   id: string
   title: string
   content: string
   tags: string[]
+  userId: string
+}
+type User = {
+  id: string
+  name: string
+  email: string
+  password: string
 }
 // Props to receive the note and its index from the parent component
 const props = defineProps<{
   note: Note
   index: number
+  users: User[]
 }>()
+
+// Compute the username by finding the user associated with the note's userId
+const userName = computed(() => {
+  const user = props.users.find((user) => user.id === props.note.userId)
+  return user ? user.name : 'Unknown User'
+})
 
 // Emits events to notify the parent component of actions (edit & delete)
 const emit = defineEmits(['edit-click', 'delete-click'])

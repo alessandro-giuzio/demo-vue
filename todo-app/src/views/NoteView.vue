@@ -47,20 +47,10 @@
       :key="note.id"
       :note="note"
       :index="index"
+      :users="users"
       @edit-click="editNote"
       @delete-click="deleteNote"
     />
-    <!--  <div class="card" v-for="(note, index) in notes" :key="index">
-      <div class="card-content">
-        <div class="content">
-          {{ note.content }}
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="#" class="card-footer-item" @click.prevent="editNote(index)">Edit</a>
-        <a href="#" class="card-footer-item" @click.prevent="deleteNote(index)">Delete</a>
-      </footer>
-    </div> -->
   </div>
 </template>
 
