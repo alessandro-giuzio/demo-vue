@@ -142,7 +142,7 @@ onMounted(() => {
         </nav>
         <p>Logged in</p>
         <!-- logout button -->
-        <button @click="isLoggedIn = false">Logout</button>
+        <button class="logout" @click="isLoggedIn = false">Logout</button>
         <CreateUser @new-user="handleUserCreated" />
       </div>
     </div>
@@ -262,5 +262,15 @@ nav a:first-of-type {
   color: #e53e3e;
   margin-top: 0.5rem;
   font-weight: bold;
+}
+
+button.logout {
+  background-color: #e53e3e;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 </style>
