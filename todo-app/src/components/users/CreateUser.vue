@@ -7,11 +7,11 @@
       </div>
       <div class="field">
         <label for="email">Email:</label>
-        <input v-model="email" type="email" id="email" />
+        <input v-model="email" type="email" id="email-create" />
       </div>
       <div class="field">
         <label for="password">Password:</label>
-        <input v-model="password" type="password" id="password" />
+        <input v-model="password" type="password" id="password-create" />
       </div>
       <button type="submit">Create User</button>
     </form>

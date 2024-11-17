@@ -5,6 +5,28 @@ import CreateUser from './components/users/CreateUser.vue'
 
 import { ref, onMounted } from 'vue'
 
+/* Rective Variables */
+const isLoggedIn = ref(false) // Tracks if the user is logged in
+const loggedInUser = ref<User | null>(null) // Stores the currently logged-in user
+const loginEmail = ref('') // Email entered in login form
+const loginPassword = ref('') // Password entered in login form
+const loginError = ref('') // Error message for login failures
+
+const handleLogin = () => {
+  // Find the user with the matching email and password
+  const user = users.value.find(
+    (u) => u.email === loginEmail.value && u.password === loginPassword.value
+  )
+
+  if (user) {
+    isLoggedIn.value = true // Mark as logged in
+    loggedInUser.value = user // Store the logged-in user details
+    loginError.value = '' // Clear any error messages
+  } else {
+    loginError.value = 'Invalid email or password' // Show error message
+  }
+}
+
 type User = {
   id: string
   name: string
@@ -81,33 +103,49 @@ onMounted(() => {
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/todo">To-Do</RouterLink>
-        <RouterLink to="/note">Note</RouterLink>
-        <RouterLink to="/users">Users</RouterLink>
-      </nav>
-      <CreateUser @new-user="handleUserCreated" />
-      <!--Login Form -->
-      <div class="simple-form">
-        <form>
+      <!-- Show Login Form if not logged in -->
+      <div v-if="!isLoggedIn" class="simple-form">
+        <form @submit.prevent="handleLogin">
           <div class="field">
             <label for="email">Email:</label>
-            <input type="email" id="email" placeholder="Enter your email" required />
+            <input
+              v-model="loginEmail"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              required
+            />
           </div>
           <div class="field">
             <label for="password">Password:</label>
-            <input type="password" id="password" placeholder="Enter your password" required />
+            <input
+              v-model="loginPassword"
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              required
+            />
           </div>
           <button type="submit" class="button">Login</button>
+          <p v-if="loginError" class="error">{{ loginError }}</p>
         </form>
+      </div>
+      <!-- Show App Content if logged in -->
+      <div v-else>
+        <nav>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/about">About</RouterLink>
+          <RouterLink to="/todo">To-Do</RouterLink>
+          <RouterLink to="/note">Note</RouterLink>
+          <RouterLink to="/users">Users</RouterLink>
+        </nav>
+        <p>Logged in</p>
+        <CreateUser @new-user="handleUserCreated" />
       </div>
     </div>
   </header>
 
-  <RouterView />
+  <RouterView v-if="isLoggedIn" />
 </template>
 
 <style scoped>
@@ -209,5 +247,11 @@ nav a:first-of-type {
 }
 .button:hover {
   background-color: #2f855a;
+}
+
+.error {
+  color: #e53e3e;
+  margin-top: 0.5rem;
+  font-weight: bold;
 }
 </style>
