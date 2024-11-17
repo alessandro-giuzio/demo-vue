@@ -105,6 +105,7 @@ onMounted(() => {
       <HelloWorld msg="You did it!" />
       <!-- Show Login Form if not logged in -->
       <div v-if="!isLoggedIn" class="simple-form">
+        <p class="message">Please log in to access the application.</p>
         <form @submit.prevent="handleLogin">
           <div class="field">
             <label for="email">Email:</label>
@@ -140,6 +141,8 @@ onMounted(() => {
           <RouterLink to="/users">Users</RouterLink>
         </nav>
         <p>Logged in</p>
+        <!-- logout button -->
+        <button @click="isLoggedIn = false">Logout</button>
         <CreateUser @new-user="handleUserCreated" />
       </div>
     </div>
@@ -149,6 +152,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.message {
+  color: #e53e3e;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
 header {
   line-height: 1.5;
   max-height: 100vh;
