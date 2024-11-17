@@ -1,18 +1,7 @@
 <template>
-  <div class="notes">
+  <div class="notes" v-if="props.loggedInUser">
     <h1>Notes</h1>
     <div class="card">
-      <!-- User Selection Dropdown -->
-      <div class="field">
-        <label for="userSelect">Select User</label>
-        <select v-model="selectedUserId" class="select" id="userSelect">
-          <option value="" disabled>Select a user</option>
-          <option v-for="user in users" :key="user.id" :value="user.id">
-            {{ user.name }}
-          </option>
-        </select>
-      </div>
-      <!-- New Title Input Field -->
       <div class="field">
         <input type="text" v-model="newTitle" class="textarea" placeholder="Add a title" />
       </div>
@@ -24,8 +13,6 @@
           placeholder="Add a new note"
         ></textarea>
       </div>
-      <!-- placeholder to insert tags -->
-
       <div class="field">
         <label for="tagsInput">Add Tags (comma-separated)</label>
         <input
@@ -52,12 +39,19 @@
       @delete-click="deleteNote"
     />
   </div>
+  <p v-else class="error">You must be logged in to create or view notes.</p>
 </template>
 
 <script setup lang="ts">
 // Imports
 import { ref, onMounted } from 'vue'
 import NoteComp from '@/components/note/NoteComp.vue'
+
+// Props
+const props = defineProps<{
+  loggedInUser: { id: string; name: string } | null
+}>()
+
 // Define the Note Type with UUID
 type Note = {
   content: string
@@ -86,6 +80,7 @@ const USERS_Key = 'users'
 const newNote = ref('')
 const newTitle = ref('') // New title field
 const newTags = ref('') // New tags field
+
 const selectedUserId = ref<string | null>(null) // Track selected user ID
 const editingIndex = ref<number | null>(null) // Track the index of the note being edited
 
@@ -96,9 +91,12 @@ const newNoteRef = ref<HTMLTextAreaElement | null>(null)
 const loadNotes = () => {
   const notesFromStorage = localStorage.getItem(STORAGE_Key)
   if (notesFromStorage) {
-    notes.value = JSON.parse(notesFromStorage)
+    notes.value = JSON.parse(notesFromStorage).filter(
+      (note: Note) => note.userId === props.loggedInUser?.id
+    )
   }
 }
+
 // Load users from localStorage
 const loadUsers = () => {
   const usersFromStorage = localStorage.getItem(USERS_Key)
@@ -114,14 +112,15 @@ const saveNotes = () => {
 
 // Add a new note associated with the selected user
 const addNote = () => {
-  if (newNote.value.trim() && newTitle.value.trim() && selectedUserId.value) {
+  if (newNote.value.trim() && newTitle.value.trim() && props.loggedInUser) {
     if (editingIndex.value !== null) {
       // Update the existing note
       notes.value[editingIndex.value] = {
         ...notes.value[editingIndex.value],
         content: newNote.value,
         title: newTitle.value,
-        userId: selectedUserId.value
+        tags: newTags.value.split(',').map((tag) => tag.trim()),
+        userId: props.loggedInUser.id // Use loggedInUser for assignment
       }
       editingIndex.value = null // Clear the editing index
     } else {
@@ -130,19 +129,20 @@ const addNote = () => {
         content: newNote.value,
         title: newTitle.value,
         id: crypto.randomUUID(),
-        tags: [],
-        userId: selectedUserId.value
+        tags: newTags.value.split(',').map((tag) => tag.trim()),
+        userId: props.loggedInUser.id // Use loggedInUser for assignment
       })
     }
 
     // Clear the form fields
     newNote.value = ''
     newTitle.value = ''
-    newTags.value = '' // Clear the tags input
-    selectedUserId.value = null
+    newTags.value = ''
 
     saveNotes() // Save the updated notes array to localStorage
     newNoteRef.value?.focus() // Focus the note input after saving
+  } else {
+    console.error('Failed to create note: Missing title, content, or user.')
   }
 }
 
@@ -151,7 +151,7 @@ const editNote = (index: number) => {
   const note = notes.value[index]
   newNote.value = note.content // Load the note content into the input for editing
   newTitle.value = note.title // Load the note title for editing
-  selectedUserId.value = note.userId // Pre-select the associated user
+  /* selectedUserId.value = note.userId  */ // Pre-select the associated user
   editingIndex.value = index // Set the index of the note being edited
 }
 

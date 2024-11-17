@@ -22,9 +22,19 @@ const handleLogin = () => {
     isLoggedIn.value = true // Mark as logged in
     loggedInUser.value = user // Store the logged-in user details
     loginError.value = '' // Clear any error messages
+    // Save to sessionStorage
+    sessionStorage.setItem('loggedInUser', JSON.stringify(user))
+    sessionStorage.setItem('isLoggedIn', 'true')
   } else {
     loginError.value = 'Invalid email or password' // Show error message
   }
+}
+
+const handleLogout = () => {
+  isLoggedIn.value = false
+  loggedInUser.value = null
+  sessionStorage.removeItem('loggedInUser')
+  sessionStorage.removeItem('isLoggedIn')
 }
 
 type User = {
@@ -94,6 +104,13 @@ const handleUserCreated = (newUser: User) => {
 // Load users from localStorage when the component mounts
 onMounted(() => {
   loadUsersFromLocalStorage()
+  // Restore login state
+  const storedUser = sessionStorage.getItem('loggedInUser')
+  const storedLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true'
+  if (storedUser && storedLoggedIn) {
+    loggedInUser.value = JSON.parse(storedUser)
+    isLoggedIn.value = true
+  }
 })
 </script>
 
@@ -142,13 +159,14 @@ onMounted(() => {
         </nav>
         <p>Logged in</p>
         <!-- logout button -->
-        <button class="logout" @click="isLoggedIn = false">Logout</button>
+        <button class="logout" @click="handleLogout">Logout</button>
+
         <CreateUser @new-user="handleUserCreated" />
       </div>
     </div>
   </header>
 
-  <RouterView v-if="isLoggedIn" />
+  <RouterView v-if="isLoggedIn" :loggedInUser="loggedInUser" />
 </template>
 
 <style scoped>
