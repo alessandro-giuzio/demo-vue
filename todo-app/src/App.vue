@@ -157,7 +157,7 @@ onMounted(() => {
           <RouterLink to="/note">Note</RouterLink>
           <RouterLink to="/users">Users</RouterLink>
         </nav>
-        <p>Logged in</p>
+        <p>Logged in as: {{ loggedInUser?.name || 'Uknown user' }}</p>
         <!-- logout button -->
         <button class="logout" @click="handleLogout">Logout</button>
 
