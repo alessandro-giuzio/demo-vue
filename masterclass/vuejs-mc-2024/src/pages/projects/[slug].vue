@@ -19,7 +19,7 @@
     <TableRow>
       <TableHead> Status </TableHead>
       <TableCell>
-        <AppInPlaceEditStatus v-model="project.status" />
+        <AppInPlaceEditStatus v-model="project.status" @commit="updateProject" />
       </TableCell>
     </TableRow>
     <!-- Row displaying project collaborators -->
