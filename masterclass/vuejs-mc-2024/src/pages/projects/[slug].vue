@@ -4,7 +4,9 @@
     <!-- Row displaying the project name -->
     <TableRow>
       <TableHead> Name </TableHead>
-      <TableCell> {{ project.name }} </TableCell>
+      <TableCell>
+        <AppInPlaceEditText v-model="project.name" />
+      </TableCell>
     </TableRow>
     <!-- Row displaying the project description -->
     <TableRow>
@@ -109,6 +111,8 @@ h2 {
 </style>
 
 <script setup lang="ts">
+import AppInPlaceEditText from '@/components/AppInPlaceEdit/AppInPlaceEditText.vue'
+
 // initialize useRoute to access route parameters and metadata
 const { slug } = useRoute('/projects/[slug]').params
 // Initialize the store
