@@ -5,7 +5,7 @@
     <TableRow>
       <TableHead> Name </TableHead>
       <TableCell>
-        <AppInPlaceEditText v-model="project.name" />
+        <AppInPlaceEditText v-model="project.name" @commit="updateProject" />
       </TableCell>
     </TableRow>
     <!-- Row displaying the project description -->
@@ -118,7 +118,7 @@ const { slug } = useRoute('/projects/[slug]').params
 // Initialize the store
 const projectsLoader = useProjectsStore()
 const { project } = storeToRefs(projectsLoader)
-const { getProject } = projectsLoader
+const { getProject, updateProject } = projectsLoader
 // Watch for changes to the project's name and update page title accordingly
 watch(
   () => project.value?.name,
