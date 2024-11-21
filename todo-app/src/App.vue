@@ -147,6 +147,8 @@ onMounted(() => {
           <button type="submit" class="button">Login</button>
           <p v-if="loginError" class="error">{{ loginError }}</p>
         </form>
+        <span class="message">Or create a new user fro the new Browser</span>
+        <CreateUser @new-user="handleUserCreated" />
       </div>
       <!-- Show App Content if logged in -->
       <div v-else>
@@ -160,8 +162,6 @@ onMounted(() => {
         <p>Logged in as: {{ loggedInUser?.name || 'Uknown user' }}</p>
         <!-- logout button -->
         <button class="logout" @click="handleLogout">Logout</button>
-
-        <CreateUser @new-user="handleUserCreated" />
       </div>
     </div>
   </header>
@@ -225,6 +225,8 @@ nav a:first-of-type {
   header .wrapper {
     display: flex;
     place-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
     flex-wrap: wrap;
   }
 
