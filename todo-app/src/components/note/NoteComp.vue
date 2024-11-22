@@ -2,10 +2,8 @@
   <div class="card">
     <div class="user-id"><strong>User:</strong> {{ userName }}</div>
     <div class="card-content">
-      <div class="title">{{ note.title }}</div>
-      <div class="content">
-        {{ note.content }}
-      </div>
+      <div class="title">Title: {{ note.title }}</div>
+      <div class="content">Content: {{ note.content }}</div>
       <div class="tags">
         <strong>Tags:</strong>
         <span v-if="note.tags && note.tags.length > 0">
@@ -13,6 +11,9 @@
         </span>
         <span v-else>No tags available</span>
       </div>
+    </div>
+    <div class="share">
+      <button class="button">Share</button>
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="handleEditClick(index)">Edit</a>
@@ -62,3 +63,13 @@ const handleEditClick = (index: number) => {
   emit('edit-click', index)
 }
 </script>
+<style>
+.share {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+</style>
