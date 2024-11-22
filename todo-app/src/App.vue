@@ -123,7 +123,7 @@ onMounted(() => {
       <!-- Show Login Form if not logged in -->
       <div v-if="!isLoggedIn" class="simple-form">
         <p class="message">Please log in to access the application.</p>
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="handleLogin" class="form-up">
           <div class="field">
             <label for="email">Email:</label>
             <input
@@ -239,7 +239,8 @@ nav a:first-of-type {
     margin-top: 1rem;
   }
 }
-.simple-form {
+.simple-form,
+.form-up {
   max-width: 400px;
   margin: 2rem auto;
   padding: 1rem;
@@ -248,6 +249,7 @@ nav a:first-of-type {
   background-color: #f9f9f9;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .field {
   margin-bottom: 1rem;
 }
