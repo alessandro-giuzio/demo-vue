@@ -13,6 +13,11 @@
       </div>
     </div>
     <div class="share">
+      <!-- TODO multi-select input -->
+      <select>
+        <option value="">Select users to share with</option>
+        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+      </select>
       <button class="button">Share</button>
     </div>
     <footer class="card-footer">
@@ -37,6 +42,7 @@ type User = {
   name: string
   email: string
   password: string
+  sharedWith: string[] // Array of users with only read access
 }
 // Props to receive the note and its index from the parent component
 const props = defineProps<{
