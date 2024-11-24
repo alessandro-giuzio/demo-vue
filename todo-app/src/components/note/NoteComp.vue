@@ -17,7 +17,7 @@
         <option value="">Select users to share with</option>
         <!-- exclude de user associated to the note -->
 
-        <option v-for="user in filteredUser" :key="user.id" :value="user.id">
+        <option :sharedWith v-for="user in filteredUser" :key="user.id" :value="user.id">
           {{ user.name }}
         </option>
       </select>
@@ -31,7 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+
+const sharedWith = ref<string[]>([])
 // Define the Note Type
 type Note = {
   id: string
@@ -59,6 +61,8 @@ const props = defineProps<{
 const filteredUser = computed(() => {
   return props.users.filter((user) => user.id !== props.note.userId)
 })
+
+// Use Vue's v-model to bind the selected users to a sharedWith property in the form.
 
 // Compute the username by finding the user associated with the note's userId
 const userName = computed(() => {
