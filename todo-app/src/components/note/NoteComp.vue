@@ -13,10 +13,13 @@
       </div>
     </div>
     <div class="share">
-      <!-- TODO multi-select input -->
       <select>
         <option value="">Select users to share with</option>
-        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+        <!-- exclude de user associated to the note -->
+
+        <option v-for="user in filteredUser" :key="user.id" :value="user.id">
+          {{ user.name }}
+        </option>
       </select>
       <button class="button">Share</button>
     </div>
@@ -37,6 +40,7 @@ type Note = {
   tags: string[]
   userId: string
 }
+// Define the User Type
 type User = {
   id: string
   name: string
@@ -50,6 +54,11 @@ const props = defineProps<{
   index: number
   users: User[]
 }>()
+
+// Filter the users to exclude the user associated with the note
+const filteredUser = computed(() => {
+  return props.users.filter((user) => user.id !== props.note.userId)
+})
 
 // Compute the username by finding the user associated with the note's userId
 const userName = computed(() => {
