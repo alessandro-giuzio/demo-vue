@@ -147,7 +147,7 @@ onMounted(() => {
           <button type="submit" class="button">Login</button>
           <p v-if="loginError" class="error">{{ loginError }}</p>
         </form>
-        <span class="message">Or create a new user fro the new Browser</span>
+        <span class="message">Or create a new user</span>
         <CreateUser @new-user="handleUserCreated" />
       </div>
       <!-- Show App Content if logged in -->
