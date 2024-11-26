@@ -12,9 +12,10 @@
         <span v-else>No tags available</span>
       </div>
     </div>
+
     <div class="share">
+      <MultiSelect />
       <select>
-        <option value="">Select users to share with</option>
         <!-- exclude de user associated to the note -->
 
         <option :sharedWith v-for="user in filteredUser" :key="user.id" :value="user.id">
@@ -32,6 +33,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import MultiSelect from '../../components/note/MultiSelect.vue'
 
 const sharedWith = ref<string[]>([])
 // Define the Note Type
