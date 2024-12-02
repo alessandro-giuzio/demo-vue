@@ -5,7 +5,16 @@
       <label for="users">Users:</label>
       <fieldset>
         <legend>Users</legend>
-        <input type="checkbox" id="user1" name="user1" value="user1" />
+        <select id="sharedUsers" multiple class="multi-select" v-model="selectedSharedUsers">
+          <option
+            v-for="user in users"
+            :key="user.id"
+            :value="user.id"
+            :disabled="user.id === loggedInUser?.id"
+          >
+            {{ user.name }}
+          </option>
+        </select>
       </fieldset>
     </form>
   </details>

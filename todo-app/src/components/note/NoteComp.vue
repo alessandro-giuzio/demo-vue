@@ -14,15 +14,45 @@
     </div>
 
     <div class="share">
-      <MultiSelect />
-      <select>
-        <!-- exclude de user associated to the note -->
+      <!-- <MultiSelect :users="filteredUser" /> -->
 
-        <option :sharedWith v-for="user in filteredUser" :key="user.id" :value="user.id">
+      <form>
+        <fieldset>
+          <legend>Users</legend>
+          <!--    <select id="sharedUsers" multiple class="multi-select" v-model="selectedSharedUsers">
+              <option
+                v-for="user in users"
+                :key="user.id"
+                :value="user.id"
+                :disabled="user.id === loggedInUser?.id"
+              >
+                {{ user.name }}
+              </option>
+            </select> -->
+          <section class="share-note-users">
+            <h3>Select users to share your note with:</h3>
+            <ul>
+              <li v-for="user in users" :key="user.id">
+                <input
+                  type="checkbox"
+                  :id="user.id"
+                  :value="user.id"
+                  v-model="selectedSharedUsers"
+                  :disabled="user.id === loggedInUser?.id"
+                />
+                <label :for="user.id">{{ user.name }}</label>
+              </li>
+            </ul>
+          </section>
+          <button class="button">Share</button>
+        </fieldset>
+      </form>
+
+      <!-- exclude de user associated to the note -->
+
+      <!-- <option :sharedWith v-for="user in filteredUser" :key="user.id" :value="user.id">
           {{ user.name }}
-        </option>
-      </select>
-      <button class="button">Share</button>
+        </option> -->
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="handleEditClick(index)">Edit</a>
@@ -36,6 +66,7 @@ import { computed, ref } from 'vue'
 import MultiSelect from '../../components/note/MultiSelect.vue'
 
 const sharedWith = ref<string[]>([])
+const selectedSharedUsers = ref<string[]>([])
 // Define the Note Type
 type Note = {
   id: string
@@ -57,6 +88,7 @@ const props = defineProps<{
   note: Note
   index: number
   users: User[]
+  loggedInUser: User // Add loggedInUser prop
 }>()
 
 // Filter the users to exclude the user associated with the note

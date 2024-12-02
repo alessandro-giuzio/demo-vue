@@ -49,6 +49,8 @@ import NoteComp from '@/components/note/NoteComp.vue'
 
 // Props
 const props = defineProps<{
+  note: Note
+  users: User[]
   loggedInUser: { id: string; name: string } | null
 }>()
 
@@ -58,7 +60,8 @@ type Note = {
   id: string // Ensure id is always a string
   title: string
   tags: string[]
-  userId: string | null
+  userId: string
+  sharedWith: string[] // Add sharedWith property
 }
 // Define User and Note Types
 type User = {
@@ -81,7 +84,8 @@ const newNote = ref('')
 const newTitle = ref('') // New title field
 const newTags = ref('') // New tags field
 
-const selectedUserId = ref<string | null>(null) // Track selected user ID
+/* const selectedSharedUsers = ref<string[]>(props.note.sharedWith || []) */
+// Track selected user ID
 const editingIndex = ref<number | null>(null) // Track the index of the note being edited
 
 // Reference to the new note textarea
