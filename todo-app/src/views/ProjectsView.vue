@@ -147,7 +147,7 @@ onMounted(() => {
 }
 
 .button {
-  background-color: #38a169; /* Success color */
+  background-color: #38a169;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
