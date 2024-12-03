@@ -35,13 +35,13 @@ const router = createRouter({
       path: '/note',
       name: 'note',
       component: () => import('../views/NoteView.vue'),
-      children: [
-        {
-          path: 'shared',
-          name: 'shared-notes',
-          component: SharedNotesView
-        }
-      ]
+    },
+    {
+
+        path: '/note/shared',
+        name: 'shared-notes',
+        component: SharedNotesView
+
     },
     {
       path: '/note/create',

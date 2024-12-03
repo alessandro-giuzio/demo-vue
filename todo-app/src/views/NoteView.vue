@@ -53,7 +53,7 @@ import NoteComp from '@/components/note/NoteComp.vue'
 // Props
 const props = defineProps<{
   users: User[]
-  loggedInUser: { id: string; name: string } | null
+  loggedInUser: User | null
 }>()
 
 // Define the Note Type with UUID

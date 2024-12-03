@@ -45,7 +45,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import MultiSelect from '../../components/note/MultiSelect.vue'
 
 const sharedWith = ref<string[]>([])
 const selectedSharedUsers = ref<string[]>([])
@@ -99,7 +98,7 @@ const handleShareClick = () => {
   // Emit the 'share-note' event with the note id and selected shared users
   emit('share-note', { noteId: props.note.id, sharedWith: selectedSharedUsers.value })
   // Update the sharedWith property of the note
-  props.note.sharedWith = selectedSharedUsers.value
+  sharedWith.value = selectedSharedUsers.value
 }
 </script>
 <style>
