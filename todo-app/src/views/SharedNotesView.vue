@@ -1,7 +1,11 @@
 <template>
   <div class="shared-notes" v-if="loggedInUser">
-    <h1>Shared Notes</h1>
-    Note title: {{ sharedNotes.map((note) => note.title) }}
+    <h1>Shared Tasks</h1>
+    <ul>
+      <li v-for="note in sharedNotes" :key="note.id">{{ note.title }}</li>
+    </ul>
+    <!-- show all the notes content -->
+
     <div v-if="sharedNotes.length > 0">
       <NoteComp
         v-for="(note, index) in sharedNotes"
@@ -13,7 +17,7 @@
         :readOnly="true"
       />
     </div>
-    <p v-else>No notes have been shared with you.</p>
+    <p v-else>No tasks have been shared with you.</p>
   </div>
   <p v-else class="error">You must be logged in to view shared notes.</p>
 </template>
@@ -62,6 +66,8 @@ const loadNotes = () => {
       note.sharedWith.includes(props.loggedInUser?.id || '')
     )
     console.log('Shared Notes:', sharedNotes.value) // Debugging: Log shared notes
+  } else {
+    console.log('No notes found in localStorage')
   }
 }
 

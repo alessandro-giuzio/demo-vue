@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="share">
+    <div class="share" v-if="!readOnly">
       <form @submit.prevent="handleShareClick">
         <fieldset>
           <legend>Users</legend>
@@ -36,7 +36,7 @@
         </fieldset>
       </form>
     </div>
-    <footer class="card-footer">
+    <footer class="card-footer" v-if="!readOnly">
       <a href="#" class="card-footer-item" @click.prevent="handleEditClick(index)">Edit</a>
       <a href="#" class="card-footer-item" @click.prevent="handleDeleteClick(index)">Delete</a>
     </footer>
@@ -46,8 +46,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-const sharedWith = ref<string[]>([])
-const selectedSharedUsers = ref<string[]>([])
 // Define the Note Type
 type Note = {
   id: string
@@ -70,7 +68,11 @@ const props = defineProps<{
   index: number
   users: User[]
   loggedInUser: User // Add loggedInUser prop
+  readOnly?: boolean // Add readOnly prop
 }>()
+
+const sharedWith = ref<string[]>([])
+const selectedSharedUsers = ref<string[]>([])
 
 // Filter the users to exclude the user associated with the note
 const filteredUsers = computed(() => {
@@ -80,6 +82,7 @@ const filteredUsers = computed(() => {
 // Compute the username by finding the user associated with the note's userId
 const userName = computed(() => {
   const user = props.users.find((user) => user.id === props.note.userId)
+  console.log('User:', user) // Debugging: Log user
   return user ? user.name : 'Unknown User'
 })
 
@@ -101,13 +104,77 @@ const handleShareClick = () => {
   sharedWith.value = selectedSharedUsers.value
 }
 </script>
+
 <style>
-.share {
+.card {
+  background-color: #22543d; /* Dark green background */
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.grouped-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button {
+  background-color: #38a169; /* Success color */
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #2f855a;
+}
+
+.button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.content {
+  font-size: 1rem;
+  color: white;
+}
+
+.card-footer {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  margin-bottom: 25px;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.card-footer-item {
+  color: #3182ce;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+.card-footer-item:hover {
+  color: #2b6cb0;
 }
 </style>

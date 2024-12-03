@@ -1,6 +1,6 @@
 <template>
   <div class="notes" v-if="props.loggedInUser">
-    <h1>Notes</h1>
+    <h1>Tasks</h1>
     <div class="card">
       <div class="field">
         <input type="text" v-model="newTitle" class="textarea" placeholder="Add a title" />
@@ -10,7 +10,7 @@
           ref="newNoteRef"
           v-model="newNote"
           class="textarea"
-          placeholder="Add a new note"
+          placeholder="Add a new task"
         ></textarea>
       </div>
       <div class="field">
@@ -25,7 +25,7 @@
       </div>
       <div class="field grouped-right">
         <button class="button" @click="addNote" :disabled="!newNote || !newTitle">
-          Add New Note
+          Add New Task
         </button>
       </div>
     </div>
@@ -40,7 +40,7 @@
       :loggedInUser="props.loggedInUser"
       @share-note="handleShareNote"
     />
-    <router-link to="/note/shared">View Shared Notes</router-link>
+    <router-link to="/note/shared">View Shared Tasks</router-link>
   </div>
   <p v-else class="error">You must be logged in to create or view notes.</p>
 </template>

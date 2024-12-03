@@ -3,6 +3,8 @@ import HomeView from '../views/HomeView.vue'
 import CreateNoteView from '@/views/CreateNoteView.vue'
 import TodoDetail from '../components/todo/TodoDetail.vue'
 import SharedNotesView from '@/views/SharedNotesView.vue'
+import ProjectsView from '@/views/ProjectsView.vue'
+import ProjectTasksView from '@/views/ProjectTasksView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,7 +49,19 @@ const router = createRouter({
       path: '/note/create',
       name: 'create-note',
       component: CreateNoteView,
-      props: route => ({ users: JSON.parse(localStorage.getItem('users') || '[]') })
+      props: () => ({ users: JSON.parse(localStorage.getItem('users') || '[]') })
+    },
+    {
+      path: '/projects',
+      name: 'projects',
+      component: ProjectsView,
+      props: () => ({ users: JSON.parse(localStorage.getItem('users') || '[]') })
+    },
+    {
+      path: '/projects/:id',
+      name: 'project-tasks',
+      component: ProjectTasksView,
+      props: true
     },
     {
       path: '/users',

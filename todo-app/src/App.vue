@@ -156,8 +156,9 @@ onMounted(() => {
           <RouterLink to="/">Home</RouterLink>
           <RouterLink to="/about">About</RouterLink>
           <RouterLink to="/todo">To-Do</RouterLink>
-          <RouterLink to="/note">Note</RouterLink>
+          <RouterLink to="/note">Tasks</RouterLink>
           <RouterLink to="/users">Users</RouterLink>
+          <RouterLink to="/projects">Projects</RouterLink>
         </nav>
         <p>Logged in as: {{ loggedInUser?.name || 'Uknown user' }}</p>
         <!-- logout button -->
