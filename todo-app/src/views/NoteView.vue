@@ -37,7 +37,10 @@
       :users="users"
       @edit-click="editNote"
       @delete-click="deleteNote"
+      :loggedInUser="props.loggedInUser"
+      @share-note="handleShareNote"
     />
+    <router-link to="/notes/shared">View Shared Notes</router-link>
   </div>
   <p v-else class="error">You must be logged in to create or view notes.</p>
 </template>
@@ -49,7 +52,6 @@ import NoteComp from '@/components/note/NoteComp.vue'
 
 // Props
 const props = defineProps<{
-  note: Note
   users: User[]
   loggedInUser: { id: string; name: string } | null
 }>()
@@ -74,7 +76,6 @@ type User = {
 // Reactive arrays for notes and users
 const notes = ref<Note[]>([])
 const users = ref<User[]>([])
-
 // LocalStorage Keys
 const STORAGE_Key = 'notes'
 const USERS_Key = 'users'
@@ -84,7 +85,6 @@ const newNote = ref('')
 const newTitle = ref('') // New title field
 const newTags = ref('') // New tags field
 
-/* const selectedSharedUsers = ref<string[]>(props.note.sharedWith || []) */
 // Track selected user ID
 const editingIndex = ref<number | null>(null) // Track the index of the note being edited
 
@@ -134,7 +134,8 @@ const addNote = () => {
         title: newTitle.value,
         id: crypto.randomUUID(),
         tags: newTags.value.split(',').map((tag) => tag.trim()),
-        userId: props.loggedInUser.id // Use loggedInUser for assignment
+        userId: props.loggedInUser.id, // Use loggedInUser for assignment
+        sharedWith: [] // Initialize sharedWith as an empty array
       })
     }
 
@@ -155,7 +156,6 @@ const editNote = (index: number) => {
   const note = notes.value[index]
   newNote.value = note.content // Load the note content into the input for editing
   newTitle.value = note.title // Load the note title for editing
-  /* selectedUserId.value = note.userId  */ // Pre-select the associated user
   editingIndex.value = index // Set the index of the note being edited
 }
 
@@ -165,11 +165,17 @@ const deleteNote = (index: number) => {
   saveNotes() // Update localStorage after deletion
 }
 
+const handleShareNote = ({ noteId, sharedWith }) => {
+  const note = notes.value.find((note) => note.id === noteId)
+  if (note) {
+    note.sharedWith = sharedWith
+    saveNotes() // Save the updated notes array to localStorage
+  }
+}
+
 // Call the function to load notes on component mount
-// Load notes when the component is mounted
 onMounted(() => {
   loadNotes()
-  // Log all notes and their IDs when the component mounts
   loadUsers()
   console.log('Notes loaded from localStorage:')
   notes.value.forEach((note) => {

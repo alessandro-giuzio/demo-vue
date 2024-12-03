@@ -14,25 +14,13 @@
     </div>
 
     <div class="share">
-      <!-- <MultiSelect :users="filteredUser" /> -->
-
-      <form>
+      <form @submit.prevent="handleShareClick">
         <fieldset>
           <legend>Users</legend>
-          <!--    <select id="sharedUsers" multiple class="multi-select" v-model="selectedSharedUsers">
-              <option
-                v-for="user in users"
-                :key="user.id"
-                :value="user.id"
-                :disabled="user.id === loggedInUser?.id"
-              >
-                {{ user.name }}
-              </option>
-            </select> -->
           <section class="share-note-users">
             <h3>Select users to share your note with:</h3>
             <ul>
-              <li v-for="user in users" :key="user.id">
+              <li v-for="user in filteredUsers" :key="user.id">
                 <input
                   type="checkbox"
                   :id="user.id"
@@ -44,15 +32,9 @@
               </li>
             </ul>
           </section>
-          <button class="button">Share</button>
+          <button class="button" type="submit">Share</button>
         </fieldset>
       </form>
-
-      <!-- exclude de user associated to the note -->
-
-      <!-- <option :sharedWith v-for="user in filteredUser" :key="user.id" :value="user.id">
-          {{ user.name }}
-        </option> -->
     </div>
     <footer class="card-footer">
       <a href="#" class="card-footer-item" @click.prevent="handleEditClick(index)">Edit</a>
@@ -74,6 +56,7 @@ type Note = {
   content: string
   tags: string[]
   userId: string
+  sharedWith: string[] // Array of users with only read access
 }
 // Define the User Type
 type User = {
@@ -81,7 +64,6 @@ type User = {
   name: string
   email: string
   password: string
-  sharedWith: string[] // Array of users with only read access
 }
 // Props to receive the note and its index from the parent component
 const props = defineProps<{
@@ -92,11 +74,9 @@ const props = defineProps<{
 }>()
 
 // Filter the users to exclude the user associated with the note
-const filteredUser = computed(() => {
+const filteredUsers = computed(() => {
   return props.users.filter((user) => user.id !== props.note.userId)
 })
-
-// Use Vue's v-model to bind the selected users to a sharedWith property in the form.
 
 // Compute the username by finding the user associated with the note's userId
 const userName = computed(() => {
@@ -105,7 +85,7 @@ const userName = computed(() => {
 })
 
 // Emits events to notify the parent component of actions (edit & delete)
-const emit = defineEmits(['edit-click', 'delete-click'])
+const emit = defineEmits(['edit-click', 'delete-click', 'share-note'])
 
 const handleDeleteClick = (index: number) => {
   // Emit the 'delete-note' event with the index of the note to delete
@@ -114,6 +94,12 @@ const handleDeleteClick = (index: number) => {
 const handleEditClick = (index: number) => {
   // Emit the 'edit-note' event with the index of the note to edit
   emit('edit-click', index)
+}
+const handleShareClick = () => {
+  // Emit the 'share-note' event with the note id and selected shared users
+  emit('share-note', { noteId: props.note.id, sharedWith: selectedSharedUsers.value })
+  // Update the sharedWith property of the note
+  props.note.sharedWith = selectedSharedUsers.value
 }
 </script>
 <style>
