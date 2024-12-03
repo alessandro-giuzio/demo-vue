@@ -25,7 +25,7 @@
     </div>
     <div v-if="projects.length > 0">
       <ul>
-        <li v-for="project in projects" :key="project.id">
+        <li v-for="project in userProjects" :key="project.id">
           <router-link :to="{ name: 'project-tasks', params: { id: project.id } }">{{
             project.name
           }}</router-link>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MultiSelect from '@/components/note/MultiSelect.vue'
 
@@ -55,6 +55,7 @@ type Project = {
   name: string
   description: string
   members: string[] // Array of user IDs
+  userId: string // ID of the user who created the project
 }
 
 // Define User Type
@@ -68,6 +69,7 @@ type User = {
 // Reactive arrays for projects and users
 const projects = ref<Project[]>([])
 const users = ref<User[]>(props.users) // Initialize users with the prop value
+const loggedInUser = ref(props.loggedInUser)
 const newProjectName = ref('')
 const newProjectDescription = ref('')
 const selectedMembers = ref<string[]>([])
@@ -90,11 +92,14 @@ const saveProjects = () => {
 
 // Create a new project
 const createProject = () => {
+  if (!loggedInUser.value) return
+
   const newProject: Project = {
     id: crypto.randomUUID(),
     name: newProjectName.value,
     description: newProjectDescription.value,
-    members: selectedMembers.value
+    members: selectedMembers.value,
+    userId: loggedInUser.value.id // Associate the project with the logged-in user
   }
   projects.value.push(newProject)
   saveProjects()
@@ -111,6 +116,11 @@ const editProject = (project: Project) => {
   // Remove the project from the list to update it
   projects.value = projects.value.filter((p) => p.id !== project.id)
 }
+
+// Filter projects to show only those created by the logged-in user
+const userProjects = computed(() => {
+  return projects.value.filter((project) => project.userId === loggedInUser.value?.id)
+})
 
 // Call the function to load projects on component mount
 onMounted(() => {
