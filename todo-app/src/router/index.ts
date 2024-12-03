@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CreateNoteView from '@/views/CreateNoteView.vue'
 import TodoDetail from '../components/todo/TodoDetail.vue'
+import SharedNotesView from '@/views/SharedNotesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,14 +27,21 @@ const router = createRouter({
     },
     {
       path: '/todo-detail/:id',
-      name: 'note-detail',
+      name: 'todo-detail',
       component: TodoDetail,
       props: true
     },
     {
-      path:'/note',
+      path: '/note',
       name: 'note',
-      component: () => import('../views/NoteView.vue')
+      component: () => import('../views/NoteView.vue'),
+      children: [
+        {
+          path: 'shared',
+          name: 'shared-notes',
+          component: SharedNotesView
+        }
+      ]
     },
     {
       path: '/note/create',
@@ -51,12 +59,7 @@ const router = createRouter({
           users: storedUsers ? JSON.parse(storedUsers) : []
         }
       }
-    },
-   /*  {
-      path:'/edit-note/:id',
-      name: 'edit-note',
-      component: () => import('../views/EditNoteView.vue'),
-    }, */
+    }
   ]
 })
 

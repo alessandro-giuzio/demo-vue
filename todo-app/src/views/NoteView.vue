@@ -40,7 +40,7 @@
       :loggedInUser="props.loggedInUser"
       @share-note="handleShareNote"
     />
-    <router-link to="/notes/shared">View Shared Notes</router-link>
+    <router-link to="/note/shared">View Shared Notes</router-link>
   </div>
   <p v-else class="error">You must be logged in to create or view notes.</p>
 </template>
@@ -75,7 +75,7 @@ type User = {
 
 // Reactive arrays for notes and users
 const notes = ref<Note[]>([])
-const users = ref<User[]>([])
+const users = ref<User[]>(props.users) // Initialize users with the prop value
 // LocalStorage Keys
 const STORAGE_Key = 'notes'
 const USERS_Key = 'users'
