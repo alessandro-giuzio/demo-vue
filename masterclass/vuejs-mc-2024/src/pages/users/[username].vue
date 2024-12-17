@@ -19,6 +19,9 @@ import { profileQuery } from '@/utils/supaQueries'
 import type { Tables } from 'database/types'
 // Getting the params from the route
 const { username } = useRoute('/users/[username]').params
+
+usePageStore().pageData.title = ''
+
 // Getting the profile data from the database
 const profile = ref<Tables<'profiles'> | null>(null)
 const getTasks = async () => {
