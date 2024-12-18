@@ -115,12 +115,14 @@ onMounted(() => {
 </script>
 
 <template>
+  <h1>app</h1>
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
       <!-- Show Login Form if not logged in -->
+
       <div v-if="!isLoggedIn" class="simple-form">
         <p class="message">Please log in to access the application.</p>
         <form @submit.prevent="handleLogin" class="form-up">
