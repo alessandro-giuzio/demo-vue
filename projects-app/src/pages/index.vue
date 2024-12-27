@@ -3,11 +3,4 @@
   <RouterLink :to="{ name: '/projects/[id]', params: { id: 1 } }">Go to Project 1</RouterLink>
 </template>
 
-<script setup lang="ts">
-import { supabase } from '@/lib/supabaseClient'
-;(async () => {
-  const { data, error } = await supabase.from('projects').select('*')
-  if (error) console.log(error)
-  return data
-})()
-</script>
+<script setup lang="ts"></script>
