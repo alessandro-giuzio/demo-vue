@@ -9,91 +9,23 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      projects: {
-        Row: {
-          collaborators: string[]
-          created_at: string
-          id: number
-          name: string
-          slug: string
-          status: Database["public"]["Enums"]["current_status"]
-        }
-        Insert: {
-          collaborators?: string[]
-          created_at?: string
-          id?: never
-          name: string
-          slug: string
-          status?: Database["public"]["Enums"]["current_status"]
-        }
-        Update: {
-          collaborators?: string[]
-          created_at?: string
-          id?: never
-          name?: string
-          slug?: string
-          status?: Database["public"]["Enums"]["current_status"]
-        }
-        Relationships: []
-      }
-      tasks: {
-        Row: {
-          collaborators: string[]
-          created_at: string
-          description: string
-          due_date: string | null
-          id: number
-          name: string
-          project_id: number | null
-          status: Database["public"]["Enums"]["current_status"]
-        }
-        Insert: {
-          collaborators?: string[]
-          created_at?: string
-          description: string
-          due_date?: string | null
-          id?: never
-          name: string
-          project_id?: number | null
-          status?: Database["public"]["Enums"]["current_status"]
-        }
-        Update: {
-          collaborators?: string[]
-          created_at?: string
-          description?: string
-          due_date?: string | null
-          id?: never
-          name?: string
-          project_id?: number | null
-          status?: Database["public"]["Enums"]["current_status"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       users: {
         Row: {
-          created_at: string
+          created_at: string | null
           email: string
           id: string
           password: string
           username: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           email: string
-          id: string
+          id?: string
           password: string
           username: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           email?: string
           id?: string
           password?: string
@@ -109,7 +41,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      current_status: "in-progress" | "completed"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
