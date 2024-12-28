@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-import { fakerEN_US as faker } from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.SERVICE_ROLE_KEY)
@@ -64,7 +64,31 @@ const seedTasks = async (numEntries, projectsIds) => {
   return data
 }
 
+const seedUsers = async (numEntries) => {
+  logStep('Seeding users...')
+  const users = []
+
+  for (let i = 0; i < numEntries; i++) {
+    users.push({
+      id: faker.string.uuid(),
+      username: faker.internet.userName(),
+      created_at: faker.date.past(),
+      email: faker.internet.email(),
+      password: faker.internet.password()
+    })
+  }
+
+  const { data, error } = await supabase.from('users').insert(users).select('id')
+
+  if (error) return logErrorAndExit('Users', error)
+
+  logStep('Users seeded successfully.')
+
+  return data
+}
+
 const seedDatabase = async (numEntriesPerTable) => {
+  await seedUsers(numEntriesPerTable)
   const projectsIds = (await seedProjects(numEntriesPerTable)).map((project) => project.id)
   await seedTasks(numEntriesPerTable, projectsIds)
 }
