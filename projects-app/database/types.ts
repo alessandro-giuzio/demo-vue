@@ -15,18 +15,21 @@ export type Database = {
           id: string
           name: string
           owner_id: string
+          slug: string
         }
         Insert: {
           description: string
           id?: string
           name: string
           owner_id: string
+          slug: string
         }
         Update: {
           description?: string
           id?: string
           name?: string
           owner_id?: string
+          slug?: string
         }
         Relationships: [
           {
@@ -34,6 +37,54 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          name: string
+          owner_id: string
+          project_id: string
+          status: string
+          tags: string[]
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          name: string
+          owner_id: string
+          project_id: string
+          status: string
+          tags: string[]
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          project_id?: string
+          status?: string
+          tags?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]

@@ -16,7 +16,7 @@ const logStep = (stepMessage) => {
   console.log(stepMessage)
 }
 
-const seedProjects = async (numEntries) => {
+const seedProjects = async (numEntries,userIds) => {
   logStep('Seeding projects...')
   const projects = []
 
@@ -24,11 +24,11 @@ const seedProjects = async (numEntries) => {
     const name = faker.lorem.words(3)
 
     projects.push({
-      name: name,
-      slug: name.toLocaleLowerCase().replace(/ /g, '-'),
       id: faker.string.uuid(),
-      owner_id: faker.helpers.arrayElement([1, 2, 3])
-
+      owner_id: faker.helpers.arrayElement(userIds),
+      name: name,
+      description: faker.lorem.paragraph(),
+      slug: name.toLocaleLowerCase().replace(/ /g, '-')
     })
   }
 
@@ -41,18 +41,20 @@ const seedProjects = async (numEntries) => {
   return data
 }
 
-const seedTasks = async (numEntries, projectsIds) => {
+const seedTasks = async (numEntries, projectsIds,userIds) => {
   logStep('Seeding tasks...')
   const tasks = []
 
   for (let i = 0; i < numEntries; i++) {
     tasks.push({
+      id: faker.string.uuid(),
       name: faker.lorem.words(3),
       status: faker.helpers.arrayElement(['in-progress', 'completed']),
       description: faker.lorem.paragraph(),
-      due_date: faker.date.future(),
       project_id: faker.helpers.arrayElement(projectsIds),
-      collaborators: faker.helpers.arrayElements([1, 2, 3])
+      owner_id: faker.helpers.arrayElement(userIds),
+      tags: faker.helpers.arrayElements(['tag1', 'tag2', 'tag3'])
+
     })
   }
 
@@ -89,9 +91,9 @@ const seedUsers = async (numEntries) => {
 }
 
 const seedDatabase = async (numEntriesPerTable) => {
-  await seedUsers(numEntriesPerTable)
-  const projectsIds = (await seedProjects(numEntriesPerTable)).map((project) => project.id)
-  await seedTasks(numEntriesPerTable, projectsIds)
+  const userIds = (await seedUsers(numEntriesPerTable)).map((user) => user.id)
+  const projectIds = (await seedProjects(numEntriesPerTable, userIds)).map((project) => project.id)
+  await seedTasks(numEntriesPerTable, projectIds, userIds)
 }
 
 const numEntriesPerTable = 10
