@@ -43,6 +43,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          assigned_to: string
           created_at: string | null
           description: string
           id: string
@@ -53,6 +54,7 @@ export type Database = {
           tags: string[]
         }
         Insert: {
+          assigned_to: string
           created_at?: string | null
           description: string
           id?: string
@@ -63,6 +65,7 @@ export type Database = {
           tags: string[]
         }
         Update: {
+          assigned_to?: string
           created_at?: string | null
           description?: string
           id?: string
@@ -73,6 +76,13 @@ export type Database = {
           tags?: string[]
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_owner_id_fkey"
             columns: ["owner_id"]

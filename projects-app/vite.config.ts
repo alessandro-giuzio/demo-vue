@@ -15,7 +15,7 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (element) => element.startsWith('iconify-icon'),
+          isCustomElement: (element) => element.startsWith('iconify-icon') || element === 'Button',
         }
       }
     }),

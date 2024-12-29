@@ -1,5 +1,5 @@
 <template>
-  <DataTable :columns="columns" :data="payments" />
+  <DataTable v-if="tasks" :columns="columns" :data="tasks" />
 </template>
 <script setup lang="ts">
 import { supabase } from '@/lib/supabaseClient'
@@ -13,43 +13,42 @@ const tasks = ref<Tables<'tasks'>[] | null>(null)
   const { data, error } = await supabase.from('tasks').select('*')
   if (error) console.log(error)
   tasks.value = data
-  console.log('Tasks:', tasks.value)
 })()
 
-type Payment = {
-  id: string
-  amount: number
-  status: 'pending' | 'processing' | 'success' | 'failed'
-  email: string
-}
-
-const payments: Payment[] = [
+const columns: ColumnDef<Tables<'tasks'>>[] = [
   {
-    id: '728ed52f',
-    amount: 100,
-    status: 'pending',
-    email: 'm@example.com'
+    accessorKey: 'name',
+    header: () => h('div', { class: 'text-left' }, 'Name'),
+    cell: ({ row }) => {
+      return h('div', { class: 'text-left font-medium' }, row.getValue('name'))
+    }
   },
   {
-    id: '489e1d42',
-    amount: 125,
-    status: 'processing',
-    email: 'example@gmail.com'
-  }
-  // ...
-]
-const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: 'amount',
-    header: () => h('div', { class: 'text-right' }, 'Amount'),
+    accessorKey: 'assigned_to',
+    header: () => h('div', { class: 'text-left' }, 'Assigned To'),
     cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue('amount'))
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      }).format(amount)
-
-      return h('div', { class: 'text-right font-medium' }, formatted)
+      return h('div', { class: 'text-left font-medium' }, row.getValue('assigned_to'))
+    }
+  },
+  {
+    accessorKey: 'status',
+    header: () => h('div', { class: 'text-left' }, 'Status'),
+    cell: ({ row }) => {
+      return h('div', { class: 'text-left font-medium' }, row.getValue('status'))
+    }
+  },
+  {
+    accessorKey: 'description',
+    header: () => h('div', { class: 'text-left' }, 'Description'),
+    cell: ({ row }) => {
+      return h('div', { class: 'text-left font-medium' }, row.getValue('description'))
+    }
+  },
+  {
+    accessorKey: 'tags',
+    header: () => h('div', { class: 'text-left' }, 'Tags'),
+    cell: ({ row }) => {
+      return h('div', { class: 'text-left font-medium' }, JSON.stringify(row.getValue('tags')))
     }
   }
 ]

@@ -53,8 +53,8 @@ const seedTasks = async (numEntries, projectsIds,userIds) => {
       description: faker.lorem.paragraph(),
       project_id: faker.helpers.arrayElement(projectsIds),
       owner_id: faker.helpers.arrayElement(userIds),
-      tags: faker.helpers.arrayElements(['tag1', 'tag2', 'tag3'])
-
+      tags: faker.helpers.arrayElements(['tag1', 'tag2', 'tag3']),
+      assigned_to: faker.helpers.arrayElement(userIds)
     })
   }
 
