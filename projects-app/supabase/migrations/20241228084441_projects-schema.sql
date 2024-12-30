@@ -4,5 +4,6 @@ create table projects (
   owner_id uuid references users(id) not null,
   name text not null,
   description text not null,
-  slug text not null
+  slug text not null,
+  collaborators text array default array[]::varchar[] not null
 );

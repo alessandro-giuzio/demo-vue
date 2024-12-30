@@ -28,7 +28,8 @@ const seedProjects = async (numEntries,userIds) => {
       owner_id: faker.helpers.arrayElement(userIds),
       name: name,
       description: faker.lorem.paragraph(),
-      slug: name.toLocaleLowerCase().replace(/ /g, '-')
+      slug: name.toLocaleLowerCase().replace(/ /g, '-'),
+      collaborators: faker.helpers.arrayElements([1, 2, 3])
     })
   }
 

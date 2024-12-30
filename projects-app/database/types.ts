@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       projects: {
         Row: {
+          collaborators: string[]
           description: string
           id: string
           name: string
@@ -18,6 +19,7 @@ export type Database = {
           slug: string
         }
         Insert: {
+          collaborators?: string[]
           description: string
           id?: string
           name: string
@@ -25,6 +27,7 @@ export type Database = {
           slug: string
         }
         Update: {
+          collaborators?: string[]
           description?: string
           id?: string
           name?: string
