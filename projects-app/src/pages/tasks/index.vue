@@ -7,9 +7,17 @@ import type { Tables } from '../../../database/types'
 import type { ColumnDef } from '@tanstack/vue-table'
 import { RouterLink } from 'vue-router'
 
+usePageStore().pageData.title = 'Tasks Page'
+
 const tasks = ref<Tables<'tasks'>[] | null>(null)
 const getTasks = async () => {
-  const { data, error } = await supabase.from('tasks').select()
+  const { data, error } = await supabase.from('tasks').select(`
+  *,
+  projects (
+  id,
+  name,
+  slug)
+  `)
 
   if (error) console.log(error)
 
@@ -30,6 +38,20 @@ const columns: ColumnDef<Tables<'tasks'>>[] = [
           class: 'text-left font-medium hover:bg-muted block w-full block w-full'
         },
         () => row.getValue('name')
+      )
+    }
+  },
+  {
+    accessorKey: 'projects',
+    header: () => h('div', { class: 'text-left' }, 'Project'),
+    cell: ({ row }) => {
+      return h(
+        RouterLink,
+        {
+          to: `/projects/${row.original.projects.slug}`,
+          class: 'text-left font-medium hover:bg-muted block w-full block w-full'
+        },
+        () => row.getValue('projects').name
       )
     }
   },

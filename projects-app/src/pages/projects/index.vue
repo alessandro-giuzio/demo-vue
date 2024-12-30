@@ -5,9 +5,10 @@
 <script setup lang="ts">
 import { supabase } from '@/lib/supabaseClient'
 import { RouterLink } from 'vue-router'
-
 import type { Tables } from '../../../database/types'
 import type { ColumnDef } from '@tanstack/vue-table'
+
+usePageStore().pageData.title = 'Projects Page'
 
 const projects = ref<Tables<'projects'>[] | null>(null)
 ;(async () => {
