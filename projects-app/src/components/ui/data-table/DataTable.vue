@@ -35,14 +35,6 @@
 </template>
 <script setup lang="ts" generic="TData, TValue">
 import type { ColumnDef } from '@tanstack/vue-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table'
 
 import { FlexRender, getCoreRowModel, useVueTable } from '@tanstack/vue-table'
 
@@ -61,3 +53,12 @@ const table = useVueTable({
   getCoreRowModel: getCoreRowModel()
 })
 </script>
+<style scoped>
+td {
+  @apply p-0;
+}
+
+td > * {
+  @apply p-4;
+}
+</style>

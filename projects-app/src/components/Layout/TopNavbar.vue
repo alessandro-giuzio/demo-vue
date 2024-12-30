@@ -28,15 +28,4 @@
     </DropdownMenu>
   </nav>
 </template>
-<script setup lang="ts">
-import Input from '@/components/ui/input/Input.vue'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-</script>
+<script setup lang="ts"></script>

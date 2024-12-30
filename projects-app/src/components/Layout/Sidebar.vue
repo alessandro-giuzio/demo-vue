@@ -24,8 +24,6 @@
   </aside>
 </template>
 <script setup lang="ts">
-import Sidebarlinks from '@/components/Layout/Sidebarlinks.vue'
-import type Button from '@/components/ui/button/Button.vue'
 const links = [
   { title: 'Dashboard', to: '/', icon: 'lucide:house' },
   { title: 'Projects', to: '/projects', icon: 'lucide:building-2' },
