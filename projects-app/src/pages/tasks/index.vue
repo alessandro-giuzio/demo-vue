@@ -3,10 +3,10 @@
 </template>
 <script setup lang="ts">
 import { tasksWithProjectsQuery } from '@/utils/supaQueries'
-import type { TasksWithProjects } from '@/utils/supaQueries'
 import { columns } from '@/utils/tableColumns/tasksColumns'
+import type { TasksWithProjects } from '@/utils/supaQueries'
 
-usePageStore().pageData.title = 'Tasks Page'
+usePageStore().pageData.title = 'My Tasks'
 
 const tasks = ref<TasksWithProjects | null>(null)
 const getTasks = async () => {
