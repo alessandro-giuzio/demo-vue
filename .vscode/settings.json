@@ -2,7 +2,7 @@
   "workbench.colorCustomizations": {
     "activityBar.background": "#40B983",
     "titleBar.activeBackground": "#34495e",
-    "titleBar.activeForeground": "#4713a6"
+    "titleBar.activeForeground": "#0fab2ec9"
   },
   "splitHTMLAttributes.closingBracketOnNewLine": true,
   "editor.wordWrap": "on",
