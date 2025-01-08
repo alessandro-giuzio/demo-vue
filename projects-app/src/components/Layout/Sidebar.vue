@@ -18,7 +18,7 @@
       </div>
 
       <div class="py-3 text-center border-y bg-background">
-        <Sidebarlinks :links="accountLinks" />
+        <Sidebarlinks :links="accountLinks" @actionClicked="executeAction" />
       </div>
     </nav>
   </aside>
@@ -35,4 +35,11 @@ const accountLinks = [
   { title: 'Settings', to: '/settings', icon: 'lucide:settings' },
   { title: 'Sign out', icon: 'lucide:log-out' }
 ]
+
+const executeAction = async (linkTitle: string) => {
+  if (linkTitle === 'Sign out') {
+    const { logout } = await import('@/utils/supaAuth')
+    await logout()
+  }
+}
 </script>

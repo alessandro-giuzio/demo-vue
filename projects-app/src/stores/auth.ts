@@ -11,6 +11,8 @@ export const useAuthStore = defineStore('auth-store', () => {
   const user = ref<null | User>(null)
   // State to hold the user registration details
   const userReg = ref<null | Tables<'users'>>(null)
+  // State to track if the authentication state is being changed
+  const isTrackingAuthChanges = ref(false)
 
   // Function to set user registration details
   const setUserReg = async () => {
@@ -32,6 +34,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     // If there is no user session, set user to null and return
     if (!userSession) {
       user.value = null
+      userReg.value = null
       return
     }
     // Set the user state and fetch user registration details
@@ -43,12 +46,25 @@ export const useAuthStore = defineStore('auth-store', () => {
     const { data } = await supabase.auth.getSession()
     if (data.session?.user) await setAuth(data.session)
   }
+
+  const trackAuthChanges = () => {
+    // If already tracking auth changes, return
+    if (isTrackingAuthChanges.value) return
+    // Set isTrackingAuthChanges to true
+    isTrackingAuthChanges.value = true
+    supabase.auth.onAuthStateChange((event,session)=>{
+      setTimeout(async () => {
+        await setAuth(session)
+      },0)
+      })
+  }
   // Return the state and functions to be used in the store
   return {
     user,
     userReg,
     setAuth,
-    getSession
+    getSession,
+    trackAuthChanges,
   }
 })
 

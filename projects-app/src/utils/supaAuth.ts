@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabaseClient'
 import type { LoginForm, RegisterForm } from '@/types/AuthForm'
 
 // Get the authentication store
-const authStore = useAuthStore()
+/* const authStore = useAuthStore() */
 
 // Function to handle user registration
 export const register = async (formData: RegisterForm) => {
@@ -29,14 +29,14 @@ export const register = async (formData: RegisterForm) => {
   }
 
   // Set the authentication state in the store
-  await authStore.setAuth(data.session)
+  /* await authStore.setAuth(data.session) */
   return true
 }
 
 // Function to handle user login
 export const login = async (formData: LoginForm) => {
   // Sign in the user with email and password
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const {  error } = await supabase.auth.signInWithPassword({
     email: formData.email,
     password: formData.password
   })
@@ -45,6 +45,13 @@ export const login = async (formData: LoginForm) => {
   if (error) return console.log(error)
 
   // Set the authentication state in the store
-  await authStore.setAuth(data.session)
+ /*  await authStore.setAuth(data.session) */
+  return true
+}
+ // Function to handle user logout
+export const logout = async () => {
+  const {error} = await supabase.auth.signOut()
+  if (error) return console.log(error)
+  /* await authStore.setAuth() */
   return true
 }
