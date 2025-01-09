@@ -35,8 +35,8 @@ export const columns: ColumnDef<Projects[0]>[] = [
     accessorKey: 'collaborators',
     header: () => h('div', { class: 'text-left' }, 'Collaborators'),
     cell: ({ row }) => {
-      const collaborators = row.getValue('collaborators') as string[];
-      return h('div', { class: 'text-left font-medium' }, collaborators.join(', '))
+      return h('div', { class: 'text-left font-medium' },
+        JSON.stringify(row.getValue('collaborators')))
     }
   },
   {

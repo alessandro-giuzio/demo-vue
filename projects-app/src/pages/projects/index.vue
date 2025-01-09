@@ -17,5 +17,6 @@ await getProjects()
 const { getProfileByIds } = useCollabs()
 const test = await getProfileByIds(projects.value[0].collaborators)
 console.log('TEST:::', test)
+
 /* getGroupedCollabs(projects.value) */
 </script>
