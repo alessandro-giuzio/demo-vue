@@ -29,7 +29,7 @@ const seedProjects = async (numEntries,userIds) => {
       name: name,
       description: faker.lorem.paragraph(),
       slug: name.toLocaleLowerCase().replace(/ /g, '-'),
-      collaborators: faker.helpers.arrayElements([1, 2, 3])
+      /* collaborators: faker.helpers.arrayElements([1, 2, 3]) */
     })
   }
 
@@ -55,7 +55,8 @@ const seedTasks = async (numEntries, projectsIds,userIds) => {
       project_id: faker.helpers.arrayElement(projectsIds),
       owner_id: faker.helpers.arrayElement(userIds),
       tags: faker.helpers.arrayElements(['tag1', 'tag2', 'tag3']),
-      assigned_to: faker.helpers.arrayElement(userIds)
+      assigned_to: faker.helpers.arrayElement(userIds),
+      collaborators: faker.helpers.arrayElements([1, 2, 3])
     })
   }
 
@@ -73,12 +74,20 @@ const seedUsers = async (numEntries) => {
   const users = []
 
   for (let i = 0; i < numEntries; i++) {
-    users.push({
-      id: faker.string.uuid(),
-      username: faker.internet.userName(),
-      created_at: faker.date.past(),
+    const { data: authUser, error: authError } = await supabase.auth.signUp({
       email: faker.internet.email(),
       password: faker.internet.password()
+    })
+
+    if (authError) return logErrorAndExit('Auth Users', authError)
+
+    users.push({
+      id: authUser.user.id,
+      username: faker.internet.userName(),
+      created_at: faker.date.past(),
+      email: authUser.user.email,
+      password: faker.internet.password(),
+      full_name: faker.name.fullName()
     })
   }
 

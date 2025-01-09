@@ -50,6 +50,6 @@ export const taskQuery = (id: string) => {
   }
 export type Task = QueryData<ReturnType<typeof taskQuery>>
 
-export const userRegQuery = (id: string) => {
-  return supabase.from('users').select().eq('id', id).single()
+export const userRegQuery = ({column, value}: {column:string, value:string}) => {
+  return supabase.from('users').select().eq(column,value).single()
 }

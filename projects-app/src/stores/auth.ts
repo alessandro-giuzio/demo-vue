@@ -24,7 +24,9 @@ export const useAuthStore = defineStore('auth-store', () => {
 
     // If userReg is not set or the user ID has changed, fetch the user registration details
     if (!userReg.value || userReg.value.id !== user.value.id) {
-      const { data } = await userRegQuery(user.value.id)
+      const { data } = await userRegQuery({
+        column:'id',
+        value: user.value.id})
       userReg.value = data || null
     }
   }

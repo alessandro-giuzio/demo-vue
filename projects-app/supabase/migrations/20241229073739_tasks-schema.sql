@@ -9,5 +9,6 @@ create table tasks (
   owner_id uuid references users(id) not null,
   status text not null,
   created_at timestamp with time zone default now(),
-  tags text[] not null
+  tags text[] not null,
+  collaborators text[] default array[]::text[] not null
 );
