@@ -42,11 +42,11 @@ export const login = async (formData: LoginForm) => {
   })
 
   // Log any errors that occur during sign in
-  if (error) return console.log(error)
+  return {error}
 
   // Set the authentication state in the store
  /*  await authStore.setAuth(data.session) */
-  return true
+
 }
  // Function to handle user logout
 export const logout = async () => {
