@@ -47,6 +47,7 @@ export type Database = {
       tasks: {
         Row: {
           assigned_to: string
+          collaborators: string[]
           created_at: string | null
           description: string
           id: string
@@ -58,6 +59,7 @@ export type Database = {
         }
         Insert: {
           assigned_to: string
+          collaborators?: string[]
           created_at?: string | null
           description: string
           id?: string
@@ -69,6 +71,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string
+          collaborators?: string[]
           created_at?: string | null
           description?: string
           id?: string
@@ -136,24 +139,30 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string | null
+          email: string
           full_name: string
           id: string
+          password: string
           username: string
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email: string
           full_name: string
           id: string
+          password: string
           username: string
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string | null
+          email?: string
           full_name?: string
           id?: string
+          password?: string
           username?: string
         }
         Relationships: []
