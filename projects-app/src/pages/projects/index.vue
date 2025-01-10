@@ -1,6 +1,5 @@
 <template>
-  <DataTable v-if="projects" :columns="columns" :data="projects" />
-  {{ projects.map((project) => project.collaborators) }}
+  <DataTable v-if="projects" :columns="columnsWithCollabs" :data="projects" />
 </template>
 
 <script setup lang="ts">
@@ -18,6 +17,6 @@ await getProjects()
 const { getGroupedCollabs, groupedCollabs } = useCollabs()
 
 await getGroupedCollabs(projects.value)
-console.log('TEST', groupedCollabs.value)
-/* getGroupedCollabs(projects.value) */
+
+const columnsWithCollabs = columns(groupedCollabs)
 </script>
