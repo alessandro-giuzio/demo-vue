@@ -9,7 +9,7 @@
     <TableRow>
       <TableHead> Description </TableHead>
       <TableCell>
-        {{ project.description }}
+        <AppInPlaceEditText v-model="project.description" @commit="updateProject" />
       </TableCell>
     </TableRow>
     <TableRow>
@@ -49,8 +49,10 @@
           </TableHeader>
           <TableBody>
             <TableRow v-for="task in project.tasks" :key="task.id">
-              <TableCell> Lorem ipsum dolor sit amet. </TableCell>
-              <TableCell> In progress </TableCell>
+              <TableCell>Lorem ipsum dolor sit amet. </TableCell>
+              <TableCell>
+                <AppInPlaceEditStatus v-model="task.status" @commit="updateProject" />
+              </TableCell>
               <TableCell> 22/08/2024 </TableCell>
             </TableRow>
           </TableBody>
@@ -82,20 +84,6 @@
   </section>
 </template>
 
-<style>
-th {
-  @apply w-[100px];
-}
-
-h2 {
-  @apply mb-4 text-lg font-semibold w-fit;
-}
-
-.table-container {
-  @apply overflow-hidden overflow-y-auto rounded-md bg-slate-900 h-80;
-}
-</style>
-
 <script setup lang="ts">
 const { slug } = useRoute('/projects/[slug]').params
 
@@ -112,3 +100,17 @@ watch(
 
 await getProject(slug)
 </script>
+
+<style>
+th {
+  @apply w-[100px];
+}
+
+h2 {
+  @apply mb-4 text-lg font-semibold w-fit;
+}
+
+.table-container {
+  @apply overflow-hidden overflow-y-auto rounded-md bg-slate-900 h-80;
+}
+</style>

@@ -76,7 +76,7 @@ export const useProjectsStore = defineStore('projects-store', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {tasks, id, ...projectProperties} = project.value
 
-    await updateProjectQuery(projectProperties, project.value.id)
+    await updateProjectQuery(projectProperties, Number(project.value.id))
   }
 
   return {
