@@ -99,6 +99,7 @@ watch(
 )
 
 await getProject(slug)
+console.log(project.value)
 </script>
 
 <style>

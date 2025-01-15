@@ -26,7 +26,7 @@ export const projectQuery = (slug: string) =>
     id,
     name,
     status,
-    assigned_to
+    assigned_to,
    )
   `
     )
@@ -48,7 +48,10 @@ export const taskQuery = (id: string) => {
         id,
         name,
         slug
-        )
+        ),
+       users!tasks_assigned_to_fkey (
+        username
+      )
       `)
     .eq('id', id).single()
   }

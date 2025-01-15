@@ -12,7 +12,7 @@
     </TableRow>
     <TableRow>
       <TableHead> Assignee </TableHead>
-      <TableCell>{{ task?.assigned_to }}</TableCell>
+      <TableCell>{{ task?.users.username }}</TableCell>
     </TableRow>
     <TableRow>
       <TableHead> Project </TableHead>
