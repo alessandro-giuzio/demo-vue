@@ -17,16 +17,15 @@ export const projectsQuery = supabase.from('projects').select()
 export type Projects = QueryData<typeof projectsQuery>
 
 export const projectQuery = (slug: string) =>
-  supabase
+    supabase
     .from('projects')
-    .select(
-      `
+    .select(`
    *,
    tasks (
     id,
     name,
     status,
-    assigned_to,
+    assigned_to
    )
   `
     )
@@ -35,14 +34,18 @@ export const projectQuery = (slug: string) =>
 
 export type Project = QueryData<ReturnType<typeof projectQuery>>
 
-export const updateProjectQuery = (updateProject = {}, id:number) => {
+export const updateProjectQuery = (updateProject = {}, id: number) => {
   return supabase.from('projects').update(updateProject).eq('id', id)
 }
 
 export const taskQuery = (id: string) => {
+  if (!id) {
+    console.error('Invalid Task ID:', id);
+    return null; // Exit early to avoid making an invalid query
+  }
   return supabase
     .from('tasks')
-    .select( `
+    .select(`
       *,
       projects(
         id,
@@ -52,8 +55,9 @@ export const taskQuery = (id: string) => {
        users!tasks_assigned_to_fkey (
         username
       )
-      `)
-    .eq('id', id).single()
+      `) // Check for trailing commas here
+    .eq('id', id)
+    .single()
   }
 export type Task = QueryData<ReturnType<typeof taskQuery>>
 
