@@ -17,6 +17,7 @@ export type Database = {
           name: string
           owner_id: string
           slug: string
+          status: Database["public"]["Enums"]["current_status"]
         }
         Insert: {
           collaborators?: string[]
@@ -25,6 +26,7 @@ export type Database = {
           name: string
           owner_id: string
           slug: string
+          status?: Database["public"]["Enums"]["current_status"]
         }
         Update: {
           collaborators?: string[]
@@ -33,6 +35,7 @@ export type Database = {
           name?: string
           owner_id?: string
           slug?: string
+          status?: Database["public"]["Enums"]["current_status"]
         }
         Relationships: [
           {
@@ -54,7 +57,7 @@ export type Database = {
           name: string
           owner_id: string
           project_id: string
-          status: string
+          status: Database["public"]["Enums"]["current_status"]
           tags: string[]
         }
         Insert: {
@@ -66,7 +69,7 @@ export type Database = {
           name: string
           owner_id: string
           project_id: string
-          status: string
+          status?: Database["public"]["Enums"]["current_status"]
           tags: string[]
         }
         Update: {
@@ -78,7 +81,7 @@ export type Database = {
           name?: string
           owner_id?: string
           project_id?: string
-          status?: string
+          status?: Database["public"]["Enums"]["current_status"]
           tags?: string[]
         }
         Relationships: [
@@ -175,7 +178,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      current_status: "in-progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never

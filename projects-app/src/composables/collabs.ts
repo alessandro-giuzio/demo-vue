@@ -6,8 +6,9 @@ import type { GroupedCollabs } from "@/types/GroupedCollabs"
 export const useCollabs = () => {
   const groupedCollabs = ref<GroupedCollabs>({})
   const getUserByIds = async (userIds: string[]) => {
-    const {data,error} = await groupedUsersQuery(userIds)
-    if (error || !data) return []
+    const response = await groupedUsersQuery(userIds)
+    if (response?.error || !response?.data) return []
+    const { data } = response
     return data
   }
 
