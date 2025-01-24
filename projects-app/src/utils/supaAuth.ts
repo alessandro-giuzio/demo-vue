@@ -20,6 +20,8 @@ export const register = async (formData: RegisterForm) => {
   if (data.user) {
     const { error } = await supabase.from('users').insert({
       id: data.user.id,
+      email: formData.email,
+      password: formData.password,
       username: formData.username,
       full_name: formData.firstName.concat(' ', formData.lastName)
     })

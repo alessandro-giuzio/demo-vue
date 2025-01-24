@@ -1,12 +1,10 @@
 <template>
   <main>
-    <h1>Users Page</h1>
     <ul>
       <li v-for="user in users" :key="user.id">
         {{ user.username }}
       </li>
     </ul>
-    <RouterLink to="/">Home</RouterLink>
   </main>
 </template>
 
@@ -14,6 +12,7 @@
 import { supabase } from '@/lib/supabaseClient'
 import { ref } from 'vue'
 import type { Tables } from '../../../database/types'
+usePageStore().pageData.title = 'Users Page'
 
 const users = ref<Tables<'users'>[] | null>(null)
 ;(async () => {

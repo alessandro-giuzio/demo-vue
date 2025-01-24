@@ -21,7 +21,7 @@ async function getProfile() {
     const { user } = session.value;
 
     const { data, error, status } = await supabase
-      .from('profiles')
+      .from('users')
       .select(`username, website, avatar_url`)
       .eq('id', user.id)
       .single();
@@ -96,13 +96,13 @@ async function signOut() {
     <div>
       <input
         type="submit"
-        class="button primary block"
+        class="block button primary"
         :value="loading ? 'Loading ...' : 'Update'"
         :disabled="loading" />
     </div>
 
     <div>
-      <button class="button block" @click="signOut" :disabled="loading">
+      <button class="block button" @click="signOut" :disabled="loading">
         Sign Out
       </button>
     </div>

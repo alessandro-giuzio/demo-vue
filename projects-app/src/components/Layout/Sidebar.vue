@@ -27,11 +27,12 @@
 const links = [
   { title: 'Dashboard', to: '/', icon: 'lucide:house' },
   { title: 'Projects', to: '/projects', icon: 'lucide:building-2' },
-  { title: 'My Tasks', to: '/tasks', icon: 'lucide:badge-check' }
+  { title: 'My Tasks', to: '/tasks', icon: 'lucide:badge-check' },
+  { title: 'Users', to: '/users', icon: 'lucide-users' }
 ]
 
 const accountLinks = [
-  { title: 'User', to: '/users', icon: 'lucide:user' },
+  { title: 'User', to: '/users/', icon: 'lucide:user' },
   { title: 'Settings', to: '/settings', icon: 'lucide:settings' },
   { title: 'Sign out', icon: 'lucide:log-out' }
 ]

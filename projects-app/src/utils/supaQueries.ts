@@ -52,7 +52,7 @@ export const taskQuery = (id: string) => {
         name,
         slug
         ),
-       users!tasks_assigned_to_fkey (
+        users!tasks_assigned_to_fkey (
         username
       )
       `) // Check for trailing commas here
@@ -65,9 +65,14 @@ export const userRegQuery = ({column, value}: {column:string, value:string}) => 
   return supabase.from('users').select().eq(column,value).single()
 }
 
-export const groupedUsersQuery = (userIds: string[]) =>
-  supabase.from('users')
+export const groupedUsersQuery = (userIds: string[]) => {
+  if (userIds.length === 0) {
+    console.error('No user IDs provided');
+    return null; // Exit early to avoid making an invalid query
+  }
+  return supabase.from('users')
     .select('username,avatar_url,id,full_name')
     .in('id', userIds)
+}
     export type Collabs = QueryData<ReturnType<typeof groupedUsersQuery>>
 
