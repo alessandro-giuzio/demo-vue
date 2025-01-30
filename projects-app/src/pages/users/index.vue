@@ -2,7 +2,9 @@
   <main>
     <ul>
       <li v-for="user in users" :key="user.id">
-        {{ user.username }}
+        <RouterLink :to="`/users/${user.username}`" class="text-[#40B983] hover:underline">
+          {{ user.username }}
+        </RouterLink>
       </li>
     </ul>
   </main>

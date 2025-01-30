@@ -18,12 +18,19 @@
       </div>
 
       <div class="py-3 text-center border-y bg-background">
-        <Sidebarlinks :links="accountLinks" @actionClicked="executeAction" />
+        <Sidebarlinks :links="computedAccountLinks" @actionClicked="executeAction" />
       </div>
     </nav>
   </aside>
 </template>
+
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+const { userReg } = storeToRefs(useAuthStore()) // Get logged-in user details
+
 const links = [
   { title: 'Dashboard', to: '/', icon: 'lucide:house' },
   { title: 'Projects', to: '/projects', icon: 'lucide:building-2' },
@@ -31,11 +38,16 @@ const links = [
   { title: 'Users', to: '/users', icon: 'lucide-users' }
 ]
 
-const accountLinks = [
-  { title: 'User', to: '/users/', icon: 'lucide:user' },
+// Compute the user profile link dynamically
+const computedAccountLinks = computed(() => [
+  {
+    title: 'User',
+    to: userReg.value ? `/users/${userReg.value.username}` : '/users',
+    icon: 'lucide:user'
+  },
   { title: 'Settings', to: '/settings', icon: 'lucide:settings' },
   { title: 'Sign out', icon: 'lucide:log-out' }
-]
+])
 
 const router = useRouter()
 
