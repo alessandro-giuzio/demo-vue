@@ -6,11 +6,13 @@
       :to="link.to"
       class="nav-link"
     >
-      <iconify-icon :icon="link.icon"></iconify-icon>
+      <!-- Apply class dynamically -->
+      <iconify-icon :icon="link.icon" :class="link.class"></iconify-icon>
       <span class="hidden lg:block text-nowrap">{{ link.title }}</span>
     </RouterLink>
     <div v-else class="cursor-pointer nav-link" @click="emitActionClicked(link.title)">
-      <iconify-icon :icon="link.icon"></iconify-icon>
+      <!-- Apply class dynamically -->
+      <iconify-icon :icon="link.icon" :class="link.class"></iconify-icon>
       <span class="hidden lg:block text-nowrap">{{ link.title }}</span>
     </div>
   </template>
@@ -21,6 +23,7 @@ type LinkProp = {
   title: string
   to?: string
   icon: string
+  class?: string // Accept class dynamically
 }
 
 defineProps<{

@@ -31,6 +31,10 @@ import { useRouter } from 'vue-router'
 
 const { userReg } = storeToRefs(useAuthStore()) // Get logged-in user details
 
+// Track if the user is logged in
+const isLoggedIn = computed(() => !!userReg.value)
+console.log(isLoggedIn.value)
+
 const links = [
   { title: 'Dashboard', to: '/', icon: 'lucide:house' },
   { title: 'Projects', to: '/projects', icon: 'lucide:building-2' },
@@ -42,8 +46,9 @@ const links = [
 const computedAccountLinks = computed(() => [
   {
     title: 'User',
-    to: userReg.value ? `/users/${userReg.value.username}` : '/users',
-    icon: 'lucide:user'
+    to: isLoggedIn.value && userReg.value ? `/users/${userReg.value.username}` : '/users',
+    icon: 'lucide:user',
+    class: isLoggedIn.value ? 'text-green-500' : 'text-gray-500' // Green when logged in, gray when logged out
   },
   { title: 'Settings', to: '/settings', icon: 'lucide:settings' },
   { title: 'Sign out', icon: 'lucide:log-out' }
