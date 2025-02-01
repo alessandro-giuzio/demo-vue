@@ -13,7 +13,12 @@ export const tasksWithProjectsQuery = supabase.from('tasks').select(`
 export type TasksWithProjects = QueryData<typeof tasksWithProjectsQuery>
 
 
-export const projectsQuery = supabase.from('projects').select()
+export const projectsQuery = supabase.from('projects').select(`
+    *,
+    users!projects_owner_id_fkey(full_name)  -- Fetch the owner's name
+  `
+
+)
 export type Projects = QueryData<typeof projectsQuery>
 
 export const projectQuery = (slug: string) =>
@@ -21,6 +26,7 @@ export const projectQuery = (slug: string) =>
     .from('projects')
     .select(`
    *,
+   users!projects_owner_id_fkey(full_name),
    tasks (
     id,
     name,

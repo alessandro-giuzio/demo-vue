@@ -6,3 +6,5 @@ create table user_projects (
     created_at timestamp with time zone default now()
 
   );
+
+/* the query in supase is different!! */

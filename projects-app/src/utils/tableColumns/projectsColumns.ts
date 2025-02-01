@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/vue-table"
-import type { Projects } from "../supaQueries"
+import type { Projects, User } from "../supaQueries"
 import { RouterLink } from "vue-router"
 import type {Ref} from 'vue'
 import type { GroupedCollabs } from "@/types/GroupedCollabs"
@@ -7,7 +7,7 @@ import Avatar from "@/components/ui/avatar/Avatar.vue"
 import AvatarImage from "@/components/ui/avatar/AvatarImage.vue"
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
 
-export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects[0]>[] => [
+export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<(Projects[0] & { users?: User })>[] => [
   {
     accessorKey: 'name',
     header: () => h('div', { class: 'text-left' }, 'Name'),
@@ -33,7 +33,26 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects[0]>[]
     accessorKey: 'owner_id',
     header: () => h('div', { class: 'text-left' }, 'Owner'),
     cell: ({ row }) => {
-      return h('div', { class: 'text-left font-medium' }, row.getValue('owner_id'))
+      const owner = row.original.users
+      return h(
+        'div',
+        { class: 'flex items-center gap-2 whitespace-nowrap' }, // Align and prevent wrapping
+        [
+          h(Avatar, { class: 'w-8 h-8 rounded-full' }, () =>
+            h(AvatarImage, { src: owner?.avatar_url || '', alt: owner?.full_name || 'Owner' }, () =>
+              h(AvatarFallback, {}, owner?.full_name?.charAt(0) || '?')
+            )
+          ),
+          h(
+            RouterLink,
+            {
+              to: `/users/${owner?.username}`,
+              class: 'text-left font-medium underline text-green-700'
+            },
+            () => owner?.full_name || 'Unknown'
+          )
+        ]
+      )
     }
   },
   {
