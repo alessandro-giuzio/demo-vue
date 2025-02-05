@@ -22,7 +22,7 @@ const seedProjects = async (numEntries,userIds) => {
 
   for (let i = 0; i < numEntries; i++) {
     const name = faker.lorem.words(3)
-
+/*TODO */
     // create project id and save to variable
     // create project object
     // push project object to projects array
