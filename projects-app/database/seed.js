@@ -23,6 +23,14 @@ const seedProjects = async (numEntries,userIds) => {
   for (let i = 0; i < numEntries; i++) {
     const name = faker.lorem.words(3)
 
+    // create project id and save to variable
+    // create project object
+    // push project object to projects array
+    // create userProject object
+    // use owner_id of project object as userid in userProject object
+  // use project obhject id as project_id in userProject object
+  // push userProject object to userProjects array
+
     projects.push({
       id: faker.string.uuid(),
       owner_id: faker.helpers.arrayElement(userIds),

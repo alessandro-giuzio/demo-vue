@@ -7,7 +7,8 @@ import Avatar from "@/components/ui/avatar/Avatar.vue"
 import AvatarImage from "@/components/ui/avatar/AvatarImage.vue"
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
 
-export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<(Projects[0] & { users?: User })>[] => [
+export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { users?: User }>[] => [
+
   {
     accessorKey: 'name',
     header: () => h('div', { class: 'text-left' }, 'Name'),
@@ -72,13 +73,14 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<(Projects[0] &
                 )
               })
             })
-          : row.original.collaborators.map(() => {
+          : row.original.collaborators?.map(() => {  // Added `?.` to prevent errors
               return h(Avatar, { class: 'animate-pulse' }, () =>
                 h(AvatarFallback)
               )
-            })
+            }) || []  // Ensure it returns an empty array if undefined
       )
     }
+
   },
   {
     accessorKey: 'slug',

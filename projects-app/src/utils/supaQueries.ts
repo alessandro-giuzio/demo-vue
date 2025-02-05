@@ -14,11 +14,13 @@ export type TasksWithProjects = QueryData<typeof tasksWithProjectsQuery>
 
 
 export const projectsQuery = supabase.from('projects').select(`
-    *,
-    users!projects_owner_id_fkey(full_name)  -- Fetch the owner's name
-  `
-
+  *,
+  users!projects_owner_id_fkey(full_name)  -- Fetch the owner's name
+`
 )
+/* TODO */// add a where clause to filter out projects that dont belong to the current user
+// for this we will look into the userprojects table
+// we will need the id of the currently authenthicated user for this
 export type Projects = QueryData<typeof projectsQuery>
 
 export const projectQuery = (slug: string) =>
@@ -67,6 +69,7 @@ export const taskQuery = (id: string) => {
   }
 export type Task = QueryData<ReturnType<typeof taskQuery>>
 
+export type User = QueryData<ReturnType<typeof userRegQuery>>
 export const userRegQuery = ({column, value}: {column:string, value:string}) => {
   return supabase.from('users').select().eq(column,value).single()
 }
