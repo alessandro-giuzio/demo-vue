@@ -1,29 +1,44 @@
 <template>
-  <DataTable v-if="projects" :columns="columnsWithCollabs" :data="filteredProjects" />
+  <DataTable
+    v-if="filteredProjects.length"
+    :columns="columnsWithCollabs"
+    :data="filteredProjects"
+  />
+  <p v-else>No projects found for the logged-in user.</p>
 </template>
 
 <script setup lang="ts">
 import { useCollabs } from '@/composables/collabs'
 import { useProjectsStore } from '@/stores/loaders/projects'
+import { filterProjectsForUser } from '@/utils/supaQueries'
 import { columns } from '@/utils/tableColumns/projectsColumns'
 
+// Set the page title
 usePageStore().pageData.title = 'My Projects'
 
+// Initialize the projects store
 const projectsLoader = useProjectsStore()
 const { projects } = storeToRefs(projectsLoader)
-const { userReg } = storeToRefs(useAuthStore())
 const { getProjects } = projectsLoader
 
-await getProjects()
-const { getGroupedCollabs, groupedCollabs } = useCollabs()
-// Filter projects for the logged-in user
-const filteredProjects = computed(() => {
-  if (!projects.value) return []
+// Get the logged-in user's registration details
+const { userReg } = storeToRefs(useAuthStore())
 
-  return projects.value.filter((project) => project.owner_id === userReg.value?.id)
-})
-getGroupedCollabs(projects.value ?? [])
+// Fetch projects for the logged-in user
+await getProjects()
+
+// Filter projects for the logged-in user
+const filteredProjects = userReg.value?.id ? await filterProjectsForUser(userReg.value.id) : []
+
+// Initialize the collaborators composable
+const { getGroupedCollabs, groupedCollabs } = useCollabs()
+
+// Fetch and group collaborators for the projects
+await getGroupedCollabs(filteredProjects)
+
+// Log the grouped collaborators for debugging
 console.log('TEST::' + JSON.stringify(groupedCollabs.value))
 
+// Define the columns with collaborators
 const columnsWithCollabs = columns(groupedCollabs)
 </script>

@@ -82,4 +82,22 @@ export const groupedUsersQuery = (userIds: string[]) => {
     .in('id', userIds)
 }
     export type Collabs = QueryData<ReturnType<typeof groupedUsersQuery>>
+// New function to filter projects for the logged-in user
+export const filterProjectsForUser = async (userId: string) => {
+  const { data, error } = await projectsQuery.eq('owner_id', userId)
+  if (error) {
+    console.error('Error fetching projects:', error)
+    return []
+  }
+  return data
+}
+// New function to filter tasks for the logged-in user
+export const filterTasksForUser = async (userId: string) => {
+  const { data, error } = await tasksWithProjectsQuery.eq('assigned_to', userId)
+  if (error) {
+    console.error('Error fetching tasks:', error)
+    return []
+  }
+  return data
+}
 
