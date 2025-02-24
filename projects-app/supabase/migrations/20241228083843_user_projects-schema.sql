@@ -7,4 +7,4 @@ create table user_projects (
 
   );
 
-/* the query in supase is different!! */
+/* the seed in supabase is different!! */

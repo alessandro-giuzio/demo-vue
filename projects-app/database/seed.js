@@ -16,41 +16,53 @@ const logStep = (stepMessage) => {
   console.log(stepMessage)
 }
 
-const seedProjects = async (numEntries,userIds) => {
+const seedProjects = async (numEntries, userIds) => {
   logStep('Seeding projects...')
   const projects = []
+  const userProjects = []
 
   for (let i = 0; i < numEntries; i++) {
     const name = faker.lorem.words(3)
-/*TODO */
-    // create project id and save to variable
-    // create project object
-    // push project object to projects array
-    // create userProject object
-    // use owner_id of project object as userid in userProject object
-  // use project obhject id as project_id in userProject object
-  // push userProject object to userProjects array
 
-    projects.push({
-      id: faker.string.uuid(),
+    // Create project ID and save to variable
+    const projectId = faker.string.uuid()
+
+    // Create project object
+    const project = {
+      id: projectId,
       owner_id: faker.helpers.arrayElement(userIds),
       name: name,
       description: faker.lorem.paragraph(),
-      slug: name.toLocaleLowerCase().replace(/ /g, '-'),
-      /* collaborators: faker.helpers.arrayElements([1, 2, 3]) */
-    })
+      slug: name.toLocaleLowerCase().replace(/ /g, '-')
+    }
+
+    // Push project object to projects array
+    projects.push(project)
+
+    // Create userProject object
+    const userProject = {
+      user_id: project.owner_id,
+      project_id: projectId
+    }
+
+    // Push userProject object to userProjects array
+    userProjects.push(userProject)
   }
 
-  const { data, error } = await supabase.from('projects').insert(projects).select('id')
+  const { data: projectData, error: projectError } = await supabase.from('projects').insert(projects).select('id')
 
-  if (error) return logErrorAndExit('Projects', error)
+  if (projectError) return logErrorAndExit('Projects', projectError)
 
-  logStep('Projects seeded successfully.')
+  const { error: userProjectError } = await supabase.from('user_projects').insert(userProjects).select('id')
 
-  return data
+  if (userProjectError) return logErrorAndExit('User Projects', userProjectError)
+
+  logStep('Projects and User Projects seeded successfully.')
+
+  return projectData
 }
 
-const seedTasks = async (numEntries, projectsIds,userIds) => {
+const seedTasks = async (numEntries, projectIds, userIds) => {
   logStep('Seeding tasks...')
   const tasks = []
 
@@ -60,7 +72,7 @@ const seedTasks = async (numEntries, projectsIds,userIds) => {
       name: faker.lorem.words(3),
       status: faker.helpers.arrayElement(['in-progress', 'completed']),
       description: faker.lorem.paragraph(),
-      project_id: faker.helpers.arrayElement(projectsIds),
+      project_id: faker.helpers.arrayElement(projectIds),
       owner_id: faker.helpers.arrayElement(userIds),
       tags: faker.helpers.arrayElements(['tag1', 'tag2', 'tag3']),
       assigned_to: faker.helpers.arrayElement(userIds),

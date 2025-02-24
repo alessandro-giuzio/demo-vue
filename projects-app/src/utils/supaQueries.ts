@@ -18,9 +18,7 @@ export const projectsQuery = supabase.from('projects').select(`
   users!projects_owner_id_fkey(full_name)  -- Fetch the owner's name
 `
 )
-/* TODO */// add a where clause to filter out projects that dont belong to the current user
-// for this we will look into the userprojects table
-// we will need the id of the currently authenthicated user for this
+
 export type Projects = QueryData<typeof projectsQuery>
 
 export const projectQuery = (slug: string) =>
