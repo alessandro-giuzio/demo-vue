@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { CreateNewTask } from "@/types/CreateNewForm";
 import type { QueryData } from "@supabase/supabase-js";
 
 
@@ -14,10 +15,16 @@ export type TasksWithProjects = QueryData<typeof tasksWithProjectsQuery>
 
 
 export const projectsQuery = supabase.from('projects').select(`
-  *,
-  users!projects_owner_id_fkey(full_name)  -- Fetch the owner's name
-`
-)
+  id,
+  name,
+  description,
+  owner_id,
+  users!projects_owner_id_fkey (
+    id,
+    full_name
+  )
+`)
+
 
 export type Projects = QueryData<typeof projectsQuery>
 
@@ -101,3 +108,9 @@ export const filterTasksForUser = async (userId: string) => {
   return data
 }
 
+export const usersQuery = supabase.from('users').select('id, full_name, username, avatar_url')
+
+export const createNewTaskQuery = async (newTask: CreateNewTask) => {
+  const { data, error } = await supabase.from('tasks').insert(newTask).select();
+  return { data, error };
+}

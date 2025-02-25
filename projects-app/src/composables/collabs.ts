@@ -13,9 +13,9 @@ export const useCollabs = () => {
   }
 
   const getGroupedCollabs = async (items: Projects | TasksWithProjects) =>{
-    const fileredItems = items.filter((item)=>item.collaborators.length)
+    const fileredItems = items.filter((item)=>item.owner_id)
 
-    const promises = fileredItems.map((item)=> getUserByIds(item.collaborators))
+    const promises = fileredItems.map((item)=> getUserByIds([item.owner_id]))
 
       const results = await Promise.all(promises)
       fileredItems.forEach((item, index)=>{
