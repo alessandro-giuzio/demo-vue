@@ -24,7 +24,7 @@
     </TableRow>
     <TableRow>
       <TableHead> Status </TableHead>
-      <AppInPlaceEditStatus v-if="task" v-model="task.status" @commit="updateProject" />
+      <AppInPlaceEditStatus v-if="task" v-model="task.status" @commit="updateTask" />
     </TableRow>
     <TableRow>
       <TableHead> Collaborators </TableHead>
