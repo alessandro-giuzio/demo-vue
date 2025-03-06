@@ -77,7 +77,10 @@ export const useProjectsStore = defineStore('projects-store', () => {
     const { tasks, id,users, ...projectProperties } = project.value
     await updateProjectQuery(projectProperties, project.value.id)
   }
-
+/* TODO
+Project Page: Update Task Status
+Task Page - Update Task Status - Update Name - Update Description Update everything
+*/
   const updateTask = async (taskId: string, newStatus: string) => {
     if (!taskId) {
       console.error("Task ID is missing")

@@ -73,15 +73,11 @@ export const userRegQuery = ({column, value}: {column:string, value:string}) => 
 }
 
 export const groupedUsersQuery = (userIds: string[]) => {
-  if (userIds.length === 0) {
-    console.error('No user IDs provided');
-    return null; // Exit early to avoid making an invalid query
-  }
-  return supabase.from('users')
-    .select('username,avatar_url,id,full_name')
-    .in('id', userIds)
+  return supabase.from('users').select('username, avatar_url, id, full_name')
+  .in('id', userIds)
 }
-    export type Collabs = QueryData<ReturnType<typeof groupedUsersQuery>>
+export type Collabs = QueryData<ReturnType<typeof groupedUsersQuery>>
+
 // New function to filter projects for the logged-in user
 export const filterProjectsForUser = async (userId: string) => {
   const { data, error } = await projectsQuery.eq('owner_id', userId)

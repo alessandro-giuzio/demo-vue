@@ -36,7 +36,7 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { u
       header: () => h('div', { class: 'text-left' }, 'Status'),
       cell: ({ row }) => {
         return h('div', { class: 'text-left font-medium' },
-          h(AppInPlaceEditStatus, { modelValue: row.original.status as "in-progress" | "completed" | undefined }),
+          h(AppInPlaceEditStatus, { modelValue: row.original.status as "in-progress" | "completed" | undefined, readonly: true }),
         )
       }
     },
@@ -70,28 +70,31 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { u
     accessorKey: 'collaborators',
     header: () => h('div', { class: 'text-left' }, 'Collaborators'),
     cell: ({ row }) => {
+      console.log("Row ID:", row.original.id)
+      console.log("Collaborators:", collabs.value[row.original.id]) // Debugging
+
       return h(
         'div',
         { class: 'text-left font-medium h-20 flex items-center' },
-        collabs.value[row.original.id]
-          ? collabs.value[row.original.id].map((collab) => {
-              return h(RouterLink, { to: `/users/${collab.username}` }, () => {
-                return h(
-                  Avatar,
-                  { class: 'hover:scale-110 transition-transform' },
-                  () => h(AvatarImage, { src: collab.avatar_url || '' })
-                )
-              })
-            })
-          : row.original.collaborators?.map(() => {  // Added `?.` to prevent errors
-              return h(Avatar, { class: 'animate-pulse' }, () =>
-                h(AvatarFallback)
-              )
-            }) || []  // Ensure it returns an empty array if undefined
+        (Array.isArray(collabs.value[row.original.id]) ? collabs.value[row.original.id] : []).map((collab) => {
+          return h(
+            RouterLink,
+            { to: `/users/${collab.username}` },
+            () => h(
+              Avatar,
+              { class: 'hover:scale-110 transition-transform' },
+              () => h(AvatarImage, { src: collab.avatar_url || '' })
+            )
+          )
+        }) || row.original.collaborators?.map(() => {  // Added `?.` to prevent errors
+          return h(Avatar, { class: 'animate-pulse' }, () =>
+            h(AvatarFallback)
+          )
+        }) || []  // Ensure it returns an empty array if undefined
       )
     }
-
   },
+
   {
     accessorKey: 'slug',
     header: () => h('div', { class: 'text-left' }, 'Slug'),

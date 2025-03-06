@@ -18,33 +18,33 @@
           placeholder="My new task"
           validation="required|length:1,255"
         />
+        <FormKit
+          type="select"
+          name="project_id"
+          id="project_id"
+          label="Project"
+          placeholder="Select a project"
+          :options="selectOptions.projects"
+          validation="required"
+        />
+        <FormKit
+          type="select"
+          name="assigned_to"
+          id="assigned_to"
+          label="User"
+          placeholder="Select a user"
+          :options="selectOptions.users"
+          validation="required"
+        />
+        <FormKit
+          type="textarea"
+          name="description"
+          id="description"
+          label="Description"
+          placeholder="Task description"
+          validation="length:0,500"
+        />
       </FormKit>
-      <FormKit
-        type="select"
-        name="profile_id"
-        id="profile_id"
-        label="User"
-        placeholder="Select a user"
-        :options="selectOptions.users"
-        validation="required"
-      />
-      <FormKit
-        type="select"
-        name="project_id"
-        id="project_id"
-        label="Project"
-        placeholder="Select a project"
-        :options="selectOptions.projects"
-        validation="required"
-      />
-      <FormKit
-        type="textarea"
-        name="description"
-        id="description"
-        label="Description"
-        placeholder="Task description"
-        validation="length:0,500"
-      />
     </SheetContent>
   </Sheet>
 </template>
@@ -90,25 +90,39 @@ getOptions()
 
 const { user } = storeToRefs(useAuthStore())
 
+// In the same file, update the createTask function
 const createTask = async (formData: CreateNewTask) => {
-  console.log('Form Data:', formData) // Debugging step
-  if (!formData.project_id) {
-    console.error('Error: project_id is missing!')
-    return
-  }
-  const task = {
-    ...formData,
-    collaborators: [user.value!.id]
-  }
-  console.log('Final Task Object:', task)
-  const { error } = await createNewTaskQuery(task)
+  try {
+    // Validate required fields
+    if (!formData.name || !formData.project_id || !formData.assigned_to) {
+      console.error('Required fields are missing:', {
+        name: !!formData.name,
+        project_id: !!formData.project_id,
+        profile_id: !!formData.id
+      })
+      return
+    }
 
-  if (error) {
-    // Log only when an error exists
-    console.error('Task creation failed:', error)
-    return
-  }
+    const task = {
+      ...formData,
+      collaborators: user.value?.id ? [user.value.id] : []
+    }
 
-  sheetOpen.value = false
+    const { error } = await createNewTaskQuery(task)
+
+    if (error) {
+      console.error('Task creation failed:', error)
+      return
+    }
+
+    // Reset form and close sheet on success
+    sheetOpen.value = false
+    selectOptions.value = {
+      projects: [],
+      users: []
+    }
+  } catch (err) {
+    console.error('Error creating task:', err)
+  }
 }
 </script>

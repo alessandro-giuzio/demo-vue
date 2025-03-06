@@ -9,7 +9,7 @@
     <TableRow>
       <TableHead> Description </TableHead>
       <TableCell>
-        <AppInPlaceEditText v-model="project.description" @commit="updateProject" />
+        <AppInPlaceEditTextArea v-model="project.description" @commit="updateProject" />
       </TableCell>
     </TableRow>
     <TableRow>
@@ -17,16 +17,26 @@
       <TableCell>{{ project.owner_id }}</TableCell>
     </TableRow>
     <TableRow>
+      <TableHead> Status </TableHead>
+      <!-- TODO
+use the component AppInPlaceEditStatus to edit the status of the project tasks
+-->
+      <AppInPlaceEditStatus v-model="project.status" @commit="updateProject" />
+    </TableRow>
+    <TableRow>
       <TableHead> Collaborators </TableHead>
       <TableCell>
         <div class="flex">
           <Avatar
             class="-mr-4 transition-transform border border-primary hover:scale-110"
-            v-for="collab in project.collaborators"
-            :key="collab"
+            v-for="collab in collabs"
+            :key="collab.id"
           >
-            <RouterLink class="flex items-center justify-center w-full h-full" to="">
-              <AvatarImage src="" alt="" />
+            <RouterLink
+              class="flex items-center justify-center w-full h-full"
+              :to="{ name: '/users/[username]', params: { username: collab.username } }"
+            >
+              <AvatarImage :src="collab.avatar_url || ''" alt="" />
               <AvatarFallback> </AvatarFallback>
             </RouterLink>
           </Avatar>
@@ -99,6 +109,9 @@ watch(
 )
 
 await getProject(slug)
+
+const { getUserByIds } = useCollabs()
+const collabs = project.value?.collaborators ? await getUserByIds(project.value?.collaborators) : []
 console.log(project.value)
 </script>
 
