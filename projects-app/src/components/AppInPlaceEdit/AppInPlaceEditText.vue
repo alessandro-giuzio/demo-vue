@@ -1,6 +1,6 @@
 <template>
   <input
-    class="w-full p-1 bg-transparent focus:outiline-none focus:border-none focus:bg-gray-800 focus:rounded-md"
+    class="w-full p-1 bg-transparent focus:outline-none focus:border-none focus:bg-gray-800 focus:rounded-md"
     type="text"
     v-model="inputValue"
     @blur="emitCommit"

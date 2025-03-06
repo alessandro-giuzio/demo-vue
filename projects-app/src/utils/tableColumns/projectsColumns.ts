@@ -6,6 +6,7 @@ import type { GroupedCollabs } from "@/types/GroupedCollabs"
 import Avatar from "@/components/ui/avatar/Avatar.vue"
 import AvatarImage from "@/components/ui/avatar/AvatarImage.vue"
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
+import AppInPlaceEditStatus from "@/components/AppInPlaceEdit/AppInPlaceEditStatus.vue"
 
 export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { users?: User }>[] => [
 
@@ -30,6 +31,15 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { u
       return h('div', { class: 'text-left font-medium' }, row.getValue('description'))
     }
   },
+   {
+      accessorKey: 'status',
+      header: () => h('div', { class: 'text-left' }, 'Status'),
+      cell: ({ row }) => {
+        return h('div', { class: 'text-left font-medium' },
+          h(AppInPlaceEditStatus, { modelValue: row.original.status as "in-progress" | "completed" | undefined }),
+        )
+      }
+    },
   {
     accessorKey: 'owner_id',
     header: () => h('div', { class: 'text-left' }, 'Owner'),

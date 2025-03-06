@@ -78,7 +78,8 @@
 <script setup lang="ts">
 import type { Task } from '@/utils/supaQueries'
 import { taskQuery } from '@/utils/supaQueries'
-
+const projectsLoader = useProjectsStore()
+const { updateTask } = projectsLoader
 const route = useRoute('/tasks/[id]')
 
 const task = ref<Task | null>(null)
