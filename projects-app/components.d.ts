@@ -56,6 +56,7 @@ declare module 'vue' {
     FormItem: typeof import('./src/components/ui/form/FormItem.vue')['default']
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
+    GuestLayout: typeof import('./src/components/Layout/main/GuestLayout.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
