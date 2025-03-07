@@ -90,12 +90,24 @@ what's finalQuery and why is it being compared to ref.value?
   }
 
   const deleteTask = async () => {
-    if (!task.value?.id) return
-    console.error('Cannot delete task: Invalid task ID')
+    try {
+      if (!task.value?.id) {
+        throw new Error('No task selected for deletion')
+      }
 
-    await deleteTaskQuery(Number(task.value.id))
-    return
+      const { error, data } = await deleteTaskQuery(task.value.id)
 
+      if (error) {
+        throw new Error(`Failed to delete task: ${error.message}`)
+      }
+
+      // Clear local state after successful deletion
+      task.value = null
+      return data
+    } catch (error) {
+      console.error('Delete task error:', error)
+      throw error
+    }
   }
   return {
     tasks,

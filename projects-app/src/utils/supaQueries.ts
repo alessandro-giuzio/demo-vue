@@ -67,8 +67,16 @@ export const updateTaskQuery = (updateTask = {}, id: number) => {
   return supabase.from('tasks').update(updateTask).eq('id', id)
 }
 
-export const deleteTaskQuery = (id: number) => {
-  return supabase.from('tasks').delete().eq('id', id)
+export const deleteTaskQuery = async (id: number | string) => {
+  if (!id) {
+    throw new Error('Task ID is required')
+  }
+
+  return supabase
+    .from('tasks')
+    .delete()
+    .eq('id', id)
+    .select()
 }
 
 export type User = QueryData<ReturnType<typeof userRegQuery>>

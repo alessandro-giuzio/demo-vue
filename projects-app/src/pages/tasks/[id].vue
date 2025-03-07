@@ -126,10 +126,20 @@ const collabs = task.value?.collaborators ? await getUserByIds(task.value?.colla
 const loadingDelete = ref(false)
 const router = useRouter()
 const triggerDeleteTask = async () => {
-  loadingDelete.value = true
-  // Trigger the delete task
-  await deleteTask()
-  loadingDelete.value = false
-  router.push({ name: '/tasks/' })
+  if (!task.value?.id) {
+    console.error('No task selected for deletion')
+    return
+  }
+
+  try {
+    loadingDelete.value = true
+    await deleteTask()
+    await router.push('/tasks')
+  } catch (error) {
+    console.error('Failed to delete task:', error)
+    // Optionally show error to user via toast/notification
+  } finally {
+    loadingDelete.value = false
+  }
 }
 </script>
