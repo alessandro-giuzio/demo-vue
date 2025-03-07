@@ -1,4 +1,5 @@
 import {
+  deleteTaskQuery,
   taskQuery,
   tasksWithProjectsQuery,
   updateTaskQuery
@@ -88,11 +89,20 @@ what's finalQuery and why is it being compared to ref.value?
     await updateTaskQuery(taskProperties, Number(task.value.id))
   }
 
+  const deleteTask = async () => {
+    if (!task.value?.id) return
+    console.error('Cannot delete task: Invalid task ID')
+
+    await deleteTaskQuery(Number(task.value.id))
+    return
+
+  }
   return {
     tasks,
     getTasks,
     getTask,
     task,
-    updateTask
+    updateTask,
+    deleteTask
   }
 })

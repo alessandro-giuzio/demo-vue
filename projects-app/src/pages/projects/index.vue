@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <Dialog>
       <DialogTrigger>
         <Button variant="outline" size="icon" class="w-8 h-8">
@@ -28,7 +28,7 @@
         <DialogFooter> Save changes </DialogFooter>
       </DialogContent>
     </Dialog>
-  </div>
+  </div> -->
 
   <DataTable
     v-if="filteredProjects.length"

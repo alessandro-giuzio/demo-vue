@@ -67,6 +67,10 @@ export const updateTaskQuery = (updateTask = {}, id: number) => {
   return supabase.from('tasks').update(updateTask).eq('id', id)
 }
 
+export const deleteTaskQuery = (id: number) => {
+  return supabase.from('tasks').delete().eq('id', id)
+}
+
 export type User = QueryData<ReturnType<typeof userRegQuery>>
 export const userRegQuery = ({column, value}: {column:string, value:string}) => {
   return supabase.from('users').select().eq(column,value).single()

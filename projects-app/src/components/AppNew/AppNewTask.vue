@@ -105,6 +105,8 @@ const createTask = async (formData: CreateNewTask) => {
 
     const task = {
       ...formData,
+      owner_id: user.value?.id || null,
+      tags: [],
       collaborators: user.value?.id ? [user.value.id] : []
     }
 
