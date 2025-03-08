@@ -7,25 +7,42 @@
       ></iconify-icon>
       <Input class="w-full pl-8 bg-background" type="text" placeholder="Search ..." />
     </form>
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage
-            src="https://www.agencyga.es/_astro/Logo1.CXzCzTjC_Z25uyUQ.svg"
-            alt="agencyga"
-          />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div class="flex items-center justify-center gap-1">
+      <Button>
+        <Transition @click="toggleDark()" class="flex w-8 h-8" name="scale" mode="out-in">
+          <iconify-icon v-if="isDark" icon="lucide:sun"></iconify-icon>
+          <iconify-icon v-else icon="lucide:moon"></iconify-icon>
+        </Transition>
+      </Button>
+      <div class="w-8">
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage
+                :src="userReg?.avatar_url || ''"
+                :alt="`${userReg?.full_name}profile picture`"
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>Billing</DropdownMenuItem>
+            <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuItem>Subscription</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   </nav>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useDark, useToggle } from '@vueuse/core'
+
+const { userReg } = storeToRefs(useAuthStore())
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+</script>
