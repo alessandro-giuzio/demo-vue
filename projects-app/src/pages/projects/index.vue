@@ -43,6 +43,7 @@ import { useCollabs } from '@/composables/collabs'
 import { useProjectsStore } from '@/stores/loaders/projects'
 import { filterProjectsForUser } from '@/utils/supaQueries'
 import { columns } from '@/utils/tableColumns/projectsColumns'
+import { title } from 'process'
 
 // Set the page title
 usePageStore().pageData.title = 'My Projects'
@@ -72,4 +73,13 @@ console.log('TEST::' + JSON.stringify(groupedCollabs.value))
 
 // Define the columns with collaborators
 const columnsWithCollabs = columns(groupedCollabs)
+
+// Define the PAge Title
+useMeta({
+  title: 'Projects',
+  description: {
+    name: 'description',
+    content: 'This is the projects page'
+  }
+})
 </script>
