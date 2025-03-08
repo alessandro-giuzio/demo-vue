@@ -143,3 +143,17 @@ const triggerDeleteTask = async () => {
   }
 }
 </script>
+
+<style scoped>
+th {
+  @apply w-[100px];
+}
+
+h2 {
+  @apply mb-4 text-lg font-semibold w-fit;
+}
+
+.table-container {
+  @apply overflow-hidden overflow-y-auto rounded-md bg-slate-900 h-80;
+}
+</style>
