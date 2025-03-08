@@ -1,9 +1,10 @@
 <template>
   <aside
-    class="flex flex-col h-screen gap-2 border-r fixed bg-muted/40 lg:w-52 w-16 transition-[width]"
+    class="flex flex-col h-screen gap-2 border-r fixed bg-muted/40 transition-[width]"
+    :class="{ 'w-52': menuOpen, 'w-24': !menuOpen }"
   >
     <div class="flex items-center justify-between h-16 gap-1 px-2 border-b lg:px-4 shrink-0">
-      <Button variant="outline" size="icon" class="w-8 h-8">
+      <Button @click="toggleMenu" variant="outline" size="icon" class="w-8 h-8">
         <iconify-icon icon="lucide:menu"></iconify-icon>
       </Button>
 
@@ -32,9 +33,11 @@
 </template>
 
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { useMenu } from '@/composables/menu'
 
 const { userReg } = storeToRefs(useAuthStore()) // Get logged-in user details
 
@@ -75,4 +78,16 @@ const executeAction = async (linkTitle: string) => {
 }
 
 defineEmits(['taskClicked'])
+
+const { menuOpen, toggleMenu } = useMenu()
+
+const windowWidth = useWindowSize().width
+
+watchEffect(() => {
+  if (windowWidth.value > 1024) {
+    menuOpen.value = true
+  } else {
+    menuOpen.value = false
+  }
+})
 </script>
