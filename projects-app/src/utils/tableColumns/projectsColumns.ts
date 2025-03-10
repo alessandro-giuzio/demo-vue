@@ -8,7 +8,7 @@ import AvatarImage from "@/components/ui/avatar/AvatarImage.vue"
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
 import AppInPlaceEditStatus from "@/components/AppInPlaceEdit/AppInPlaceEditStatus.vue"
 
-export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { users?: User }>[] => [
+export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { users?: User, id: string }>[] => [
 
   {
     accessorKey: 'name',
@@ -85,10 +85,6 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<Projects & { u
               { class: 'hover:scale-110 transition-transform' },
               () => h(AvatarImage, { src: collab.avatar_url || '' })
             )
-          )
-        }) || row.original.collaborators?.map(() => {  // Added `?.` to prevent errors
-          return h(Avatar, { class: 'animate-pulse' }, () =>
-            h(AvatarFallback)
           )
         }) || []  // Ensure it returns an empty array if undefined
       )

@@ -11,6 +11,15 @@ import type { TasksWithProjects } from '@/utils/supaQueries'
 // Set the page title
 usePageStore().pageData.title = 'My Tasks'
 
+// Set the meta title and description
+useMeta({
+  title: 'My Tasks',
+  description: {
+    name: 'description',
+    content: 'View your tasks'
+  }
+})
+
 // Get the logged-in user's registration details
 const { userReg } = storeToRefs(useAuthStore())
 

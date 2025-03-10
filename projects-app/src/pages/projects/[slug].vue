@@ -35,7 +35,10 @@ use the component AppInPlaceEditStatus to edit the status of the project tasks
             >
               <RouterLink
                 class="flex items-center justify-center w-full h-full"
-                :to="{ name: '/users/[username]', params: { username: collab.username } }"
+                :to="{
+                  name: '/users/[username]',
+                  params: { username: collab.username }
+                }"
               >
                 <AvatarImage :src="collab.avatar_url || ''" alt="" />
                 <AvatarFallback> </AvatarFallback>
@@ -111,10 +114,12 @@ watch(
 )
 
 await getProject(slug)
+console.log('Project collaborators:', project.value?.collaborators)
 
 const { getUserByIds } = useCollabs()
 const collabs = project.value?.collaborators ? await getUserByIds(project.value?.collaborators) : []
 console.log(project.value)
+console.log('Project collaborators:', project.value?.collaborators)
 </script>
 
 <style scoped>

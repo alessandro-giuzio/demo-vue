@@ -7,6 +7,7 @@ export const useCollabs = () => {
 
   const getUserByIds = async (userIds: string[]) => {
     const response = await groupedUsersQuery(userIds)
+    console.log('groupedUsersQuery response:', response)
     if (response?.error || !response?.data) return []
     return response.data
   }
@@ -25,7 +26,11 @@ export const useCollabs = () => {
 
     // Assign users to corresponding items
     filteredItems.forEach(item => {
-      groupedCollabs.value[item.id] = userMap.get(item.owner_id) || null
+      groupedCollabs.value[item.id] = groupedCollabs.value[item.id] || []
+      const user = userMap.get(item.owner_id)
+      if (user) {
+        groupedCollabs.value[item.id].push(user)
+      }
     })
   }
 
