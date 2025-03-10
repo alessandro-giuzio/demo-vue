@@ -2,6 +2,7 @@
   <div>
     <Sidebar @taskClicked="taskSheetOpen = true" />
     <AppNewTask v-model="taskSheetOpen" />
+    <AppNewProject v-model="taskSheetOpen" />
     <div
       class="flex flex-col transition-[margin]"
       :class="{ 'ml-52': menuOpen, 'ml-24': !menuOpen }"
@@ -18,6 +19,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import AppNewProject from '@/components/AppNew/AppNewProject.vue'
 import { useMenu } from '@/composables/menu'
 
 const { pageData } = storeToRefs(usePageStore())
