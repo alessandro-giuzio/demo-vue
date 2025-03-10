@@ -29,7 +29,7 @@ use the component AppInPlaceEditStatus to edit the status of the project tasks
         <TableCell>
           <div class="flex">
             <Avatar
-              class="-mr-4 transition-transform border border-primary hover:scale-110"
+              class="-mr-4 transition-transform border-primary hover:scale-110"
               v-for="collab in collabs"
               :key="collab.id"
             >
