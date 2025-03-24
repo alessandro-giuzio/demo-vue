@@ -2,7 +2,7 @@
   <div>
     <Sidebar @taskClicked="taskSheetOpen = true" />
     <AppNewTask v-model="taskSheetOpen" />
-    <AppNewProject v-model="taskSheetOpen" />
+    <!--  <AppNewProject v-model="taskSheetOpen" /> -->
     <div
       class="flex flex-col transition-[margin]"
       :class="{ 'ml-52': menuOpen, 'ml-24': !menuOpen }"

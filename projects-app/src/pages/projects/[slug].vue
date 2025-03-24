@@ -22,7 +22,7 @@
         <!-- TODO
 use the component AppInPlaceEditStatus to edit the status of the project tasks
 -->
-        <AppInPlaceEditStatus v-model="project.status" @commit="updateProject" />
+        <AppInPlaceEditStatus v-model="project.status" @commit="updateProjectStatus($event)" />
       </TableRow>
       <TableRow>
         <TableHead> Collaborators </TableHead>
@@ -104,7 +104,7 @@ const { slug } = useRoute('/projects/[slug]').params
 
 const projectsLoader = useProjectsStore()
 const { project } = storeToRefs(projectsLoader)
-const { getProject, updateProject } = projectsLoader
+const { getProject, updateProject, updateProjectStatus } = projectsLoader
 
 watch(
   () => project.value?.name,
@@ -114,12 +114,12 @@ watch(
 )
 
 await getProject(slug)
-console.log('Project collaborators:', project.value?.collaborators)
+/* console.log('Project collaborators:', project.value?.collaborators) */
 
 const { getUserByIds } = useCollabs()
 const collabs = project.value?.collaborators ? await getUserByIds(project.value?.collaborators) : []
-console.log(project.value)
-console.log('Project collaborators:', project.value?.collaborators)
+/* console.log(project.value)
+console.log('Project collaborators:', project.value?.collaborators) */
 </script>
 
 <style scoped>

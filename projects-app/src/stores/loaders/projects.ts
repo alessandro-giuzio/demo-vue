@@ -71,12 +71,45 @@ export const useProjectsStore = defineStore('projects-store', () => {
   }
 
   const updateProject = async () => {
-    if (!project.value) return
+    if (!project.value) return;
+    if (!project.value.id) {
+      console.error("No project id");
+      return;
+    }
+    // Remove properties that should not be updated
+    const { tasks, id, users, ...projectProperties } = project.value;
+    // Use the project's UUID string directly
+    const pid = project.value.id;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { tasks, id,users, ...projectProperties } = project.value
-    await updateProjectQuery(projectProperties, project.value.id)
-  }
+    const { error } = await updateProjectQuery(projectProperties, pid);
+    if (error) {
+      console.error("Update error:", error);
+    } else {
+      console.log("Project updated successfully");
+    }
+  };
+
+
+
+  const updateProjectStatus = async (newStatus: "in-progress" | "completed") => {
+    if (!project.value || !project.value.id) {
+      console.error("Project is missing or has no id");
+      return;
+    }
+    const projectId = project.value.id;
+    console.log("Updating project status:", { projectId, status: newStatus });
+
+    const { data, error } = await updateProjectQuery({ status: newStatus }, projectId);
+    if (error) {
+      console.error("Error updating project status:", error);
+    } else {
+      console.log("Project updated successfully:", data);
+      // Optionally update the local store
+      project.value.status = newStatus;
+    }
+  };
+
+
 /* TODO
 Project Page: Update Task Status
 Task Page - Update Task Status - Update Name - Update Description Update everything
@@ -89,7 +122,7 @@ Task Page - Update Task Status - Update Name - Update Description Update everyth
 
     console.log("Updating task:", { taskId, status: newStatus }) // Debugging log
 
-    const { data, error } = await updateTaskQuery(taskId, newStatus)
+    const { data, error } = await updateTaskQuery(Number(taskId), newStatus)
 
     if (error) {
       console.error("Error updating task status:", error)
@@ -105,6 +138,7 @@ Task Page - Update Task Status - Update Name - Update Description Update everyth
     getProject,
     project,
     updateProject,
+    updateProjectStatus,
     updateTask
   }
 })

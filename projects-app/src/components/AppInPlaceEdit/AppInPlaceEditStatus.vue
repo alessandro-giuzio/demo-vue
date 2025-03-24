@@ -2,7 +2,7 @@
   <div class="text-2xl cursor-pointer" @click="toggleValue">
     <Transition name="scale" mode="out-in">
       <iconify-icon
-        v-if="value === 'completed'"
+        v-if="localValue === 'completed'"
         icon="lucide:circle-check"
         class="text-green-500"
       />
@@ -12,16 +12,44 @@
 </template>
 
 <script setup lang="ts">
-const value = defineModel<'in-progress' | 'completed'>()
-const emit = defineEmits(['commit'])
-const { readonly = false } = defineProps<{
-  readonly?: boolean
-}>()
+import { ref, watch } from 'vue'
+import type { PropType } from 'vue'
+
+// Define props with an explicit v-model (modelValue) and default:
+const props = defineProps({
+  modelValue: {
+    type: String as PropType<'in-progress' | 'completed'>,
+    default: 'in-progress'
+  },
+  readonly: {
+    type: Boolean,
+    default: false
+  }
+})
+
+// Define emits for v-model update and custom commit
+const emit = defineEmits(['update:modelValue', 'commit'])
+
+// Create a local ref which syncs with props.modelValue
+const localValue = ref(props.modelValue)
+
+// Watch for any changes from the parent
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    localValue.value = newVal
+  }
+)
 
 const toggleValue = () => {
-  if (readonly) return
+  if (props.readonly) return
 
-  value.value = value.value === 'completed' ? 'in-progress' : 'completed'
-  emit('commit')
+  // Toggle the value between 'completed' and 'in-progress'
+  localValue.value = localValue.value === 'completed' ? 'in-progress' : 'completed'
+
+  // Emit update so the parent's v-model is updated
+  emit('update:modelValue', localValue.value)
+  // Also emit a commit event with the new value
+  emit('commit', localValue.value)
 }
 </script>
