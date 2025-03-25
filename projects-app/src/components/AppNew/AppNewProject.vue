@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import type { CreateNewProject } from '@/types/CreateNewForm'
-import { projectsQuery, usersQuery, createNewProjectQuery } from '@/utils/supaQueries'
+import { usersQuery, createNewProjectQuery } from '@/utils/supaQueries'
 
 const sheetOpen = defineModel<boolean>()
 
