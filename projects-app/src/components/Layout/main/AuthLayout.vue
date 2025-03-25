@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Sidebar @taskClicked="taskSheetOpen = true" />
+    <Sidebar @taskClicked="taskSheetOpen = true" @projectClicked="projectsSheetOpen = true" />
     <AppNewTask v-model="taskSheetOpen" />
-    <!--  <AppNewProject v-model="taskSheetOpen" /> -->
+    <AppNewProject v-model="projectsSheetOpen" />
     <div
       class="flex flex-col transition-[margin]"
       :class="{ 'ml-52': menuOpen, 'ml-24': !menuOpen }"
@@ -25,6 +25,7 @@ import { useMenu } from '@/composables/menu'
 const { pageData } = storeToRefs(usePageStore())
 
 const taskSheetOpen = ref(false)
+const projectsSheetOpen = ref(false)
 
 const { menuOpen } = useMenu()
 </script>

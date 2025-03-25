@@ -16,7 +16,7 @@
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem @click="$emit('taskClicked')">Task</DropdownMenuItem>
-          <DropdownMenuItem>Project</DropdownMenuItem>
+          <DropdownMenuItem @click="$emit('projectClicked')">Project</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -77,7 +77,7 @@ const executeAction = async (linkTitle: string) => {
   }
 }
 
-defineEmits(['taskClicked'])
+defineEmits(['taskClicked', 'projectClicked'])
 
 const { menuOpen, toggleMenu } = useMenu()
 

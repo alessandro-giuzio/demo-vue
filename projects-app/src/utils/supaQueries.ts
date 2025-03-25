@@ -115,3 +115,10 @@ export const createNewTaskQuery = async (newTask: CreateNewTask) => {
   const { data, error } = await supabase.from('tasks').insert(newTask).select();
   return { data, error };
 }
+
+// New function to add a new project
+
+export const createNewProjectQuery = async (newProject: Project) => {
+  const { data, error } = await supabase.from('projects').insert(newProject).select();
+  return { data, error };
+}

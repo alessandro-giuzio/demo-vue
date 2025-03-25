@@ -19,6 +19,15 @@
           placeholder="My new project"
           validation="required|length:1,255"
         />
+        <!-- <FormKit
+          type="select"
+          name="assigned_to"
+          id="assigned_to"
+          label="User"
+          placeholder="Select a user"
+          :options="selectOptions.users"
+          validation="required"
+        /> -->
         <FormKit
           type="textarea"
           name="description"
@@ -33,9 +42,61 @@
 </template>
 
 <script setup lang="ts">
+import type { CreateNewProject } from '@/types/CreateNewForm'
+import { projectsQuery, usersQuery, createNewProjectQuery } from '@/utils/supaQueries'
+
 const sheetOpen = defineModel<boolean>()
-function createProject() {
-  // Add your project creation logic here
-  console.log('Project created')
+
+type SelectOption = { label: string; value: number | string }
+const selectOptions = ref({
+  users: [] as SelectOption[]
+})
+
+const getUsersOptions = async () => {
+  const { data: allUsers } = await usersQuery.select('*')
+  if (!allUsers) return
+  allUsers.forEach((user) => {
+    selectOptions.value.users.push({
+      label: user.full_name || user.username,
+      value: user.id
+    })
+  })
+}
+getUsersOptions()
+
+// Get current logged-in user id from auth store
+const { user } = storeToRefs(useAuthStore())
+
+// Function invoked on form submission
+const createProject = async (formData: CreateNewProject) => {
+  if (!formData.name) {
+    console.error('Project name is required')
+    return
+  }
+
+  // Generate a slug from the name (using slugify)
+  const slug = formData.name
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '')
+
+  // Build the payload for inserting a new project
+  const projectPayload = {
+    name: formData.name,
+    description: formData.description || '',
+    slug,
+    status: 'in-progress',
+    owner_id: user.value?.id,
+    collaborators: user.value?.id ? [user.value.id] : []
+  }
+
+  const { data, error } = await createNewProjectQuery(projectPayload)
+  if (error) {
+    console.error('Project creation failed:', error)
+    return
+  }
+  console.log('Project created successfully:', data)
+  // Optionally reset the form and close the modal
+  sheetOpen.value = false
 }
 </script>

@@ -15,7 +15,7 @@
       </TableRow>
       <TableRow>
         <TableHead> Project Owner </TableHead>
-        <TableCell>{{ project.owner_id }}</TableCell>
+        <TableCell>{{ project.users.full_name }}</TableCell>
       </TableRow>
       <TableRow>
         <TableHead> Status </TableHead>

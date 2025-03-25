@@ -1,5 +1,5 @@
 <template>
-  <div class="text-2xl cursor-pointer" @click="toggleValue">
+  <div class="flex p-2 mx-auto text-2xl cursor-pointer enter" @click="toggleValue">
     <Transition name="scale" mode="out-in">
       <iconify-icon
         v-if="localValue === 'completed'"
