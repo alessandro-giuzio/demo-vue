@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import type { CreateNewProject } from '@/types/CreateNewForm'
-import { usersQuery, createNewProjectQuery } from '@/utils/supaQueries'
+import { usersQuery, createNewProjectQuery, assignUserToProjectQuery } from '@/utils/supaQueries'
 
 const sheetOpen = defineModel<boolean>()
 
@@ -69,28 +69,66 @@ const { user } = storeToRefs(useAuthStore())
 
 // Function invoked on form submission
 const createProject = async (formData: CreateNewProject) => {
-  if (!formData.name) {
-    console.error('Project name is required')
+  if (!formData.name || !user.value?.id) {
+    console.error('Missing data')
     return
   }
 
-  // Generate a slug from the name (using slugify)
   const slug = formData.name
     .toLowerCase()
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
 
-  // Build the payload for inserting a new project
   const projectPayload = {
+    name: formData.name,
+    description: formData.description || '',
+    slug,
+    status: 'in-progress',
+    owner_id: user.value.id
+  }
+
+  // Step 1: Create the project
+  const { data: newProject, error: projectError } = await createNewProjectQuery(projectPayload)
+
+  if (projectError || !newProject) {
+    console.error('Project creation failed:', projectError)
+    return
+  }
+
+  // Step 2: Link the user to the project
+  const { error: linkError } = await assignUserToProjectQuery({
+    userId: user.value.id,
+    projectId: newProject.id,
+    role: 'owner',
+    status: 'in-progress'
+  })
+
+  if (linkError) {
+    console.error('Failed to link user to project:', linkError)
+    return
+  }
+
+  console.log('Project and user_project link created successfully:', newProject)
+  sheetOpen.value = false
+}
+
+// Generate a slug from the name (using slugify)
+/*   const slug = formData.name
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '') */
+
+// Build the payload for inserting a new project
+/*   const projectPayload = {
     name: formData.name,
     description: formData.description || '',
     slug,
     status: 'in-progress',
     owner_id: user.value?.id,
     collaborators: user.value?.id ? [user.value.id] : []
-  }
+  } */
 
-  const { data, error } = await createNewProjectQuery(projectPayload)
+/*   const { data, error } = await createNewProjectQuery(projectPayload)
   if (error) {
     console.error('Project creation failed:', error)
     return
@@ -98,5 +136,5 @@ const createProject = async (formData: CreateNewProject) => {
   console.log('Project created successfully:', data)
   // Optionally reset the form and close the modal
   sheetOpen.value = false
-}
+} */
 </script>

@@ -119,6 +119,31 @@ export const createNewTaskQuery = async (newTask: CreateNewTask) => {
 // New function to add a new project
 
 export const createNewProjectQuery = async (newProject: Project) => {
-  const { data, error } = await supabase.from('projects').insert(newProject).select();
+  const { data, error } = await supabase.from('projects').insert(newProject).select().single();
   return { data, error };
 }
+
+export const assignUserToProjectQuery = async ({
+  userId,
+  projectId,
+  role = 'owner',
+  status = 'in-progress'
+}: {
+  userId: string
+  projectId: string
+  role?: string
+  status?: string
+}) => {
+  return supabase
+    .from('user_projects')
+    .insert([
+      {
+        user_id: userId,
+        project_id: projectId,
+        role,
+        status
+      }
+    ])
+    .select()
+}
+
