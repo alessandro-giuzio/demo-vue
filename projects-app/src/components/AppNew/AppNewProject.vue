@@ -84,7 +84,8 @@ const createProject = async (formData: CreateNewProject) => {
     description: formData.description || '',
     slug,
     status: 'in-progress',
-    owner_id: user.value.id
+    owner_id: user.value.id,
+    collaborators: [user.value.id] // 👈 includes the owner in collaborators array
   }
 
   // Step 1: Create the project
@@ -95,7 +96,7 @@ const createProject = async (formData: CreateNewProject) => {
     return
   }
 
-  // Step 2: Link the user to the project
+  // Step 2: Link the user to the project (optional if you're managing this via `collaborators`)
   const { error: linkError } = await assignUserToProjectQuery({
     userId: user.value.id,
     projectId: newProject.id,
