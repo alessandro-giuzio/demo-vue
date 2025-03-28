@@ -37,6 +37,16 @@
           validation="length:0,500"
         />
       </FormKit>
+      <FormKit
+        type="select"
+        name="collaborators"
+        id="collaborators"
+        label="Collaborators"
+        placeholder="Select collaborators"
+        :options="selectOptions.users"
+        multiple
+        validation="required"
+      />
     </SheetContent>
   </Sheet>
 </template>
@@ -54,15 +64,17 @@ const selectOptions = ref({
 })
 
 const getUsersOptions = async () => {
-  const { data: allUsers } = await usersQuery.select('*')
+  const { data: allUsers } = await usersQuery
   if (!allUsers) return
-  allUsers.forEach((user) => {
-    selectOptions.value.users.push({
+
+  selectOptions.value.users = allUsers
+    .filter((u) => u.id !== user.value?.id) // ❌ exclude logged-in user
+    .map((user) => ({
       label: user.full_name || user.username,
       value: user.id
-    })
-  })
+    }))
 }
+
 getUsersOptions()
 
 // Get current logged-in user id from auth store
@@ -93,7 +105,12 @@ const createProject = async (formData: CreateNewProject) => {
     slug,
     status: 'in-progress',
     owner_id: user.value.id,
-    collaborators: [user.value.id]
+    collaborators: [
+      ...new Set([
+        user.value.id, // always include the owner
+        ...(formData.collaborators || []) // any selected collaborators
+      ])
+    ]
   }
 
   const { data: newProject, error: projectError } = await createNewProjectQuery(projectPayload)

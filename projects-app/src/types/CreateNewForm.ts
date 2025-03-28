@@ -19,4 +19,5 @@ export interface CreateNewProject {
   owner_id: string;
   status?: "in-progress" | "completed";
   tags: string[];
+  collaborators?: (number | string)[];
 }
