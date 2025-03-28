@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProjectBySlug } from '@/lib/supabaseClient'
 import type { CreateNewProject } from '@/types/CreateNewForm'
 import { usersQuery, createNewProjectQuery, assignUserToProjectQuery } from '@/utils/supaQueries'
 
@@ -79,16 +80,22 @@ const createProject = async (formData: CreateNewProject) => {
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
 
+  // ✅ Check for existing project
+  const { data: existingProject } = await getProjectBySlug(slug)
+  if (existingProject) {
+    console.error('A project with this slug already exists.')
+    return
+  }
+
   const projectPayload = {
     name: formData.name,
     description: formData.description || '',
     slug,
     status: 'in-progress',
     owner_id: user.value.id,
-    collaborators: [user.value.id] // 👈 includes the owner in collaborators array
+    collaborators: [user.value.id]
   }
 
-  // Step 1: Create the project
   const { data: newProject, error: projectError } = await createNewProjectQuery(projectPayload)
 
   if (projectError || !newProject) {
@@ -96,7 +103,6 @@ const createProject = async (formData: CreateNewProject) => {
     return
   }
 
-  // Step 2: Link the user to the project (optional if you're managing this via `collaborators`)
   const { error: linkError } = await assignUserToProjectQuery({
     userId: user.value.id,
     projectId: newProject.id,
