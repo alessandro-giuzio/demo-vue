@@ -49,7 +49,7 @@ usePageStore().pageData.title = 'My Projects'
 
 // Initialize the projects store
 const projectsLoader = useProjectsStore()
-const { projects } = storeToRefs(projectsLoader)
+/* const { projects } = storeToRefs(projectsLoader) */
 const { getProjects } = projectsLoader
 
 // Get the logged-in user's registration details

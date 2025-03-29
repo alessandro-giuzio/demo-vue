@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppErrorDevSection: typeof import('./src/components/AppError/AppErrorDevSection.vue')['default']
     AppErrorPage: typeof import('./src/components/AppError/AppErrorPage.vue')['default']
-    AppErrorProd: typeof import('./src/components/AppError/AppErrorProdSection.vue')['default']
     AppErrorProdSection: typeof import('./src/components/AppError/AppErrorProdSection.vue')['default']
     AppInPlaceEditStatus: typeof import('./src/components/AppInPlaceEdit/AppInPlaceEditStatus.vue')['default']
     AppInPlaceEditText: typeof import('./src/components/AppInPlaceEdit/AppInPlaceEditText.vue')['default']

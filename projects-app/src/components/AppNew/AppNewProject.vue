@@ -36,17 +36,17 @@
           placeholder="Project description"
           validation="length:0,500"
         />
+        <FormKit
+          type="select"
+          name="collaborators"
+          id="collaborators"
+          label="Collaborators"
+          placeholder="Select collaborators"
+          :options="selectOptions.users"
+          multiple
+          validation="required"
+        />
       </FormKit>
-      <FormKit
-        type="select"
-        name="collaborators"
-        id="collaborators"
-        label="Collaborators"
-        placeholder="Select collaborators"
-        :options="selectOptions.users"
-        multiple
-        validation="required"
-      />
     </SheetContent>
   </Sheet>
 </template>
@@ -103,12 +103,12 @@ const createProject = async (formData: CreateNewProject) => {
     name: formData.name,
     description: formData.description || '',
     slug,
-    status: 'in-progress',
+    status: 'in-progress' as const,
     owner_id: user.value.id,
     collaborators: [
       ...new Set([
-        user.value.id, // always include the owner
-        ...(formData.collaborators || []) // any selected collaborators
+        user.value.id.toString(), // ensure collaborators are strings
+        ...(formData.collaborators || []).map((collaborator) => collaborator.toString())
       ])
     ]
   }

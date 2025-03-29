@@ -5,7 +5,7 @@ export interface CreateNewTask {
   description: string;
   id?: string;
   name: string;
-  owner_id: string;
+  owner_id: string | null;
   project_id: string;
   status?: "in-progress" | "completed";
   tags: string[];
@@ -20,4 +20,6 @@ export interface CreateNewProject {
   status?: "in-progress" | "completed";
   tags: string[];
   collaborators?: (number | string)[];
+  tasks?: (number | string)[];
+
 }
