@@ -63,7 +63,7 @@ use the component AppInPlaceEditStatus to edit the status of the project tasks
             </TableHeader>
             <TableBody>
               <TableRow v-for="task in project.tasks" :key="task.id">
-                <TableCell>Lorem ipsum dolor sit amet. </TableCell>
+                <TableCell>{{ task.name }} </TableCell>
                 <TableCell>
                   <AppInPlaceEditStatus v-model="task.status" @commit="updateProject" />
                 </TableCell>
