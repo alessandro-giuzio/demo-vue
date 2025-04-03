@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO complete the form to add new projects -->
   <Sheet v-model:open="sheetOpen">
     <SheetContent>
       <SheetHeader>
@@ -56,6 +55,7 @@ import { getProjectBySlug } from '@/lib/supabaseClient'
 import type { CreateNewProject } from '@/types/CreateNewForm'
 import { usersQuery, createNewProjectQuery, assignUserToProjectQuery } from '@/utils/supaQueries'
 
+const router = useRouter()
 const sheetOpen = defineModel<boolean>()
 
 type SelectOption = { label: string; value: number | string }
@@ -134,6 +134,7 @@ const createProject = async (formData: CreateNewProject) => {
 
   console.log('Project and user_project link created successfully:', newProject)
   sheetOpen.value = false
+  router.push('/projects')
 }
 
 // Generate a slug from the name (using slugify)
