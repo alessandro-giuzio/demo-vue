@@ -102,9 +102,9 @@
 </template>
 
 <script setup lang="ts">
-import { useTasksStore } from '@/stores/loaders/tasks'
-
 const { id } = useRoute('/tasks/[id]').params
+
+import { useTasksStore } from '@/stores/loaders/tasks'
 
 const tasksLoader = useTasksStore()
 const { task } = storeToRefs(tasksLoader)

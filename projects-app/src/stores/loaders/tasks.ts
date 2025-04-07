@@ -83,10 +83,16 @@ what's finalQuery and why is it being compared to ref.value?
   const updateTask = async () => {
     if (!task.value) return
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { projects, id, ...taskProperties } = task.value
+    const { id, name, description, status, assigned_to } = task.value
 
-    await updateTaskQuery(taskProperties, Number(task.value.id))
+    if (!id) {
+      console.error('Missing task ID for update')
+      return
+    }
+
+    const payload = { name, description, status, assigned_to }
+
+    await updateTaskQuery(payload, id)
   }
 
   const deleteTask = async () => {

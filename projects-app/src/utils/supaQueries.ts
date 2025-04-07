@@ -4,12 +4,16 @@ import type { QueryData } from "@supabase/supabase-js";
 
 
 export const tasksWithProjectsQuery = supabase.from('tasks').select(`
-  *,
+ *,
   projects (
-  id,
-  name,
-  slug)
-  `)
+    id,
+    name,
+    slug
+  ),
+  assigned_user:assigned_to (
+    full_name
+  )
+`)
 
 export type TasksWithProjects = QueryData<typeof tasksWithProjectsQuery>
 
@@ -63,7 +67,7 @@ export const taskQuery = (id: string) => {
   }
 export type Task = QueryData<ReturnType<typeof taskQuery>>
 
-export const updateTaskQuery = (updateTask = {}, id: number) => {
+export const updateTaskQuery = (updateTask = {}, id: string) => {
   return supabase.from('tasks').update(updateTask).eq('id', id)
 }
 

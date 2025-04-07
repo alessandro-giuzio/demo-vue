@@ -18,15 +18,15 @@
           placeholder="My new project"
           validation="required|length:1,255"
         />
-        <!-- <FormKit
+        <FormKit
           type="select"
           name="assigned_to"
           id="assigned_to"
-          label="User"
+          label="Assigned to"
           placeholder="Select a user"
           :options="selectOptions.users"
           validation="required"
-        /> -->
+        />
         <FormKit
           type="textarea"
           name="description"

@@ -3,7 +3,7 @@ import type { TasksWithProjects } from "../supaQueries"
 import { RouterLink } from "vue-router"
 import AppInPlaceEditStatus from "@/components/AppInPlaceEdit/AppInPlaceEditStatus.vue"
 
-export const columns: ColumnDef<TasksWithProjects[0]>[] = [
+export const columns: ColumnDef<TasksWithProjects[number]>[] = [
   {
     accessorKey: 'name',
     header: () => h('div', { class: 'text-left' }, 'Name'),
@@ -34,14 +34,25 @@ export const columns: ColumnDef<TasksWithProjects[0]>[] = [
         : ''
     }
   },
-  {
+ /*  {
     accessorKey: 'assigned_to',
     header: () => h('div', { class: 'text-left' }, 'Assigned To'),
     cell: ({ row }) => {
       return h('div', { class: 'text-left font-medium' }, row.getValue('assigned_to'))
     }
-  },
+  }, */
   {
+    accessorKey: 'assigned_user.full_name',
+    header: () => h('div', { class: 'text-left' }, 'Assigned To'),
+    cell: ({ row }) => {
+      const fullName = (row.original as {
+        assigned_user?: { full_name?: string }
+      })?.assigned_user?.full_name || 'Unknown'
+
+      return h('div', { class: 'text-left font-medium' }, fullName)
+    },
+  },
+{
     accessorKey: 'status',
     header: () => h('div', { class: 'text-left' }, 'Status'),
     cell: ({ row }) => {
