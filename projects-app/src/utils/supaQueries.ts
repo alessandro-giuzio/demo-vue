@@ -26,13 +26,13 @@ export const projectQuery = (slug: string) =>
     .from('projects')
     .select(`
    *,
-   users!projects_owner_id_fkey(full_name),
-   tasks (
+    users!projects_owner_id_fkey(full_name),
+    tasks (
     id,
     name,
     status,
     assigned_to
-   )
+  )
   `
     )
     .eq('slug', slug)

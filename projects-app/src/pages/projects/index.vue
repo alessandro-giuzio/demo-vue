@@ -1,35 +1,4 @@
 <template>
-  <!-- <div>
-    <Dialog>
-      <DialogTrigger>
-        <Button variant="outline" size="icon" class="w-8 h-8">
-          <iconify-icon icon="lucide:plus"></iconify-icon>
-        </Button>
-        Add New Project
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <form action="submit">
-          <input type="text" name="name" id="name" placeholder="Project name" />
-          <input
-            type="text"
-            name="description"
-            id="description"
-            placeholder="Project description"
-          />
-          <input type="text" name="status" id="status" placeholder="Project status" />
-          <input type="text" name="dueDate" id="dueDate" placeholder="Due date" />
-        </form>
-        <DialogFooter> Save changes </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div> -->
-
   <DataTable
     v-if="filteredProjects.length"
     :columns="columnsWithCollabs"
