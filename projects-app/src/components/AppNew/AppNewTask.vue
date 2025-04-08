@@ -44,6 +44,15 @@
           placeholder="Task description"
           validation="length:0,500"
         />
+        <FormKit
+          type="select"
+          name="status_id"
+          id="status_id"
+          label="Status"
+          placeholder="Select a status"
+          :options="selectOptions.statuses"
+          validation="required"
+        />
       </FormKit>
     </SheetContent>
   </Sheet>
@@ -51,7 +60,12 @@
 
 <script setup lang="ts">
 import type { CreateNewTask } from '@/types/CreateNewForm'
-import { projectsQuery, usersQuery, createNewTaskQuery } from '@/utils/supaQueries'
+import {
+  projectsQuery,
+  usersQuery,
+  createNewTaskQuery,
+  taskStatusesQuery
+} from '@/utils/supaQueries'
 
 const sheetOpen = defineModel<boolean>()
 
@@ -59,7 +73,8 @@ type SelectOption = { label: string; value: number | string }
 
 const selectOptions = ref({
   projects: [] as SelectOption[],
-  users: [] as SelectOption[]
+  users: [] as SelectOption[],
+  statuses: [] as SelectOption[]
 })
 
 const getProjectsOptions = async () => {
@@ -81,16 +96,22 @@ const getUsersOptions = async () => {
     selectOptions.value.users.push({ label: user.full_name, value: user.id })
   })
 }
+const getStatusOptions = async () => {
+  const { data: allStatuses } = await taskStatusesQuery()
+  if (!allStatuses) return
+  allStatuses.forEach((status) => {
+    selectOptions.value.statuses.push({ label: status.name, value: status.id })
+  })
+}
 
 const getOptions = async () => {
-  await Promise.all([getProjectsOptions(), getUsersOptions()])
+  await Promise.all([getProjectsOptions(), getUsersOptions(), getStatusOptions()])
 }
 
 getOptions()
 
 const { user } = storeToRefs(useAuthStore())
 
-// In the same file, update the createTask function
 const createTask = async (formData: CreateNewTask) => {
   try {
     // Validate required fields
@@ -121,7 +142,8 @@ const createTask = async (formData: CreateNewTask) => {
     sheetOpen.value = false
     selectOptions.value = {
       projects: [],
-      users: []
+      users: [],
+      statuses: []
     }
   } catch (err) {
     console.error('Error creating task:', err)

@@ -2,13 +2,14 @@ export interface CreateNewTask {
   assigned_to: string;
   collaborators?: string[];
   created_at?: string | null;
-  description: string;
+  description?: string;
   id?: string;
   name: string;
-  owner_id: string | null;
+  owner_id?: string | null;
   project_id: string;
+  status_id: string;
   status?: "in-progress" | "completed";
-  tags: string[];
+  tags?: string[];
 }
 
 export interface CreateNewProject {
@@ -21,5 +22,4 @@ export interface CreateNewProject {
   tags: string[];
   collaborators?: (number | string)[];
   tasks?: (number | string)[];
-
 }

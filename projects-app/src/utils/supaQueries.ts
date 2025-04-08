@@ -151,3 +151,10 @@ export const assignUserToProjectQuery = async ({
     .select()
 }
 
+export const taskStatusesQuery = async () => {
+  return await supabase
+    .from('task_status')
+    .select('*')
+    .order('order_index', { ascending: true });
+}
+
