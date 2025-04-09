@@ -97,11 +97,36 @@ const getUsersOptions = async () => {
   })
 }
 const getStatusOptions = async () => {
-  const { data: allStatuses } = await taskStatusesQuery()
-  if (!allStatuses) return
+  // Clear existing options first
+  selectOptions.value.statuses = []
+
+  const { data: allStatuses, error } = await taskStatusesQuery()
+
+  if (error || !allStatuses) {
+    console.error('Failed to fetch statuses:', error)
+    return
+  }
+
+  console.log('Raw status data:', allStatuses)
+
+  // Use a Set to track unique names (case insensitive)
+  const uniqueStatuses = new Map()
+
   allStatuses.forEach((status) => {
-    selectOptions.value.statuses.push({ label: status.name, value: status.id })
+    // Only add each status name once
+    const statusName = status.name.toLowerCase()
+    if (!uniqueStatuses.has(statusName)) {
+      uniqueStatuses.set(statusName, {
+        label: status.name,
+        value: status.id
+      })
+    } else {
+      console.log(`Duplicate status found: ${status.name} (ID: ${status.id})`)
+    }
   })
+
+  selectOptions.value.statuses = Array.from(uniqueStatuses.values())
+  console.log('Final statuses array:', selectOptions.value.statuses)
 }
 
 const getOptions = async () => {
