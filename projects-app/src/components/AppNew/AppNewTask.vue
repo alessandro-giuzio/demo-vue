@@ -53,24 +53,6 @@
           :options="selectOptions.statuses"
           validation="required"
         />
-        <FormKit
-          type="select"
-          name="status_id"
-          id="status_id"
-          label="Status"
-          placeholder="Select a status"
-          :options="selectOptions.statuses"
-          validation="required"
-        >
-          <template #option="{ option }">
-            <div style="display: flex; align-items: center; gap: 8px">
-              <span
-                :style="`background-color: ${option.color}; width: 16px; height: 16px; border-radius: 50%; display: inline-block;`"
-              ></span>
-              {{ option.label }}
-            </div>
-          </template>
-        </FormKit>
       </FormKit>
     </SheetContent>
   </Sheet>
@@ -172,7 +154,8 @@ const createTask = async (formData: CreateNewTask) => {
       ...formData,
       owner_id: user.value?.id || null,
       tags: [],
-      collaborators: user.value?.id ? [user.value.id] : []
+      collaborators: user.value?.id ? [user.value.id] : [],
+      status_id: formData.status_id
     }
 
     const { error } = await createNewTaskQuery(task)
@@ -181,14 +164,16 @@ const createTask = async (formData: CreateNewTask) => {
       console.error('Task creation failed:', error)
       return
     }
+    console.log('Task created successfully:')
 
     // Reset form and close sheet on success
     sheetOpen.value = false
-    selectOptions.value = {
+    /* TODO refresh page */
+    /*  selectOptions.value = {
       projects: [],
       users: [],
       statuses: []
-    }
+    } */
   } catch (err) {
     console.error('Error creating task:', err)
   }
