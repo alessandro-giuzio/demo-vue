@@ -53,6 +53,24 @@
           :options="selectOptions.statuses"
           validation="required"
         />
+        <FormKit
+          type="select"
+          name="status_id"
+          id="status_id"
+          label="Status"
+          placeholder="Select a status"
+          :options="selectOptions.statuses"
+          validation="required"
+        >
+          <template #option="{ option }">
+            <div style="display: flex; align-items: center; gap: 8px">
+              <span
+                :style="`background-color: ${option.color}; width: 16px; height: 16px; border-radius: 50%; display: inline-block;`"
+              ></span>
+              {{ option.label }}
+            </div>
+          </template>
+        </FormKit>
       </FormKit>
     </SheetContent>
   </Sheet>
@@ -118,7 +136,8 @@ const getStatusOptions = async () => {
     if (!uniqueStatuses.has(statusName)) {
       uniqueStatuses.set(statusName, {
         label: status.name,
-        value: status.id
+        value: status.id,
+        color: status.color
       })
     } else {
       console.log(`Duplicate status found: ${status.name} (ID: ${status.id})`)

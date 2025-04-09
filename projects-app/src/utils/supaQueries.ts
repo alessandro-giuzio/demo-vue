@@ -12,7 +12,12 @@ export const tasksWithProjectsQuery = supabase.from('tasks').select(`
   ),
   assigned_user:assigned_to (
     full_name
+  ),
+  task_status (
+    name,
+    color
   )
+
 `)
 
 export type TasksWithProjects = QueryData<typeof tasksWithProjectsQuery>
@@ -60,6 +65,10 @@ export const taskQuery = (id: string) => {
         ),
         users!tasks_assigned_to_fkey (
         username
+      ),
+      task_status (
+        name,
+        color
       )
       `) // Check for trailing commas here
     .eq('id', id)
