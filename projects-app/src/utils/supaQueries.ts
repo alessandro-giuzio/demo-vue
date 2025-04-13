@@ -14,6 +14,7 @@ export const tasksWithProjectsQuery = supabase.from('tasks').select(`
     full_name
   ),
   task_status (
+    id,
     name,
     color
   )
@@ -114,19 +115,53 @@ export const filterProjectsForUser = async (userId: string) => {
 }
 // New function to filter tasks for the logged-in user
 export const filterTasksForUser = async (userId: string) => {
-  const { data, error } = await tasksWithProjectsQuery.eq('assigned_to', userId)
-  if (error) {
-    console.error('Error fetching tasks:', error)
-    return []
-  }
-  return data
+  const { data } = await supabase
+    .from('tasks')
+    .select(`
+      *,
+      projects (id, name, slug),
+      task_status (id, name, color)
+    `)
+    .eq('assigned_to', userId)
+
+  return data || []
 }
 
 export const usersQuery = supabase.from('users').select('id, full_name, username, avatar_url')
-
+/* TODO check for id */
 export const createNewTaskQuery = async (newTask: CreateNewTask) => {
-  const { data, error } = await supabase.from('tasks').insert(newTask).select();
-  return { data, error };
+  try {
+    // Check if required fields are present
+    if (!newTask.name || !newTask.project_id || !newTask.status_id) {
+      const error = new Error('Required fields missing: name, project_id, or status_id');
+      console.error(error);
+      return { data: null, error };
+    }
+
+    // If ID is provided but empty, remove it to let Supabase generate one
+    const taskToInsert = {
+      ...newTask,
+      description: newTask.description ?? '' // Ensure description is a string
+    };
+    if (taskToInsert.id === undefined || taskToInsert.id === '') {
+      delete taskToInsert.id;
+    }
+
+    // Insert the task and return the newly created record
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(taskToInsert as any) // Cast to 'any' to avoid TypeScript error
+      .select('*, task_status(id, name, color)'); // Include related task_status
+
+    if (error) {
+      console.error('Error creating task:', error);
+    }
+
+    return { data, error };
+  } catch (err) {
+    console.error('Exception in createNewTaskQuery:', err);
+    return { data: null, error: err as Error };
+  }
 }
 
 // New function to add a new project

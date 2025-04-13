@@ -80,19 +80,20 @@ what's finalQuery and why is it being compared to ref.value?
     })
   }
 
-  const updateTask = async () => {
-    if (!task.value) return
+  const updateTask = async (fields: Partial<Task>) => {
+    console.log('Updating task with fields:', fields) // Debug
+    try {
+      if (!task.value) {
+        throw new Error('No task selected for update')
+      }
+      const { error } = await updateTaskQuery(fields, task.value.id)
+      if (error) throw error
 
-    const { id, name, description, status, assigned_to } = task.value
-
-    if (!id) {
-      console.error('Missing task ID for update')
-      return
+      // Update local state with the fields
+      task.value = { ...task.value, ...fields }
+    } catch (err) {
+      console.error('Failed to update task:', err)
     }
-
-    const payload = { name, description, status, assigned_to }
-
-    await updateTaskQuery(payload, id)
   }
 
   const deleteTask = async () => {

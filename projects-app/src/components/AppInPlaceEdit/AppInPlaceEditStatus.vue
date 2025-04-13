@@ -1,55 +1,90 @@
 <template>
-  <div class="flex p-2 mx-auto text-2xl cursor-pointer enter" @click="toggleValue">
-    <Transition name="scale" mode="out-in">
-      <iconify-icon
-        v-if="localValue === 'completed'"
-        icon="lucide:circle-check"
-        class="text-green-500"
-      />
-      <iconify-icon v-else icon="lucide:circle-dot" class="text-gray-500" />
-    </Transition>
+  <div class="relative">
+    <!-- Display Current Status -->
+    <div class="flex p-2 mx-auto cursor-pointer" @click="toggleValue">
+      <div class="flex items-center gap-2">
+        <span
+          class="inline-block w-3 h-3 rounded-full"
+          :style="{ backgroundColor: currentStatus?.color || '#ccc' }"
+        ></span>
+        <span>{{ currentStatus?.name || 'Loading...' }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import type { PropType } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import type { TaskStatus } from '@/types/TaskStatus'
+import type { CreateNewTask } from '@/types/CreateNewForm'
+import { taskStatusesQuery } from '@/utils/supaQueries'
 
-// Define props with an explicit v-model (modelValue) and default:
-const props = defineProps({
-  modelValue: {
-    type: String as PropType<'in-progress' | 'completed'>,
-    default: 'in-progress'
-  },
-  readonly: {
-    type: Boolean,
-    default: false
-  }
-})
+// Define props using the CreateNewTask type for the status_id field
+interface StatusProps {
+  modelValue: CreateNewTask['status_id']
+  readonly?: boolean
+}
 
-// Define emits for v-model update and custom commit
+const props = defineProps<StatusProps>()
 const emit = defineEmits(['update:modelValue', 'commit'])
 
-// Create a local ref which syncs with props.modelValue
-const localValue = ref(props.modelValue)
+// Track available statuses
+const statuses = ref<TaskStatus[]>([])
 
-// Watch for any changes from the parent
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    localValue.value = newVal
-  }
-)
+// Find the current status object based on the id
+const currentStatus = computed(() => {
+  console.log('Current modelValue:', props.modelValue)
+  console.log('Available statuses:', statuses.value)
+  return statuses.value.find((status) => status.id === props.modelValue)
+})
 
+// Toggle to next status
 const toggleValue = () => {
   if (props.readonly) return
 
-  // Toggle the value between 'completed' and 'in-progress'
-  localValue.value = localValue.value === 'completed' ? 'in-progress' : 'completed'
+  // Get all statuses sorted by order_index
+  const sortedStatuses = [...statuses.value].sort(
+    (a, b) => (a.order_index || 0) - (b.order_index || 0)
+  )
 
-  // Emit update so the parent's v-model is updated
-  emit('update:modelValue', localValue.value)
-  // Also emit a commit event with the new value
-  emit('commit', localValue.value)
+  if (sortedStatuses.length < 2) return
+
+  // Find current index
+  const currentIndex = sortedStatuses.findIndex((s) => s.id === props.modelValue)
+
+  // If current status not found, start with the first status
+  if (currentIndex === -1 && sortedStatuses.length > 0) {
+    const firstStatus = sortedStatuses[0]
+    emit('update:modelValue', firstStatus.id)
+    emit('commit', { status_id: firstStatus.id })
+    return
+  }
+
+  // Get next status (or loop back to first)
+  const nextIndex = (currentIndex + 1) % sortedStatuses.length
+  const nextStatus = sortedStatuses[nextIndex]
+
+  // Emit the ID of the next status
+  emit('update:modelValue', nextStatus.id)
+  emit('commit', { status_id: nextStatus.id })
 }
+
+// Fetch statuses on component mount
+onMounted(async () => {
+  const { data } = await taskStatusesQuery()
+  if (data) {
+    statuses.value = data.map((status) => ({
+      id: status.id,
+      name: status.name,
+      color: status.color || '#ccc',
+      order_index: status.order_index ?? undefined
+    }))
+
+    // If we have statuses but no current status, set a default
+    if (!props.modelValue && statuses.value.length > 0) {
+      emit('update:modelValue', statuses.value[0].id)
+      emit('commit', { status_id: statuses.value[0].id })
+    }
+  }
+})
 </script>

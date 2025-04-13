@@ -32,7 +32,7 @@
       </TableRow>
       <TableRow>
         <TableHead> Status </TableHead>
-        <AppInPlaceEditStatus v-if="task" v-model="task.status" @commit="updateTask" />
+        <AppInPlaceEditStatus v-if="task" v-model="task.status_id" @commit="updateTask" />
       </TableRow>
       <TableRow>
         <TableHead> Collaborators </TableHead>

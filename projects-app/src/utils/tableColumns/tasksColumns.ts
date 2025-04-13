@@ -52,13 +52,26 @@ export const columns: ColumnDef<TasksWithProjects[number]>[] = [
       return h('div', { class: 'text-left font-medium' }, fullName)
     },
   },
-{
-    accessorKey: 'status',
+/* {
+    accessorKey: 'statatus',
     header: () => h('div', { class: 'text-left' }, 'Status'),
     cell: ({ row }) => {
       return h('div', { class: 'text-left font-medium' },
         h(AppInPlaceEditStatus, { modelValue: row.original.status as "in-progress" | "completed" | undefined }),
       )
+    }
+  }, */
+  {
+    accessorKey: 'task_status.id',
+    header: () => h('div', { class: 'text-left' }, 'Status'),
+    cell: ({ row }) => {
+      return h(AppInPlaceEditStatus, {
+        modelValue: row.original.status_id,
+        onCommit: (payload) => {
+          // Implement update logic here or pass through to a store
+          console.log('Status update:', payload, row.original.id)
+        }
+      })
     }
   },
   {
@@ -74,5 +87,6 @@ export const columns: ColumnDef<TasksWithProjects[number]>[] = [
     cell: ({ row }) => {
       return h('div', { class: 'text-left font-medium' }, JSON.stringify(row.getValue('tags')))
     }
-  }
+  },
+
 ]

@@ -137,7 +137,8 @@ const getOptions = async () => {
 getOptions()
 
 const { user } = storeToRefs(useAuthStore())
-
+const router = useRouter()
+/* TODO check for the id do the same for the project func - we need also the data aswell the error */
 const createTask = async (formData: CreateNewTask) => {
   try {
     // Validate required fields
@@ -157,8 +158,9 @@ const createTask = async (formData: CreateNewTask) => {
       collaborators: user.value?.id ? [user.value.id] : [],
       status_id: formData.status_id
     }
-
-    const { error } = await createNewTaskQuery(task)
+    /* TODO add data */
+    const { error, data }: { error: any; data: { id: number } | { id: number }[] | null } =
+      await createNewTaskQuery(task)
 
     if (error) {
       console.error('Task creation failed:', error)
@@ -168,7 +170,11 @@ const createTask = async (formData: CreateNewTask) => {
 
     // Reset form and close sheet on success
     sheetOpen.value = false
-    /* TODO refresh page */
+    /* TODO navigate to the new task*/
+    if (data) {
+      router.push(`/tasks/${Array.isArray(data) ? data[0]?.id : data?.id}`)
+    }
+
     /*  selectOptions.value = {
       projects: [],
       users: [],
