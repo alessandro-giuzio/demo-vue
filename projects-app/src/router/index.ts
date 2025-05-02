@@ -11,6 +11,11 @@ const routes = [
   { path: '/task/:taskId', component: SingleTaskComponent },
   { path: '/project', component: ProjectComponent },
   { path: '/project/:slug', component: SingleProjectComponent },
+  { path: '/project/:slug/task' }, // show all tasks of that project
+  { path: '/project/:slug/task/:taskId' }, // show single task of that project
+  { path: '/project/:slug/settings', }, // show project settings
+  { path: '/project/:slug/user', }, // show team members of that project
+  
 ]
 
 /*
