@@ -45,10 +45,7 @@
             >
               <RouterLink
                 class="flex items-center justify-center w-full h-full"
-                :to="{
-                  name: '/users/[username]',
-                  params: { username: collab.username }
-                }"
+                :to="`/users/${collab.username}`"
               >
                 <AvatarImage :src="collab.avatar_url || ''" alt="" />
                 <AvatarFallback> </AvatarFallback>

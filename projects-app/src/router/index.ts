@@ -1,21 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
-import TasksComponent from '@/pages/tasks/index.vue'
-import SingleTaskComponent from '@/pages/tasks/[id].vue'
-import ProjectComponent from '@/pages/projects/index.vue'
-import SingleProjectComponent from '@/pages/projects/[slug].vue'
+
 
 const routes = [
-  { path: '/', redirect: '/task' },
-  { path: '/task', component: TasksComponent },
-  { path: '/task/:taskId', component: SingleTaskComponent },
-  { path: '/project', component: ProjectComponent },
-  { path: '/project/:slug', component: SingleProjectComponent },
+  { path: '/', redirect: '/tasks' },
+  { path: '/login', component: () => import('@/pages/login.vue') },
+  { path: '/register', component: () => import('@/pages/register.vue') },
+  { path: '/tasks', component: () => import('@/pages/tasks/index.vue') },
+  { path: '/tasks/:id', component: () => import('@/pages/tasks/[id].vue') },
+  { path: '/projects', component: () => import('@/pages/projects/index.vue') },
+  { path: '/projects/:slug', component: () => import('@/pages/projects/[slug].vue') },
+  { path: '/users', component: () => import('@/pages/users/index.vue') },
+  { path: '/users/:username', component: () => import('@/pages/users/[username].vue') },
   // { path: '/project/:slug/task' }, // show all tasks of that project
   // { path: '/project/:slug/task/:taskId' }, // show single task of that project
   // { path: '/project/:slug/settings', }, // show project settings
   // { path: '/project/:slug/user', }, // show team members of that project
-  
+
+  // Catch-all route for 404s
+  { path: '/:catchAll(.*)', component: () => import('@/pages/[...catchAll].vue') }
+
 ]
 
 /*
