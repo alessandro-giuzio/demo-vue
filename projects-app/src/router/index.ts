@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
 const routes = [
-  { path: '/', redirect: '/tasks', name: 'home' },
+  { path: '/', redirect: '/', name: 'home' },
   { path: '/login', component: () => import('@/pages/login.vue'), name: 'login' },
   { path: '/register', component: () => import('@/pages/register.vue'), name: 'register' },
   { path: '/tasks', component: () => import('@/pages/tasks/index.vue'), name: 'tasks' },
