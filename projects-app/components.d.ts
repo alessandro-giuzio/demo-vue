@@ -80,6 +80,7 @@ declare module 'vue' {
     TableHead: typeof import('./src/components/ui/table/TableHead.vue')['default']
     TableHeader: typeof import('./src/components/ui/table/TableHeader.vue')['default']
     TableRow: typeof import('./src/components/ui/table/TableRow.vue')['default']
+    TaskStatusSelector: typeof import('./src/components/TaskStatusSelector.vue')['default']
     TopNavbar: typeof import('./src/components/Layout/TopNavbar.vue')['default']
   }
 }

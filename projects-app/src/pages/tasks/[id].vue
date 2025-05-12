@@ -35,6 +35,16 @@
         <AppInPlaceEditStatus v-if="task" v-model="task.status_id" @commit="updateTask" />
       </TableRow>
       <TableRow>
+        <TableHead> Status </TableHead>
+        <TaskStatusSelector
+          v-if="task"
+          v-model="task.status_id"
+          :taskId="task.id"
+          @commit="updateTask"
+          aria-label="Change task status"
+        />
+      </TableRow>
+      <TableRow>
         <TableHead> Collaborators </TableHead>
         <TableCell>
           <div class="flex">
