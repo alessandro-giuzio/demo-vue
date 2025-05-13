@@ -37,7 +37,7 @@ const { getGroupedCollabs, groupedCollabs } = useCollabs()
 await getGroupedCollabs(filteredProjects)
 
 // Log the grouped collaborators for debugging
-console.log('TEST::' + JSON.stringify(groupedCollabs.value))
+/* console.log('TEST::' + JSON.stringify(groupedCollabs.value)) */
 
 // Define the columns with collaborators
 const columnsWithCollabs = columns(groupedCollabs)

@@ -131,8 +131,6 @@ const getStatusOptions = async () => {
     return
   }
 
-  console.log('Raw status data:', allStatuses)
-
   // Use a Map to track unique names (case insensitive) and prevent duplicates
   const uniqueStatuses = new Map()
 
@@ -150,7 +148,6 @@ const getStatusOptions = async () => {
   })
 
   selectOptions.value.statuses = Array.from(uniqueStatuses.values())
-  console.log('Final statuses array:', selectOptions.value.statuses)
 }
 
 /**

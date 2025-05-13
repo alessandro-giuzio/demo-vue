@@ -197,13 +197,13 @@ export const assignUserToProjectQuery = async ({
 }
 
 export const taskStatusesQuery = async () => {
-  console.log('Fetching task statuses...')
+
   const { data, error } = await supabase
     .from('task_status')
     .select('*')
     .order('order_index', { ascending: true });
 
-  console.log('Task statuses received:', data)
+
 
   if (error) {
     console.error('Error fetching task statuses:', error)

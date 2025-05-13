@@ -33,8 +33,6 @@ const statuses = ref<TaskStatus[]>([])
 
 // Find the current status object based on the id
 const currentStatus = computed(() => {
-  console.log('Current modelValue:', props.modelValue)
-  console.log('Available statuses:', statuses.value)
   return statuses.value.find((status) => status.id === props.modelValue)
 })
 

@@ -79,8 +79,7 @@ export const columns = (collabs: Ref<GroupedCollabs>) : ColumnDef<ProjectWithSta
     accessorKey: 'collaborators',
     header: () => h('div', { class: 'text-left' }, 'Collaborators'),
     cell: ({ row }) => {
-      console.log("Row ID:", row.original.id)
-      console.log("Collaborators:", collabs.value[row.original.id]) // Debugging
+
 
       return h(
         'div',
