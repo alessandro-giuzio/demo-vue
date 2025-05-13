@@ -46,7 +46,7 @@ what's finalQuery and why is it being compared to ref.value?
     }
   }
 
-  const getTasks = async () => {
+  const getTasks = async (id: string, force = false) => {
     tasks.value = null
 
     const { data, error, status } = await loadTasks('tasks')

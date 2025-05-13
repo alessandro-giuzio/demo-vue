@@ -36,13 +36,15 @@
       </TableRow>
       <TableRow>
         <TableHead> Status </TableHead>
-        <TaskStatusSelector
-          v-if="task"
-          v-model="task.status_id"
-          :taskId="task.id"
-          @commit="updateTask"
-          aria-label="Change task status"
-        />
+        <TableCell>
+          <TaskStatusSelector
+            v-if="task"
+            v-model="task.status_id"
+            :task-id="task?.id"
+            @commit="updateTask"
+            aria-label="Change task status"
+          />
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableHead> Collaborators </TableHead>
@@ -124,7 +126,9 @@ watch(
   }
 )
 
-await getTask(id)
+onMounted(() => {
+  getTask(id) // Force re-fetch
+})
 
 const { getUserByIds } = useCollabs()
 

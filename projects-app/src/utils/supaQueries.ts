@@ -68,6 +68,7 @@ export const taskQuery = (id: string) => {
         username
       ),
       task_status (
+        id,
         name,
         color
       )
