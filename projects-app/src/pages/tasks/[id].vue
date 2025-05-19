@@ -1,15 +1,21 @@
 <template>
+  <!-- Main container centering content -->
   <div class="flex flex-col items-center justify-center">
     <Table>
+      <!-- Editable task name -->
       <TableRow v-if="task">
         <TableHead> Name </TableHead>
         <TableCell>
+          <!-- Inline editable input bound to task.name -->
           <AppInPlaceEditText v-model="task.name" @commit="updateTask" />
         </TableCell>
       </TableRow>
+
+      <!-- Editable task description -->
       <TableRow>
         <TableHead> Description </TableHead>
         <TableCell>
+          <!-- Multiline input for task description -->
           <AppInPlaceEditTextArea
             v-if="task"
             class="h-20"
@@ -18,22 +24,32 @@
           />
         </TableCell>
       </TableRow>
+
+      <!-- Display assigned user -->
       <TableRow>
         <TableHead> Assignee </TableHead>
         <TableCell>{{ task?.users.username }}</TableCell>
       </TableRow>
+
+      <!-- Display project name -->
       <TableRow>
         <TableHead> Project </TableHead>
         <TableCell>{{ task?.projects.name }}</TableCell>
       </TableRow>
+
+      <!-- Display project ID -->
       <TableRow>
         <TableHead> Project Id: </TableHead>
         <TableCell> {{ task?.project_id }} </TableCell>
       </TableRow>
+
+      <!-- Editable task status using custom input -->
       <TableRow>
         <TableHead> Status </TableHead>
         <AppInPlaceEditStatus v-if="task" v-model="task.status_id" @commit="updateTask" />
       </TableRow>
+
+      <!-- Alternate task status selector with dropdown -->
       <TableRow>
         <TableHead> Status </TableHead>
         <TableCell>
@@ -46,10 +62,13 @@
           />
         </TableCell>
       </TableRow>
+
+      <!-- Display avatars of all collaborators -->
       <TableRow>
         <TableHead> Collaborators </TableHead>
         <TableCell>
           <div class="flex">
+            <!-- Render each collaborator's avatar with link to their profile -->
             <Avatar
               class="-mr-4 transition-transform border border-primary hover:scale-110"
               v-for="collab in collabs"
@@ -66,14 +85,15 @@
           </div>
         </TableCell>
       </TableRow>
+
+      <!-- Comment section -->
       <TableRow class="hover:bg-transparent">
         <TableHead class="pt-4 align-top"> Comments </TableHead>
-
         <TableCell>
-          <!-- Loading state -->
+          <!-- Show loading indicator while fetching comments -->
           <div v-if="loading" class="text-sm text-muted-foreground">Loading comments...</div>
 
-          <!-- Comments list -->
+          <!-- Render list of comments if any exist -->
           <div v-else-if="comments.length" class="mb-4 space-y-4">
             <div
               v-for="comment in comments"
@@ -81,33 +101,67 @@
               class="p-3 border rounded-md shadow-sm bg-muted"
             >
               <div class="flex items-center justify-between mb-1">
+                <!-- Display comment author -->
                 <div class="text-sm font-medium text-primary">
                   {{ comment.users?.username || 'Unknown User' }}
                 </div>
+                <!-- Display formatted timestamp -->
                 <div class="text-xs text-muted-foreground">
                   {{ new Date(comment.created_at).toLocaleString() }}
                 </div>
               </div>
-              <div class="text-sm text-muted-foreground">
-                {{ comment.content }}
+              <!-- Display comment content -->
+              <!-- Show textarea if editing this comment -->
+              <div v-if="editingCommentId === comment.id" class="space-y-2">
+                <textarea
+                  v-model="editedContent"
+                  class="w-full p-2 text-sm border rounded bg-background border-muted"
+                ></textarea>
+                <div class="flex gap-2">
+                  <Button size="sm" @click="submitEdit(comment.id)">Save</Button>
+                  <Button variant="ghost" size="sm" @click="cancelEdit">Cancel</Button>
+                  <Button variant="destructive" size="sm" @click="deleteComment(comment.id)"
+                    >Delete</Button
+                  >
+                </div>
+              </div>
+
+              <!-- Otherwise show static comment content and edit button -->
+              <div v-else class="flex justify-between text-sm text-muted-foreground">
+                <span>{{ comment.content }}</span>
+                <!-- Edit button (visible only if this user wrote the comment) -->
+                <button
+                  class="text-xs underline hover:text-primary"
+                  @click="startEdit(comment)"
+                  v-if="user?.id === comment.user_id"
+                >
+                  Edit
+                </button>
               </div>
             </div>
           </div>
+
+          <!-- Optional: Show comment count -->
           <div v-if="comments.length">Comments count: {{ comments.length }}</div>
 
-          <!-- No comments yet -->
+          <!-- Fallback when no comments exist -->
           <div v-else class="mb-4 text-sm italic text-muted-foreground">No comments yet.</div>
 
-          <!-- New comment form -->
+          <!-- Comment input form -->
           <div class="flex flex-col justify-between p-3 mt-2 rounded-md bg-muted">
+            <!-- Textarea bound to commentInput -->
             <textarea
               v-model="commentInput"
               placeholder="Add your comment..."
               class="w-full max-w-full p-3 overflow-y-auto prose-sm prose border rounded dark:prose-invert hover:border-muted bg-background border-muted"
             ></textarea>
 
+            <!-- Comment action buttons -->
             <div class="flex justify-between mt-3">
+              <!-- Submit comment -->
               <Button @click="submitComment">Comment</Button>
+
+              <!-- Optional file/image upload buttons (non-functional) -->
               <div class="flex gap-4">
                 <button variant="ghost" @click.prevent>
                   <iconify-icon icon="lucide:paperclip"></iconify-icon>
@@ -123,6 +177,8 @@
         </TableCell>
       </TableRow>
     </Table>
+
+    <!-- Delete task button with loading indicator -->
     <Button class="self-end w-full mt-3 max-w-40" variant="destructive" @click="triggerDeleteTask">
       <Transition name="scale" mode="out-in">
         <iconify-icon
@@ -138,12 +194,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/loaders/tasks'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentsStore } from '@/stores/loaders/comments'
+import { supabase } from '@/lib/supabaseClient'
 
 // Route param
 const { id } = useRoute('/tasks/[id]').params
@@ -232,6 +289,52 @@ const triggerDeleteTask = async () => {
     console.error('Failed to delete task:', error)
   } finally {
     loadingDelete.value = false
+  }
+}
+const editingCommentId = ref<string | null>(null)
+const editedContent = ref('')
+
+// Start editing
+const startEdit = (comment: Comment) => {
+  editingCommentId.value = comment.id
+  editedContent.value = comment.content
+}
+
+// Cancel editing
+const cancelEdit = () => {
+  editingCommentId.value = null
+  editedContent.value = ''
+}
+
+// Update comment in Supabase
+const submitEdit = async (commentId: string) => {
+  if (!editedContent.value.trim()) return
+
+  // Update via Supabase (create this helper if needed)
+  await supabase.from('comments').update({ content: editedContent.value }).eq('id', commentId)
+
+  // Update local state manually
+  const index = comments.value.findIndex((c) => c.id === commentId)
+  if (index !== -1) {
+    comments.value[index].content = editedContent.value
+  }
+
+  cancelEdit()
+}
+const deleteComment = async (commentId: string) => {
+  const { error } = await supabase.from('comments').delete().eq('id', commentId)
+
+  if (error) {
+    console.error('Error deleting comment:', error)
+    return
+  }
+
+  // Remove from local state
+  comments.value = comments.value.filter((comment) => comment.id !== commentId)
+
+  // If we were editing this comment, cancel editing
+  if (editingCommentId.value === commentId) {
+    cancelEdit()
   }
 }
 </script>
