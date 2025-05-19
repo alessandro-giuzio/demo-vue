@@ -60,7 +60,8 @@ export const useCommentsStore = defineStore('comments-store', () => {
       }
 
       if (newComment) {
-        comments.value = [...comments.value, newComment] // ✅ trigger Vue reactivity
+        // Add new comment to the beginning of the array
+        comments.value = [newComment, ...comments.value]
       }
     } catch (error) {
       console.error('Error posting comment:', error)

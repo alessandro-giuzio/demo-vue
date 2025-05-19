@@ -96,7 +96,7 @@
           <!-- Render list of comments if any exist -->
           <div v-else-if="comments.length" class="mb-4 space-y-4">
             <div
-              v-for="comment in comments"
+              v-for="comment in [...comments].reverse()"
               :key="comment.id"
               class="p-3 border rounded-md shadow-sm bg-muted"
             >
