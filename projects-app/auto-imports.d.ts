@@ -59,6 +59,7 @@ declare global {
   const useAttrs: typeof import('vue')['useAttrs']
   const useAuthStore: typeof import('./src/stores/auth')['useAuthStore']
   const useCollabs: typeof import('./src/composables/collabs')['useCollabs']
+  const useCommentsStore: typeof import('./src/stores/loaders/comments')['useCommentsStore']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
   const useErrorStore: typeof import('./src/stores/error')['useErrorStore']

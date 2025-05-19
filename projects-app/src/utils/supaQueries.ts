@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import type { CreateNewTask } from "@/types/CreateNewForm";
+import type { Comment } from "../types/Comments";
 import type { QueryData } from "@supabase/supabase-js";
 
 
@@ -203,8 +204,6 @@ export const taskStatusesQuery = async () => {
     .select('*')
     .order('order_index', { ascending: true });
 
-
-
   if (error) {
     console.error('Error fetching task statuses:', error)
   }
@@ -212,3 +211,92 @@ export const taskStatusesQuery = async () => {
   return { data, error };
 }
 
+// New function to fetcch tasks comments
+export async function fetchCommentsForTask(taskId: string): Promise<Comment[]> {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, users(username, avatar_url)')
+    .eq('task_id', taskId)
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching comments:', error)
+    return []
+  }
+
+  return data as Comment[]
+}
+
+// New function to add a comment to a task
+export async function addCommentToTask({
+  content,
+  taskId,
+  userId
+}: {
+  content: string
+  taskId: string
+  userId: string
+}): Promise<Comment | null> {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([
+      {
+        content,
+        task_id: taskId,
+        user_id: userId,
+      },
+    ])
+    .select('*, users(username, avatar_url)')
+    .single()
+
+  if (error) {
+    console.error('Error adding comment:', error)
+    return null
+  }
+
+  return data as Comment
+}
+ // New function to fetch comments for a project
+export async function fetchCommentsForProject(projectId: string) {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, users(username, avatar_url)')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching project comments:', error)
+    return []
+  }
+
+  return data
+}
+// New function to add a comment to a project
+export async function addCommentToProject({
+  content,
+  projectId,
+  userId
+}: {
+  content: string
+  projectId: string
+  userId: string
+}) {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([
+      {
+        content,
+        project_id: projectId,
+        user_id: userId
+      }
+    ])
+    .select('*, users(username, avatar_url)')
+    .single()
+
+  if (error) {
+    console.error('Error adding project comment:', error)
+    return null
+  }
+
+  return data
+}
