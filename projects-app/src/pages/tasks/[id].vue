@@ -141,7 +141,7 @@
             </div>
           </div>
 
-          <!-- Optional: Show comment count -->
+          <!--  Show comment count -->
           <div v-if="comments.length">Comments count: {{ comments.length }}</div>
 
           <!-- Fallback when no comments exist -->
