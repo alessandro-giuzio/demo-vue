@@ -134,7 +134,8 @@ const createProject = async (formData: CreateNewProject) => {
 
   console.log('Project and user_project link created successfully:', newProject)
   sheetOpen.value = false
-  router.push('/projects')
+
+  router.push(`/projects/${newProject.slug}`)
 }
 
 // Generate a slug from the name (using slugify)
