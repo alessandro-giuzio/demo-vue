@@ -1,4 +1,23 @@
 <template>
+  <!-- Hidden file inputs -->
+  <input
+    ref="fileInputRef"
+    type="file"
+    multiple
+    accept=".pdf,.doc,.docx,.txt,.csv,.xlsx"
+    @change="handleFileSelection"
+    style="display: none"
+  />
+
+  <input
+    ref="imageInputRef"
+    type="file"
+    multiple
+    accept="image/*"
+    @change="handleFileSelection"
+    style="display: none"
+  />
+
   <!-- Main container centering content -->
   <div class="flex flex-col items-center justify-center">
     <Table>
@@ -147,6 +166,59 @@
           <!-- Fallback when no comments exist -->
           <div v-else class="mb-4 text-sm italic text-muted-foreground">No comments yet.</div>
 
+          <!-- File upload queue display -->
+          <div v-if="fileUploadStore.hasFiles" class="mb-4">
+            <div class="space-y-2">
+              <div
+                v-for="item in fileUploadStore.uploadQueue"
+                :key="item.id"
+                class="flex items-center justify-between p-2 bg-gray-100 rounded dark:bg-gray-700"
+              >
+                <div class="flex items-center gap-2">
+                  <iconify-icon
+                    :icon="item.file.type.startsWith('image/') ? 'lucide:image' : 'lucide:file'"
+                    class="text-sm"
+                  ></iconify-icon>
+                  <span class="text-sm">{{ item.file.name }}</span>
+                  <span class="text-xs text-gray-500"
+                    >({{ (item.file.size / 1024 / 1024).toFixed(1) }}MB)</span
+                  >
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <!-- Progress/Status indicator -->
+                  <div v-if="item.status === 'uploading'" class="w-16 h-2 bg-gray-200 rounded-full">
+                    <div
+                      class="h-2 transition-all duration-300 bg-blue-600 rounded-full"
+                      :style="{ width: `${item.progress}%` }"
+                    ></div>
+                  </div>
+
+                  <iconify-icon
+                    v-else-if="item.status === 'completed'"
+                    icon="lucide:check-circle"
+                    class="text-green-500"
+                  ></iconify-icon>
+
+                  <iconify-icon
+                    v-else-if="item.status === 'error'"
+                    icon="lucide:x-circle"
+                    class="text-red-500"
+                  ></iconify-icon>
+
+                  <!-- Remove button -->
+                  <button
+                    @click="fileUploadStore.removeFile(item.id)"
+                    class="p-1 text-xs text-red-500 hover:text-red-700"
+                    :disabled="item.status === 'uploading'"
+                  >
+                    <iconify-icon icon="lucide:x" class="text-sm"></iconify-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Comment input form -->
           <div class="flex flex-col justify-between p-3 mt-2 rounded-md bg-muted">
             <!-- Textarea bound to commentInput -->
@@ -159,15 +231,34 @@
             <!-- Comment action buttons -->
             <div class="flex justify-between mt-3">
               <!-- Submit comment -->
-              <Button @click="submitComment">Comment</Button>
+              <Button
+                @click="submitComment"
+                :disabled="
+                  fileUploadStore.isUploading || (!commentInput.trim() && !fileUploadStore.hasFiles)
+                "
+              >
+                <span v-if="fileUploadStore.isUploading">
+                  <iconify-icon icon="lucide:loader-2" class="mr-2 animate-spin"></iconify-icon>
+                  Uploading...
+                </span>
+                <span v-else>Comment</span>
+              </Button>
 
-              <!-- Optional file/image upload buttons (non-functional) -->
+              <!-- File upload buttons -->
               <div class="flex gap-4">
-                <button variant="ghost" @click.prevent>
+                <button
+                  @click="triggerFileUpload"
+                  :disabled="fileUploadStore.isUploading"
+                  class="p-2 rounded hover:bg-gray-100"
+                >
                   <iconify-icon icon="lucide:paperclip"></iconify-icon>
                   <span class="sr-only">Attach file</span>
                 </button>
-                <button variant="ghost" @click.prevent>
+                <button
+                  @click="triggerImageUpload"
+                  :disabled="fileUploadStore.isUploading"
+                  class="p-2 rounded hover:bg-gray-100"
+                >
                   <iconify-icon icon="lucide:image-up"></iconify-icon>
                   <span class="sr-only">Upload image</span>
                 </button>
@@ -200,6 +291,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/loaders/tasks'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentsStore } from '@/stores/loaders/comments'
+import { useFileUploadStore } from '@/stores/loaders/storage'
 import { supabase } from '@/lib/supabaseClient'
 
 // Route param
@@ -217,56 +309,93 @@ const tasksLoader = useTasksStore()
 const { task } = storeToRefs(tasksLoader)
 const { getTask, updateTask, deleteTask } = tasksLoader
 
+const fileUploadStore = useFileUploadStore()
+
+// File input refs
+const fileInputRef = ref<HTMLInputElement | null>(null)
+const imageInputRef = ref<HTMLInputElement | null>(null)
+
 // Comment input
 const commentInput = ref('')
-/* onMounted(async () => {
-  await getTask(id)
 
-  if (task.value?.id) {
-    await getComments({ taskId: task.value.id })
+// File handling functions
+const triggerFileUpload = () => {
+  fileInputRef.value?.click()
+}
+
+const triggerImageUpload = () => {
+  imageInputRef.value?.click()
+}
+
+const handleFileSelection = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    const files = Array.from(target.files)
+    const { added, rejected } = fileUploadStore.addFilesWithValidation(files)
+
+    if (rejected.length > 0) {
+      console.warn('Some files were rejected:', rejected)
+    }
+
+    // Reset input
+    if (target) target.value = ''
   }
-}) */
+}
 
-// Set page title when task name is available
-/* watch(
-  () => task.value?.name,
-  () => {
-    usePageStore().pageData.title = `Task: ${task.value?.name || ''}`
+// Submit new comment with file uploads
+const submitComment = async () => {
+  if (!commentInput.value.trim() && !fileUploadStore.hasFiles) return
+  if (!user.value?.id || !task.value?.id) return
+
+  try {
+    let attachmentUrls: string[] = []
+
+    // Upload pending files first
+    if (fileUploadStore.pendingCount > 0) {
+      attachmentUrls = await fileUploadStore.uploadAllFiles()
+    }
+
+    // Get completed files
+    const completedFiles = fileUploadStore.getCompletedFiles()
+    attachmentUrls = [...attachmentUrls, ...completedFiles.map((f) => f.url)]
+
+    // Prepare comment content with attachments
+    let commentContent = commentInput.value
+    if (attachmentUrls.length > 0) {
+      const fileList = fileUploadStore.uploadQueue
+        .filter((item) => item.status === 'completed')
+        .map((item) => `[${item.file.name}](${item.url})`)
+        .join('\n')
+
+      commentContent = commentInput.value
+        ? `${commentInput.value}\n\n**Attachments:**\n${fileList}`
+        : `**Attachments:**\n${fileList}`
+    }
+
+    // Submit comment
+    const result = await postComment({
+      content: commentContent,
+      taskId: task.value.id,
+      userId: user.value.id
+    })
+
+    console.log('🟢 New comment added:', result)
+
+    // Reset form
+    commentInput.value = ''
+    fileUploadStore.clearAll()
+  } catch (error) {
+    console.error('Failed to submit comment:', error)
   }
-) */
+}
 
-// Load task and comments
-/* onMounted(() => {
-  getTask(id)
-}) */
-
-// Load comments when task ID is ready
-/* watch(
-  () => task.value?.id,
-  (taskId) => {
-    if (taskId) getComments({ taskId })
-  },
-  { immediate: true }
-) */
+// Load task and comments on mount
 onMounted(async () => {
   await getTask(id)
   if (task.value?.id) {
     await getComments({ taskId: task.value.id })
   }
 })
-
-// Submit new comment
-const submitComment = async () => {
-  if (!commentInput.value.trim() || !user.value?.id || !task.value?.id) return
-
-  const result = await postComment({
-    content: commentInput.value,
-    taskId: task.value.id,
-    userId: user.value.id
-  })
-  console.log('🟢 New comment added:', result)
-  commentInput.value = ''
-}
 
 // Collaborators
 const { getUserByIds } = useCollabs()
@@ -291,6 +420,8 @@ const triggerDeleteTask = async () => {
     loadingDelete.value = false
   }
 }
+
+// Comment editing
 const editingCommentId = ref<string | null>(null)
 const editedContent = ref('')
 
@@ -310,7 +441,7 @@ const cancelEdit = () => {
 const submitEdit = async (commentId: string) => {
   if (!editedContent.value.trim()) return
 
-  // Update via Supabase (create this helper if needed)
+  // Update via Supabase
   await supabase.from('comments').update({ content: editedContent.value }).eq('id', commentId)
 
   // Update local state manually
@@ -321,6 +452,8 @@ const submitEdit = async (commentId: string) => {
 
   cancelEdit()
 }
+
+// Delete comment
 const deleteComment = async (commentId: string) => {
   const { error } = await supabase.from('comments').delete().eq('id', commentId)
 

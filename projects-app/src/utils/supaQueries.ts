@@ -3,7 +3,78 @@ import type { CreateNewTask } from "@/types/CreateNewForm";
 import type { Comment } from "../types/Comments";
 import type { QueryData } from "@supabase/supabase-js";
 
+// Storage
+// Remove the broken line and replace with this:
 
+export const uploadFilesToStorage = async (files: File[]): Promise<{
+  urls: string[]
+  progress: { [key: string]: number }
+}> => {
+  const uploadedUrls: string[] = []
+  const progressTracker: { [key: string]: number } = {}
+
+  try {
+    for (const file of files) {
+      // Create unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `task-comments/${fileName}`
+
+      // Initialize progress tracking
+      progressTracker[file.name] = 0
+
+      // Upload file to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('comments-updates') // Your bucket name
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (error) {
+        console.error('Upload error:', error)
+        throw new Error(`Failed to upload ${file.name}`)
+      }
+
+      // Update progress to 100%
+      progressTracker[file.name] = 100
+
+      // Generate public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('task-attachments')
+        .getPublicUrl(filePath)
+
+      uploadedUrls.push(publicUrlData.publicUrl)
+    }
+
+    return {
+      urls: uploadedUrls,
+      progress: progressTracker
+    }
+  } catch (error) {
+    console.error('Upload failed:', error)
+    throw error
+  }
+}
+
+// Optional: Add a function to delete files from storage
+export const deleteFileFromStorage = async (filePath: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase.storage
+      .from('task-attachments')
+      .remove([filePath])
+
+    if (error) {
+      console.error('Delete error:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Delete failed:', error)
+    return false
+  }
+}
 export const tasksWithProjectsQuery = supabase.from('tasks').select(`
  *,
   projects (
