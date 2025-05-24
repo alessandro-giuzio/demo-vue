@@ -63,6 +63,7 @@ declare global {
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
   const useErrorStore: typeof import('./src/stores/error')['useErrorStore']
+  const useFileUploadStore: typeof import('./src/stores/loaders/storage')['useFileUploadStore']
   const useFormError: typeof import('./src/composables/formErrors')['useFormErrors']
   const useFormErrors: typeof import('./src/composables/formErrors')['useFormErrors']
   const useId: typeof import('vue')['useId']
@@ -88,4 +89,7 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { FileUploadItem } from './src/stores/loaders/storage'
+  import('./src/stores/loaders/storage')
 }
