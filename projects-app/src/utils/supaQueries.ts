@@ -327,7 +327,7 @@ export async function addCommentToTask({
 
   return data as Comment
 }
- // New function to fetch comments for a project
+// New function to fetch comments for a project
 export async function fetchCommentsForProject(projectId: string) {
   const { data, error } = await supabase
     .from('comments')
@@ -370,4 +370,76 @@ export async function addCommentToProject({
   }
 
   return data
+}
+
+// New function to upload a single file to storage
+export const uploadSingleFileToStorage = async (file: File): Promise<string | null> => {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+  const filePath = `uploads/${fileName}`
+
+  try {
+    const { error } = await supabase.storage
+      .from('comment-attachments')
+      .upload(filePath, file)
+
+    if (error) {
+      console.error('Upload error:', error)
+      return null
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('comment-attachments')
+      .getPublicUrl(filePath)
+
+    return publicUrlData?.publicUrl || null
+  } catch (error) {
+    console.error('Error uploading file:', error)
+    return null
+  }
+}
+
+// Add comment-related operations
+
+export const postComment = async (comment: { content: string; taskId: string; userId: string }) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert({
+      content: comment.content,
+      task_id: comment.taskId,
+      user_id: comment.userId
+    })
+    .select('*') // Ensure the newly created comment is returned
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteComment = async (commentId: string) => {
+  try {
+    const { error } = await supabase.from('comments').delete().eq('id', commentId);
+
+    if (error) {
+      console.error('Error deleting comment:', error);
+      throw error;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Failed to delete comment:', error);
+    throw error;
+  }
+};
+
+export const submitEdit = async (commentId: string, content: string) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .update({ content })
+    .eq('id', commentId)
+    .select('*') // Return the updated comment
+    .single()
+
+  if (error) throw error
+  return data // Return the updated comment object
 }

@@ -63,6 +63,7 @@ declare global {
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
   const useErrorStore: typeof import('./src/stores/error')['useErrorStore']
+  const useFileUpload: typeof import('./src/composables/useFileUpload')['useFileUpload']
   const useFileUploadStore: typeof import('./src/stores/loaders/storage')['useFileUploadStore']
   const useFormError: typeof import('./src/composables/formErrors')['useFormErrors']
   const useFormErrors: typeof import('./src/composables/formErrors')['useFormErrors']
