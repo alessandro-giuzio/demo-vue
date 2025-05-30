@@ -13,6 +13,7 @@ export interface CreateNewTask {
 }
 
 export interface CreateNewProject {
+  assigned_to: null;
   created_at?: string | null;
   description: string;
   id?: string;

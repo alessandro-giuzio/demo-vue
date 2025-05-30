@@ -8,5 +8,6 @@ create table projects (
   description text not null default '',
   slug text unique not null,
   status current_status default 'in-progress' not null,
-  collaborators text array default array[]::varchar[] not null
+  collaborators text array default array[]::varchar[] not null,
+  assigned_to uuid references users(id) default null
 );

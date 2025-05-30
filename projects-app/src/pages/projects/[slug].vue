@@ -111,7 +111,7 @@ watch(
 )
 
 await getProject(slug)
-/* console.log('Project collaborators:', project.value?.collaborators) */
+console.log('Project collaborators:', project.value?.collaborators)
 
 const { getUserByIds } = useCollabs()
 const collabs = project.value?.collaborators ? await getUserByIds(project.value?.collaborators) : []

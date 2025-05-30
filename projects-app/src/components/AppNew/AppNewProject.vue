@@ -25,7 +25,7 @@
           label="Assigned to"
           placeholder="Select a user"
           :options="selectOptions.users"
-          validation="required"
+          validation="length:0,255"
         />
         <FormKit
           type="textarea"
@@ -43,7 +43,7 @@
           placeholder="Select collaborators"
           :options="selectOptions.users"
           multiple
-          validation="required"
+          validation="length:0,255"
         />
       </FormKit>
     </SheetContent>
@@ -65,14 +65,16 @@ const selectOptions = ref({
 
 const getUsersOptions = async () => {
   const { data: allUsers } = await usersQuery
-  if (!allUsers) return
+  if (!allUsers || allUsers.length === 0) {
+    console.warn('No users found.')
+    selectOptions.value.users = [] // Ensure options are empty
+    return
+  }
 
-  selectOptions.value.users = allUsers
-    .filter((u) => u.id !== user.value?.id) // ❌ exclude logged-in user
-    .map((user) => ({
-      label: user.full_name || user.username,
-      value: user.id
-    }))
+  selectOptions.value.users = allUsers.map((user) => ({
+    label: user.full_name || user.username,
+    value: user.id
+  }))
 }
 
 getUsersOptions()
@@ -92,7 +94,7 @@ const createProject = async (formData: CreateNewProject) => {
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
 
-  // ✅ Check for existing project
+  // Check for existing project with the same slug
   const { data: existingProject } = await getProjectBySlug(slug)
   if (existingProject) {
     console.error('A project with this slug already exists.')
@@ -105,12 +107,16 @@ const createProject = async (formData: CreateNewProject) => {
     slug,
     status: 'in-progress' as const,
     owner_id: user.value.id,
-    collaborators: [
-      ...new Set([
-        user.value.id.toString(), // ensure collaborators are strings
-        ...(formData.collaborators || []).map((collaborator) => collaborator.toString())
-      ])
-    ]
+    collaborators: formData.collaborators?.length
+      ? [
+          ...new Set(
+            formData.collaborators
+              .filter((collaborator) => user.value && collaborator !== user.value.id) // Exclude owner_id
+              .map((collaborator) => collaborator.toString())
+          )
+        ]
+      : [], // Default to an empty array if no collaborators
+    assigned_to: formData.assigned_to || null // Default to null if not assigned
   }
 
   const { data: newProject, error: projectError } = await createNewProjectQuery(projectPayload)

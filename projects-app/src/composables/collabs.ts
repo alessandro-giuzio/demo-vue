@@ -12,27 +12,18 @@ export const useCollabs = () => {
     return response.data
   }
 
-  const getGroupedCollabs = async (items: Projects | TasksWithProjects) => {
-    const filteredItems = items.filter((item) => item.owner_id) // ✅ Fixed Typo
-
-    // Collect all unique user IDs to batch query
-    const uniqueUserIds = [...new Set(filteredItems.map(item => item.owner_id))]
-
-    // Fetch all users in one request
-    const users = await getUserByIds(uniqueUserIds)
-
-    // Map user ID to user data
-    const userMap = new Map(users.map(user => [user.id, user]))
-
-    // Assign users to corresponding items
-    filteredItems.forEach(item => {
-      groupedCollabs.value[item.id] = groupedCollabs.value[item.id] || []
-      const user = userMap.get(item.owner_id)
-      if (user) {
-        groupedCollabs.value[item.id].push(user)
-      }
-    })
+  const getGroupedCollabs = async (projects: Array<{ collaborators: string[]; description: string; id: string; name: string; owner_id: string; slug: string; status: "in-progress" | "completed"; }>) => {
+    const collabsObj: GroupedCollabs = {}
+    for (const project of projects) {
+      const filteredCollabIds = project.collaborators?.filter(
+        (collaborator) => collaborator !== project.owner_id // Exclude owner_id
+      ) || []
+      const users = await getUserByIds(filteredCollabIds)
+      collabsObj[project.id] = users
+    }
+    groupedCollabs.value = collabsObj
   }
+
 
   return {
     getUserByIds,

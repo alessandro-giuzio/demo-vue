@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       comments: {
         Row: {
+          attachments: Json
           content: string
           created_at: string | null
           id: number
@@ -20,6 +21,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attachments?: Json
           content: string
           created_at?: string | null
           id?: never
@@ -29,6 +31,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attachments?: Json
           content?: string
           created_at?: string | null
           id?: never
