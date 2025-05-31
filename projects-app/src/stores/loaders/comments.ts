@@ -53,16 +53,22 @@ export const useCommentsStore = defineStore('comments-store', () => {
   }) => {
     try {
       let newComment: Comment | null = null
+      console.log('Task ID:', taskId)
+      console.log('User ID:', userId)
+      if (!taskId || !userId) {
+        console.error('Invalid taskId or userId:', { taskId, userId })
+        return null
+      }
       if (taskId) {
         newComment = await addCommentToTask({ content, taskId, userId })
       } else if (projectId) {
         newComment = await addCommentToProject({ content, projectId, userId })
       }
-
       if (newComment) {
-        // Add new comment to the beginning of the array
         comments.value = [newComment, ...comments.value]
+        console.log('Updated comments:', comments.value)
       }
+
     } catch (error) {
       console.error('Error posting comment:', error)
     }

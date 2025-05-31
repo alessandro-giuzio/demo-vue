@@ -324,7 +324,7 @@ export async function addCommentToTask({
     console.error('Error adding comment:', error)
     return null
   }
-
+  console.log('Inserted comment:', data)
   return data as Comment
 }
 // New function to fetch comments for a project
