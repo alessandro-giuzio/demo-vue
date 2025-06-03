@@ -113,6 +113,7 @@
           <div v-if="loading" class="text-sm text-muted-foreground">Loading comments...</div>
 
           <!-- Render list of comments if any exist -->
+          <!-- Render list of comments if any exist -->
           <div v-else-if="comments.length" class="mb-4 space-y-4">
             <div
               v-for="comment in [...comments]"
@@ -129,7 +130,7 @@
                   {{ new Date(comment.created_at).toLocaleString() }}
                 </div>
               </div>
-              <!-- Display comment content -->
+
               <!-- Show textarea if editing this comment -->
               <div v-if="editingCommentId === comment.id" class="space-y-2">
                 <textarea
@@ -146,16 +147,84 @@
               </div>
 
               <!-- Otherwise show static comment content and edit button -->
-              <div v-else class="flex justify-between text-sm text-muted-foreground">
-                <span>{{ comment.content }}</span>
-                <!-- Edit button (visible only if this user wrote the comment) -->
-                <button
-                  class="text-xs underline hover:text-primary"
-                  @click="startEdit(comment)"
-                  v-if="user?.id === comment.user_id"
+              <div v-else>
+                <!-- Comment text content -->
+                <div class="mb-2 text-sm text-muted-foreground">
+                  {{ extractCommentText(comment.content) }}
+                </div>
+
+                <!-- Images grid -->
+                <div
+                  v-if="getImageAttachments(comment.content).length"
+                  class="grid grid-cols-2 gap-2 my-2 sm:grid-cols-3 md:grid-cols-4"
                 >
-                  Edit
-                </button>
+                  <a
+                    v-for="image in getImageAttachments(comment.content)"
+                    :key="image.url"
+                    :href="image.url"
+                    target="_blank"
+                    class="relative block overflow-hidden border rounded-md aspect-square border-muted bg-muted-foreground/10"
+                  >
+                    <img
+                      :src="image.url"
+                      :alt="image.name"
+                      class="absolute inset-0 object-cover w-full h-full transition-transform hover:scale-105"
+                      loading="lazy"
+                    />
+                  </a>
+                </div>
+
+                <!-- Other file types -->
+                <div v-if="getFileAttachments(comment.content).length" class="my-2 space-y-1">
+                  <a
+                    v-for="file in getFileAttachments(comment.content)"
+                    :key="file.url"
+                    :href="file.url"
+                    target="_blank"
+                    class="flex items-center gap-2 p-2 border rounded-md border-muted hover:bg-muted/50 group"
+                  >
+                    <!-- File icon based on type -->
+                    <div class="text-muted-foreground">
+                      <iconify-icon
+                        :icon="
+                          file.type === 'pdf'
+                            ? 'lucide:file-text'
+                            : file.type === 'document'
+                              ? 'lucide:file-text'
+                              : file.type === 'spreadsheet'
+                                ? 'lucide:file-spreadsheet'
+                                : file.type === 'presentation'
+                                  ? 'lucide:file-presentation'
+                                  : 'lucide:file'
+                        "
+                        class="text-lg"
+                      ></iconify-icon>
+                    </div>
+
+                    <!-- File name -->
+                    <div class="flex-1 text-sm truncate">
+                      {{ file.name }}
+                    </div>
+
+                    <!-- Download icon -->
+                    <div
+                      class="transition-opacity opacity-0 text-muted-foreground group-hover:opacity-100"
+                    >
+                      <iconify-icon icon="lucide:download" class="text-sm"></iconify-icon>
+                    </div>
+                  </a>
+                </div>
+
+                <!-- Edit button (visible only if this user wrote the comment) -->
+                <div class="flex justify-end mt-1">
+                  <button
+                    class="text-xs underline hover:text-primary"
+                    @click="startEdit(comment)"
+                    v-if="user?.id === comment.user_id"
+                  >
+                    Edit
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -294,6 +363,66 @@ import { useCommentsStore } from '@/stores/loaders/comments'
 import { useFileUploadStore } from '@/stores/loaders/storage'
 import { supabase } from '@/lib/supabaseClient'
 
+// Add these helper functions after your existing imports
+const getAttachmentsFromComment = (content: string) => {
+  const regex = /\[([^\]]+)\]\(([^)]+)\)/g
+  const attachments = []
+  let match
+
+  while ((match = regex.exec(content)) !== null) {
+    attachments.push({
+      name: match[1],
+      url: match[2],
+      type: getFileTypeFromUrl(match[2], match[1])
+    })
+  }
+
+  return attachments
+}
+
+// Extract comment text without the attachment markdown
+const extractCommentText = (content: string) => {
+  // Remove the attachments section and markdown links
+  return content
+    .replace(/\*\*Attachments:\*\*\n(.*)/s, '')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '')
+    .trim()
+}
+
+// Determine file type from URL or name
+const getFileTypeFromUrl = (url: string, filename: string) => {
+  // Get extension from filename or URL
+  const extension = filename.split('.').pop()?.toLowerCase() || url.split('.').pop()?.toLowerCase()
+
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension)) {
+    return 'image'
+  }
+
+  if (extension === 'pdf') return 'pdf'
+  if (['doc', 'docx'].includes(extension)) return 'document'
+  if (['xls', 'xlsx', 'csv'].includes(extension)) return 'spreadsheet'
+  if (['ppt', 'pptx'].includes(extension)) return 'presentation'
+  if (['txt', 'md'].includes(extension)) return 'text'
+
+  return 'file'
+}
+
+// Separate attachments into images and files
+const getImageAttachments = (content: string) => {
+  return getAttachmentsFromComment(content).filter((att) => att.type === 'image')
+}
+
+const getFileAttachments = (content: string) => {
+  return getAttachmentsFromComment(content).filter((att) => att.type !== 'image')
+}
+
+// Format readable file size
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
 // Route param
 const { id } = useRoute('/tasks/[id]').params
 
@@ -352,7 +481,17 @@ const submitComment = async () => {
 
     // Upload pending files first
     if (fileUploadStore.pendingCount > 0) {
-      attachmentUrls = await fileUploadStore.uploadAllFiles()
+      try {
+        attachmentUrls = await fileUploadStore.uploadAllFiles()
+
+        // Log success
+        console.log('Files uploaded successfully:', attachmentUrls)
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError)
+        // Show a user-friendly error message (using your preferred notification system)
+        alert(`File upload failed: ${uploadError.message}`)
+        return // Stop the submission if uploads fail
+      }
     }
 
     // Get completed files

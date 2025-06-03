@@ -48,7 +48,7 @@ export const uploadFilesToStorage = async (file: File, path: string = 'uploads')
 export const deleteFileFromStorage = async (filePath: string): Promise<boolean> => {
   try {
     const { error } = await supabase.storage
-      .from('task-attachments')
+      .from('comments-updates')
       .remove([filePath])
 
     if (error) {
@@ -367,7 +367,7 @@ export const uploadSingleFileToStorage = async (file: File): Promise<string | nu
 
   try {
     const { error } = await supabase.storage
-      .from('comment-attachments')
+      .from('comment-updates')
       .upload(filePath, file)
 
     if (error) {
@@ -376,7 +376,7 @@ export const uploadSingleFileToStorage = async (file: File): Promise<string | nu
     }
 
     const { data: publicUrlData } = supabase.storage
-      .from('comment-attachments')
+      .from('comment-updates')
       .getPublicUrl(filePath)
 
     return publicUrlData?.publicUrl || null
