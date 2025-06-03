@@ -85,32 +85,67 @@ export const useFileUploadStore = defineStore('file-upload-store', () => {
   }
 
   // Upload all pending files
-  const uploadAllFiles = async (): Promise<string[]> => {
-    const pendingFiles = uploadQueue.value.filter(item => item.status === 'pending')
-    if (pendingFiles.length === 0) return []
+  // Or wherever your file upload store is located
 
-    isUploading.value = true
-    const uploadedUrls: string[] = []
+  // Upload all files in the queue
+  const uploadAllFiles = async () => {
+    if (!hasFiles.value) return [];
+
+    // Filter files that need uploading
+    const filesToUpload = uploadQueue.value.filter(
+      (item) => item.status === 'pending' || item.status === 'failed'
+    );
+
+    if (filesToUpload.length === 0) {
+      return uploadQueue.value
+        .filter((item) => item.status === 'completed')
+        .map((item) => item.url);
+    }
 
     try {
-      // Upload files in parallel (you could also do sequential if preferred)
-      const uploadPromises = pendingFiles.map(uploadSingleFile)
-      const results = await Promise.allSettled(uploadPromises)
+      // Set all selected files to uploading status
+      filesToUpload.forEach((item) => {
+        item.status = 'uploading';
+      });
 
-      results.forEach((result, index) => {
-        if (result.status === 'fulfilled' && result.value) {
-          uploadedUrls.push(result.value)
+      // Upload each file in the queue
+      const uploadPromises = filesToUpload.map(async (item) => {
+        try {
+          const publicUrl = await uploadFilesToStorage(item.file);
+
+          // Update the item in the queue
+          const index = uploadQueue.value.findIndex((i) => i.id === item.id);
+          if (index !== -1) {
+            uploadQueue.value[index].status = 'completed';
+            uploadQueue.value[index].url = publicUrl;
+          }
+
+          return publicUrl;
+        } catch (error) {
+          // Mark the item as failed
+          const index = uploadQueue.value.findIndex((i) => i.id === item.id);
+          if (index !== -1) {
+            uploadQueue.value[index].status = 'failed';
+            uploadQueue.value[index].error = error.message;
+          }
+
+          console.error(`Failed to upload ${item.file.name}:`, error);
+          return null;
         }
-      })
+      });
 
-      return uploadedUrls
+      // Wait for all uploads to complete or fail
+      const results = await Promise.allSettled(uploadPromises);
+
+      // Return all successful URLs
+      return uploadQueue.value
+        .filter((item) => item.status === 'completed')
+        .map((item) => item.url);
     } catch (error) {
-      console.error('Batch upload failed:', error)
-      return uploadedUrls
-    } finally {
-      isUploading.value = false
+      console.error('Upload failed:', error);
+      return [];
     }
-  }
+  };
 
   // Validate file before adding to queue
   const validateFile = (file: File): { valid: boolean; error?: string } => {

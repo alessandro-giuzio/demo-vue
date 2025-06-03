@@ -4,58 +4,45 @@ import type { Comment } from "../types/Comments";
 import type { QueryData } from "@supabase/supabase-js";
 
 // Storage
-// Remove the broken line and replace with this:
 
-export const uploadFilesToStorage = async (files: File[]): Promise<{
-  urls: string[]
-  progress: { [key: string]: number }
-}> => {
-  const uploadedUrls: string[] = []
-  const progressTracker: { [key: string]: number } = {}
 
+export const uploadFilesToStorage = async (file: File, path: string = 'uploads'): Promise<string> => {
   try {
-    for (const file of files) {
-      // Create unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-      const filePath = `task-comments/${fileName}`
+    // Create a unique file name to avoid collisions
+    const uniqueFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-      // Initialize progress tracking
-      progressTracker[file.name] = 0
-
-      // Upload file to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('comments-updates') // Your bucket name
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
-
-      if (error) {
-        console.error('Upload error:', error)
-        throw new Error(`Failed to upload ${file.name}`)
-      }
-
-      // Update progress to 100%
-      progressTracker[file.name] = 100
-
-      // Generate public URL
-      const { data: publicUrlData } = supabase.storage
-        .from('task-attachments')
-        .getPublicUrl(filePath)
-
-      uploadedUrls.push(publicUrlData.publicUrl)
+    // Ensure the user is authenticated before upload
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('User is not authenticated');
     }
 
-    return {
-      urls: uploadedUrls,
-      progress: progressTracker
+    // Upload the file
+    const { data, error } = await supabase
+      .storage
+      .from('comments-updates')
+      .upload(`${path}/${uniqueFileName}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Upload error details:', error);
+      throw new Error(`Failed to upload ${file.name}: ${error.message}`);
     }
+
+    // Generate a public URL for the file
+    const { data: urlData } = supabase
+      .storage
+      .from('comments-updates')
+      .getPublicUrl(`${path}/${uniqueFileName}`);
+
+    return urlData.publicUrl;
   } catch (error) {
-    console.error('Upload failed:', error)
-    throw error
+    console.error('Upload error:', error);
+    throw error;
   }
-}
+};
 
 // Optional: Add a function to delete files from storage
 export const deleteFileFromStorage = async (filePath: string): Promise<boolean> => {
@@ -288,7 +275,7 @@ export async function fetchCommentsForTask(taskId: string): Promise<Comment[]> {
     .from('comments')
     .select('*, users(username, avatar_url)')
     .eq('task_id', taskId)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching comments:', error)

@@ -65,7 +65,8 @@ export const useCommentsStore = defineStore('comments-store', () => {
         newComment = await addCommentToProject({ content, projectId, userId })
       }
       if (newComment) {
-        comments.value = [newComment, ...comments.value]
+        comments.value = [newComment, ...comments.value].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at))
         console.log('Updated comments:', comments.value)
       }
 

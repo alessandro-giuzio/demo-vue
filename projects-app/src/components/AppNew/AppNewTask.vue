@@ -36,7 +36,7 @@
           type="select"
           name="assigned_to"
           id="assigned_to"
-          label="User"
+          label="Assigned To"
           placeholder="Select a user"
           :options="selectOptions.users"
           validation="required"
