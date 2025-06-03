@@ -20,7 +20,7 @@
 
     <!-- Status dot - positioned absolutely to appear inside the select -->
     <span
-      class="absolute inline-block w-3 h-3 -translate-y-1/2 rounded-full left-5 top-1/2"
+      class="absolute inline-block w-3 h-3 -translate-y-1/2 rounded-full left-3 top-1/2"
       :style="{ backgroundColor: currentStatus?.color || '#ccc' }"
     ></span>
 
