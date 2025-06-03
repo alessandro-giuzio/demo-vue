@@ -63,10 +63,10 @@
       </TableRow>
 
       <!-- Editable task status using custom input -->
-      <TableRow>
+      <!--    <TableRow>
         <TableHead> Status </TableHead>
         <AppInPlaceEditStatus v-if="task" v-model="task.status_id" @commit="updateTask" />
-      </TableRow>
+      </TableRow> -->
 
       <!-- Alternate task status selector with dropdown -->
       <TableRow>

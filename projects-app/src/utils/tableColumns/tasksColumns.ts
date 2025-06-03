@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/vue-table"
 import type { TasksWithProjects } from "../supaQueries"
 import { RouterLink } from "vue-router"
 import AppInPlaceEditStatus from "@/components/AppInPlaceEdit/AppInPlaceEditStatus.vue"
-
+import TaskStatusSelector from "../../components/TaskStatusSelector.vue"
 export const columns: ColumnDef<TasksWithProjects[number]>[] = [
   {
     accessorKey: 'name',
@@ -52,6 +52,21 @@ export const columns: ColumnDef<TasksWithProjects[number]>[] = [
       return h('div', { class: 'text-left font-medium' }, fullName)
     },
   },
+  {
+    accessorKey: 'status_id',
+    header: () => h('div', { class: 'text-left' }, 'Status'),
+    cell: ({ row }) => {
+      return h(TaskStatusSelector, {
+        modelValue: row.original.status_id,
+        taskId: row.original.id,
+        onCommit: (payload) => {
+          // This will trigger the status update
+          console.log('Status update:', payload, row.original.id)
+
+        }
+      })
+    }
+  },
 /* {
     accessorKey: 'statatus',
     header: () => h('div', { class: 'text-left' }, 'Status'),
@@ -61,7 +76,7 @@ export const columns: ColumnDef<TasksWithProjects[number]>[] = [
       )
     }
   }, */
-  {
+/*   {
     accessorKey: 'task_status.id',
     header: () => h('div', { class: 'text-left' }, 'Status'),
     cell: ({ row }) => {
@@ -73,7 +88,7 @@ export const columns: ColumnDef<TasksWithProjects[number]>[] = [
         }
       })
     }
-  },
+  }, */
   {
     accessorKey: 'description',
     header: () => h('div', { class: 'text-left' }, 'Description'),

@@ -4,7 +4,7 @@
       v-model="selectedId"
       @change="handleChange"
       :disabled="readonly"
-      class="w-full py-2 pr-4 text-sm font-medium transition-all bg-white border rounded-md appearance-none cursor-pointer pl-9 dark:bg-gray-800 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary hover:shadow-sm disabled:opacity-50"
+      class="w-full py-2 pl-6 text-sm font-medium transition-all bg-white border rounded-md appearance-none cursor-pointer dark:bg-gray-800 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary hover:shadow-sm disabled:opacity-50"
     >
       <option
         v-for="status in sortedStatuses"
@@ -20,13 +20,13 @@
 
     <!-- Status dot - positioned absolutely to appear inside the select -->
     <span
-      class="absolute inline-block w-3 h-3 -translate-y-1/2 rounded-full left-3 top-1/2"
+      class="absolute inline-block w-3 h-3 -translate-y-1/2 rounded-full left-5 top-1/2"
       :style="{ backgroundColor: currentStatus?.color || '#ccc' }"
     ></span>
 
     <iconify-icon
       icon="lucide:chevron-down"
-      class="absolute text-gray-400 transform -translate-y-1/2 pointer-events-none right-3 top-1/2"
+      class="absolute text-gray-400 transform -translate-y-1/2 pointer-events-none right-5 top-1/2"
     />
   </div>
 </template>
