@@ -3,6 +3,33 @@
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
 project_id = "projects-app"
+# Reference to your remote project
+reference_id = "vrpxweazkhztaeweaujf"
+[storage.buckets.task-attachments]
+public = true
+file_size_limit = "50MiB"
+allowed_mime_types = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "application/pdf",
+  "text/plain",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+]
+
+[storage.buckets.comments-updates]
+public = true
+file_size_limit = "50MiB"
+allowed_mime_types = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "application/pdf",
+  "text/plain",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+]
 
 [api]
 enabled = true

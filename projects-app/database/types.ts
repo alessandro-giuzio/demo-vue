@@ -49,6 +49,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_with_status"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "comments_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
@@ -64,8 +71,39 @@ export type Database = {
           },
         ]
       }
+      project_status: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          order_index: number | null
+          updated_at: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
+          assigned_to: string | null
           collaborators: string[]
           description: string
           id: string
@@ -73,8 +111,10 @@ export type Database = {
           owner_id: string
           slug: string
           status: Database["public"]["Enums"]["current_status"]
+          status_id: string | null
         }
         Insert: {
+          assigned_to?: string | null
           collaborators?: string[]
           description?: string
           id?: string
@@ -82,8 +122,10 @@ export type Database = {
           owner_id: string
           slug: string
           status?: Database["public"]["Enums"]["current_status"]
+          status_id?: string | null
         }
         Update: {
+          assigned_to?: string | null
           collaborators?: string[]
           description?: string
           id?: string
@@ -91,13 +133,28 @@ export type Database = {
           owner_id?: string
           slug?: string
           status?: Database["public"]["Enums"]["current_status"]
+          status_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "project_status"
             referencedColumns: ["id"]
           },
         ]
@@ -186,6 +243,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_with_status"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_status_id_fkey"
             columns: ["status_id"]
             isOneToOne: false
@@ -225,6 +289,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_with_status"
             referencedColumns: ["id"]
           },
           {
@@ -271,7 +342,44 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      projects_with_status: {
+        Row: {
+          assigned_to: string | null
+          collaborators: string[] | null
+          description: string | null
+          id: string | null
+          name: string | null
+          owner_id: string | null
+          slug: string | null
+          status: Database["public"]["Enums"]["current_status"] | null
+          status_color: string | null
+          status_id: string | null
+          status_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "project_status"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
