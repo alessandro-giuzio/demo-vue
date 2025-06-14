@@ -35,7 +35,11 @@ export const uploadFilesToStorage = async (file: File, path: string = 'uploads')
       });
 
     if (error) {
-      console.error('Upload error details:', error);
+      // Use error store for consistent handling
+      useErrorStore().setError({
+        error: `Failed to upload ${file.name}: ${error.message}`,
+        customCode: 500
+      });
       throw new Error(`Failed to upload ${file.name}: ${error.message}`);
     }
 

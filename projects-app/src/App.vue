@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Toaster from '@/components/ui/toast/Toaster.vue'
 const { activeError } = storeToRefs(useErrorStore())
 
 const errorStore = useErrorStore()
@@ -22,6 +23,7 @@ useMeta({
 </script>
 
 <template>
+  <Toaster />
   <metainfo></metainfo>
   <Transition name="fade" mode="out-in">
     <Component :is="user ? AuthLayout : GuestLayout" :key="user?.id">

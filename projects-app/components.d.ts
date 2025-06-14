@@ -82,6 +82,14 @@ declare module 'vue' {
     TableHeader: typeof import('./src/components/ui/table/TableHeader.vue')['default']
     TableRow: typeof import('./src/components/ui/table/TableRow.vue')['default']
     TaskStatusSelector: typeof import('./src/components/TaskStatusSelector.vue')['default']
+    Toast: typeof import('./src/components/ui/toast/Toast.vue')['default']
+    ToastAction: typeof import('./src/components/ui/toast/ToastAction.vue')['default']
+    ToastClose: typeof import('./src/components/ui/toast/ToastClose.vue')['default']
+    ToastDescription: typeof import('./src/components/ui/toast/ToastDescription.vue')['default']
+    Toaster: typeof import('./src/components/ui/toast/Toaster.vue')['default']
+    ToastProvider: typeof import('./src/components/ui/toast/ToastProvider.vue')['default']
+    ToastTitle: typeof import('./src/components/ui/toast/ToastTitle.vue')['default']
+    ToastViewport: typeof import('./src/components/ui/toast/ToastViewport.vue')['default']
     TopNavbar: typeof import('./src/components/Layout/TopNavbar.vue')['default']
   }
 }

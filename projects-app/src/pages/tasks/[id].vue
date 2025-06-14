@@ -473,6 +473,7 @@ const handleFileSelection = (event: Event) => {
 
 // Submit new comment with file uploads
 const submitComment = async () => {
+  // Form validation
   if (!commentInput.value.trim() && !fileUploadStore.hasFiles) return
   if (!user.value?.id || !task.value?.id) return
 
