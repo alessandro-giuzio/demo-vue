@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
-import { uploadFilesToStorage } from '@/utils/supaQueries'
+import { uploadFilesToStorage, deleteFileFromStorage } from '@/utils/supaQueries'
 
 export interface FileUploadItem {
   file: File
@@ -229,7 +229,49 @@ export const useFileUploadStore = defineStore('file-upload-store', () => {
   const hasFiles = computed(() => uploadQueue.value.length > 0)
 
   const hasCompletedFiles = computed(() => completedCount.value > 0)
+  const deleteFile = async (fileId: string): Promise<boolean> => {
+    const fileIndex = uploadQueue.value.findIndex(item => item.id === fileId);
 
+    if (fileIndex === -1) {
+      console.error('File not found in upload queue:', fileId);
+      return false;
+    }
+
+    const file = uploadQueue.value[fileIndex];
+
+    // Only attempt to delete from storage if the file was successfully uploaded
+    if (file.status === 'completed' && file.url) {
+      try {
+        const deleted = await deleteFileFromStorage(file.url);
+        if (!deleted) {
+          console.warn('Failed to delete file from storage, but will remove from UI');
+        }
+        // Remove from queue regardless of storage deletion success
+        uploadQueue.value = uploadQueue.value.filter(item => item.id !== fileId);
+        return true;
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        return false;
+      }
+    } else {
+      // File wasn't uploaded yet, just remove from queue
+      uploadQueue.value = uploadQueue.value.filter(item => item.id !== fileId);
+      return true;
+    }
+  };
+
+  /**
+   * Delete multiple files from storage by URL
+   */
+  const deleteFiles = async (fileUrls: string[]): Promise<boolean[]> => {
+    const results = await Promise.allSettled(
+      fileUrls.map(url => deleteFileFromStorage(url))
+    );
+
+    return results.map(result =>
+      result.status === 'fulfilled' ? result.value : false
+    );
+  };
   return {
     // State
     uploadQueue: readonly(uploadQueue),
@@ -246,6 +288,8 @@ export const useFileUploadStore = defineStore('file-upload-store', () => {
     validateFile,
     getFilesByStatus,
     getCompletedFiles,
+    deleteFile,
+    deleteFiles,
 
     // Computed
     pendingCount,

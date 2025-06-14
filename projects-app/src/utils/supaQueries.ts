@@ -57,23 +57,41 @@ export const uploadFilesToStorage = async (file: File, path: string = 'uploads')
 };
 
 // Optional: Add a function to delete files from storage
-export const deleteFileFromStorage = async (filePath: string): Promise<boolean> => {
+export const deleteFileFromStorage = async (fileUrl: string): Promise<boolean> => {
   try {
-    const { error } = await supabase.storage
-      .from('comments-updates')
-      .remove([filePath])
+    // Extract the path from the URL
 
-    if (error) {
-      console.error('Delete error:', error)
-      return false
+    const url = new URL(fileUrl);
+    const pathParts = url.pathname.split('/');
+    // Find the index of "public" and get everything after the bucket name
+    const publicIndex = pathParts.indexOf('public');
+    if (publicIndex === -1 || publicIndex + 2 >= pathParts.length) {
+      throw new Error('Invalid file URL structure');
     }
 
-    return true
+    // Get the bucket name and file path
+    const bucketName = pathParts[publicIndex + 1];
+    const filePath = pathParts.slice(publicIndex + 2).join('/');
+
+    console.log('Attempting to delete file:', { bucketName, filePath });
+
+    const { error } = await supabase
+      .storage
+      .from(bucketName)
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Delete error details:', error);
+      throw new Error(`Failed to delete file: ${error.message}`);
+    }
+
+    console.log('File successfully deleted');
+    return true;
   } catch (error) {
-    console.error('Delete failed:', error)
-    return false
+    console.error('Delete file error:', error);
+    return false;
   }
-}
+};
 export const tasksWithProjectsQuery = supabase.from('tasks').select(`
  *,
   projects (

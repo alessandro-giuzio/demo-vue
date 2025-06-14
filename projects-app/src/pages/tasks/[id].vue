@@ -140,9 +140,15 @@
                 <div class="flex gap-2">
                   <Button size="sm" @click="submitEdit(comment.id)">Save</Button>
                   <Button variant="ghost" size="sm" @click="cancelEdit">Cancel</Button>
-                  <Button variant="destructive" size="sm" @click="deleteComment(comment.id)"
-                    >Delete</Button
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    @click="deleteComment(comment.id, comment.content)"
+                    :disabled="loadingDelete"
                   >
+                    <iconify-icon icon="lucide:trash" class="mr-1" />
+                    Delete
+                  </Button>
                 </div>
               </div>
 
@@ -236,6 +242,7 @@
           <div v-else class="mb-4 text-sm italic text-muted-foreground">No comments yet.</div>
 
           <!-- File upload queue display -->
+          <!-- File upload queue display -->
           <div v-if="fileUploadStore.hasFiles" class="mb-4">
             <div class="space-y-2">
               <div
@@ -275,13 +282,13 @@
                     class="text-red-500"
                   ></iconify-icon>
 
-                  <!-- Remove button -->
+                  <!-- Remove button - Updated to use deleteFile -->
                   <button
-                    @click="fileUploadStore.removeFile(item.id)"
+                    @click="fileUploadStore.deleteFile(item.id)"
                     class="p-1 text-xs text-red-500 hover:text-red-700"
                     :disabled="item.status === 'uploading'"
                   >
-                    <iconify-icon icon="lucide:x" class="text-sm"></iconify-icon>
+                    <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
                   </button>
                 </div>
               </div>
@@ -578,36 +585,116 @@ const cancelEdit = () => {
 }
 
 // Update comment in Supabase
+// Update comment in Supabase with file cleanup
 const submitEdit = async (commentId: string) => {
   if (!editedContent.value.trim()) return
 
-  // Update via Supabase
-  await supabase.from('comments').update({ content: editedContent.value }).eq('id', commentId)
+  try {
+    const commentToUpdate = comments.value.find((comment) => comment.id === commentId)
 
-  // Update local state manually
-  const index = comments.value.findIndex((c) => c.id === commentId)
-  if (index !== -1) {
-    comments.value[index].content = editedContent.value
+    if (!commentToUpdate) {
+      console.error('Comment not found for editing:', commentId)
+      return
+    }
+
+    // Extract files from both original and edited content
+    const originalAttachments = getAttachmentsFromComment(commentToUpdate.content)
+    const newAttachments = getAttachmentsFromComment(editedContent.value)
+
+    // Find files that were removed in the edit
+    const originalUrls = new Set(originalAttachments.map((a) => a.url))
+    const newUrls = new Set(newAttachments.map((a) => a.url))
+    const removedFiles = originalAttachments.filter((a) => !newUrls.has(a.url))
+
+    // Update comment in database
+    const { error } = await supabase
+      .from('comments')
+      .update({ content: editedContent.value })
+      .eq('id', commentId)
+
+    if (error) {
+      console.error('Error updating comment:', error)
+      return
+    }
+
+    // Delete removed files from storage
+    if (removedFiles.length > 0) {
+      console.log('Cleaning up removed files:', removedFiles.length)
+
+      // Import the deleteFileFromStorage function
+      const { deleteFileFromStorage } = await import('@/utils/supaQueries')
+
+      // Delete each removed file
+      for (const file of removedFiles) {
+        try {
+          await deleteFileFromStorage(file.url)
+        } catch (fileError) {
+          console.error(`Failed to delete file ${file.name}:`, fileError)
+        }
+      }
+    }
+
+    // Update local state
+    const index = comments.value.findIndex((c) => c.id === commentId)
+    if (index !== -1) {
+      comments.value[index].content = editedContent.value
+    }
+
+    cancelEdit()
+  } catch (error) {
+    console.error('Error during comment update process:', error)
   }
-
-  cancelEdit()
 }
 
 // Delete comment
-const deleteComment = async (commentId: string) => {
-  const { error } = await supabase.from('comments').delete().eq('id', commentId)
+// Delete comment with file cleanup
+const deleteComment = async (commentId: string, content: string) => {
+  const commentToDelete = comments.value.find((comment) => comment.id === commentId)
 
-  if (error) {
-    console.error('Error deleting comment:', error)
+  if (!commentToDelete) {
+    console.error('Comment not found:', commentId)
     return
   }
 
-  // Remove from local state
-  comments.value = comments.value.filter((comment) => comment.id !== commentId)
+  try {
+    // Extract file URLs from comment content
+    const attachments = getAttachmentsFromComment(commentToDelete.content)
 
-  // If we were editing this comment, cancel editing
-  if (editingCommentId.value === commentId) {
-    cancelEdit()
+    // Delete the comment from the database first
+    const { error } = await supabase.from('comments').delete().eq('id', commentId)
+
+    if (error) {
+      console.error('Error deleting comment:', error)
+      return
+    }
+
+    // If comment deletion was successful, clean up the files
+    if (attachments.length > 0) {
+      console.log('Cleaning up attached files:', attachments.length)
+
+      // Import the deleteFileFromStorage function
+      const { deleteFileFromStorage } = await import('@/utils/supaQueries')
+
+      // Delete each file
+      for (const attachment of attachments) {
+        try {
+          await deleteFileFromStorage(attachment.url)
+        } catch (fileError) {
+          console.error(`Failed to delete file ${attachment.name}:`, fileError)
+          // Continue with other files even if one fails
+        }
+      }
+    }
+
+    // Remove from local state
+    comments.value = comments.value.filter((comment) => comment.id !== commentId)
+
+    // If we were editing this comment, cancel editing
+    if (editingCommentId.value === commentId) {
+      cancelEdit()
+    }
+  } catch (error) {
+    console.error('Error during comment deletion process:', error)
   }
 }
 </script>

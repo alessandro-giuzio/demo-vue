@@ -7,12 +7,29 @@ import {
   fetchCommentsForTask,
   addCommentToTask,
   fetchCommentsForProject,
-  addCommentToProject
+  addCommentToProject,
+  deleteFileFromStorage
 } from '@/utils/supaQueries'
+import { supabase } from '../../lib/supabaseClient'
 
 export const useCommentsStore = defineStore('comments-store', () => {
   const comments = ref<Comment[]>([])
   const loading = ref(false)
+
+  /**
+ * Extracts file URLs from comment content
+ */
+  const extractFileUrls = (content: string): string[] => {
+    const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const urls: string[] = [];
+    let match;
+
+    while ((match = regex.exec(content)) !== null) {
+      urls.push(match[2]); // The URL is in the second capture group
+    }
+
+    return urls;
+  };
 
   // Fetch comments by taskId or projectId
   const getComments = async ({
@@ -75,10 +92,75 @@ export const useCommentsStore = defineStore('comments-store', () => {
     }
   }
 
+  // Delete a comment and its associated files
+  const deleteCommentWithFiles = async (commentId: string) => {
+    const isDeleting = ref(true);
+
+    try {
+      // Find the comment
+      const comment = comments.value.find(c => c.id === commentId);
+      if (!comment) {
+        console.error('Comment not found:', commentId);
+        return;
+      }
+      // Extract all file URLs from the comment
+      const fileUrls = extractFileUrls(comment.content);
+
+      // Delete the files from storage if there are any
+      if (fileUrls.length > 0) {
+        console.log('Deleting files for comment:', fileUrls);
+        // Delete each file from storage
+        for (const url of fileUrls) {
+          try {
+            await deleteFileFromStorage(url);
+          } catch (error) {
+            console.error(`Failed to delete file: ${url}`, error);
+            // Continue with other files even if one fails
+          }
+        }
+      }
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) {
+        console.error('Error deleting comment:', error);
+        return;
+      }
+      // Update local state
+      comments.value = comments.value.filter(c => c.id !== commentId);
+
+      // If we were editing this comment, cancel editing
+      if (editingCommentId.value === commentId) {
+        cancelEdit();
+      }
+    } catch (error) {
+      console.error('Error deleting comment with files:', error);
+    } finally {
+      isDeleting.value = false;
+    }
+  };
+
+  // Then update your deleteComment function to use this new function:
+  const deleteComment = async (commentId: string) => {
+    // Confirm deletion with the user
+    if (!confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    await deleteCommentWithFiles(commentId);
+  };
+
+
   return {
     comments,
     loading,
+    fetchComments: getComments,
     getComments,
-    postComment
+    postComment,
+    deleteComment,
+    extractFileUrls,
+    deleteCommentWithFiles
   }
 })
