@@ -406,10 +406,10 @@ const getFileTypeFromUrl = (url: string, filename: string) => {
   }
 
   if (extension === 'pdf') return 'pdf'
-  if (['doc', 'docx'].includes(extension)) return 'document'
-  if (['xls', 'xlsx', 'csv'].includes(extension)) return 'spreadsheet'
-  if (['ppt', 'pptx'].includes(extension)) return 'presentation'
-  if (['txt', 'md'].includes(extension)) return 'text'
+  if (['doc', 'docx'].includes(extension || '')) return 'document'
+  if (['xls', 'xlsx', 'csv'].includes(extension || '')) return 'spreadsheet'
+  if (['ppt', 'pptx'].includes(extension || '')) return 'presentation'
+  if (['txt', 'md'].includes(extension || '')) return 'text'
 
   return 'file'
 }
