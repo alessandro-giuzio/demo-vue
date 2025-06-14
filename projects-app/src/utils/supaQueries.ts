@@ -8,22 +8,30 @@ import type { QueryData } from "@supabase/supabase-js";
 
 export const uploadFilesToStorage = async (file: File, path: string = 'uploads'): Promise<string> => {
   try {
-    // Create a unique file name to avoid collisions
-    const uniqueFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-
-    // Ensure the user is authenticated before upload
-    const { data: { session } } = await supabase.auth.getSession();
+    // Verify authentication
+    const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
-      throw new Error('User is not authenticated');
+      throw new Error('User is not authenticated')
     }
 
-    // Upload the file
+    // Create a unique file name to avoid collisions
+    const uniqueFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+
+    console.log('Attempting to upload file:', {
+      bucketName: 'comments-updates',
+      fileName: uniqueFileName,
+      fileSize: file.size,
+      fileType: file.type,
+      userId: session.user.id
+    });
+
+    // Upload the file with upsert option
     const { data, error } = await supabase
       .storage
       .from('comments-updates')
       .upload(`${path}/${uniqueFileName}`, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: true  // Change to true to replace any existing file
       });
 
     if (error) {
