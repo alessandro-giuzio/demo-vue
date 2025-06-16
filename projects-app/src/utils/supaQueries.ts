@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabaseClient";
 import type { CreateNewTask } from "@/types/CreateNewForm";
 import type { Comment } from "../types/Comments";
 import type { QueryData } from "@supabase/supabase-js";
+import { showError, showSuccess } from "./toast";
 
 // Storage
 
@@ -172,15 +173,34 @@ export const updateTaskQuery = (updateTask = {}, id: string) => {
 }
 
 export const deleteTaskQuery = async (id: number | string) => {
-  if (!id) {
-    throw new Error('Task ID is required')
-  }
+  try {
+    if (!id) {
+      showError('Task ID is required')
+      throw new Error('Task ID is required')
+    }
 
-  return supabase
-    .from('tasks')
-    .delete()
-    .eq('id', id)
-    .select()
+    const { data, error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id)
+      .select()
+
+    if (error) {
+      showError(`Failed to delete task: ${error.message}`)
+      console.error('Delete task error:', error)
+      throw error
+    }
+
+    showSuccess('Task deleted successfully')
+    return data
+  } catch (error) {
+    console.error('Error in deleteTaskQuery:', error)
+    // Only show error if it hasn't been shown already
+    if (!(error instanceof Error && error.message === 'Task ID is required')) {
+      showError('Failed to delete task')
+    }
+    throw error
+  }
 }
 
 export type User = QueryData<ReturnType<typeof userRegQuery>>
@@ -419,18 +439,33 @@ export const uploadSingleFileToStorage = async (file: File): Promise<string | nu
 // Add comment-related operations
 
 export const postComment = async (comment: { content: string; taskId: string; userId: string }) => {
-  const { data, error } = await supabase
-    .from('comments')
-    .insert({
-      content: comment.content,
-      task_id: comment.taskId,
-      user_id: comment.userId
-    })
-    .select('*') // Ensure the newly created comment is returned
-    .single()
+  try {
+    const { data, error } = await supabase
+      .from('comments')
+      .insert({
+        content: comment.content,
+        task_id: comment.taskId,
+        user_id: comment.userId
+      })
+      .select('*')
+      .single()
 
-  if (error) throw error
-  return data
+    if (error) {
+      showError(`Failed to post comment: ${error.message}`)
+      throw error
+    }
+
+    showSuccess('Comment posted successfully')
+    return data
+  } catch (error) {
+    console.error('Error posting comment:', error)
+    if (error instanceof Error) {
+      showError(error.message)
+    } else {
+      showError('Failed to post comment')
+    }
+    throw error
+  }
 }
 
 export const deleteComment = async (commentId: string) => {
@@ -438,16 +473,20 @@ export const deleteComment = async (commentId: string) => {
     const { error } = await supabase.from('comments').delete().eq('id', commentId);
 
     if (error) {
-      console.error('Error deleting comment:', error);
+      showError(`Failed to delete comment: ${error.message}`)
       throw error;
     }
 
+    showSuccess('Comment deleted')
     return true;
   } catch (error) {
     console.error('Failed to delete comment:', error);
+    showError('Failed to delete comment')
     throw error;
   }
 };
+
+
 
 export const submitEdit = async (commentId: string, content: string) => {
   const { data, error } = await supabase

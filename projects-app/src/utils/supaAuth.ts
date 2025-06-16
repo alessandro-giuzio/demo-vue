@@ -1,5 +1,6 @@
 // Import the supabase client and types for login and registration forms
 import { supabase } from '@/lib/supabaseClient'
+import { showError } from './toast'
 import type { LoginForm, RegisterForm } from '@/types/AuthForm'
 
 // Get the authentication store
@@ -14,7 +15,10 @@ export const register = async (formData: RegisterForm) => {
   })
 
   // Log any errors that occur during sign up
-  if (error) return console.log(error)
+  if (error) {
+    showError(error.message)
+    return false
+  }
 
   // If the user is successfully created, insert additional user details into the 'users' table
   if (data.user) {
@@ -27,7 +31,10 @@ export const register = async (formData: RegisterForm) => {
     })
 
     // Log any errors that occur during the insertion of user details
-    if (error) return console.log('Users err: ', error)
+    if (error) {
+      showError(`Registration failed: ${error.message}`)
+      return false
+    }
   }
 
   // Set the authentication state in the store
@@ -52,8 +59,11 @@ export const login = async (formData: LoginForm) => {
 }
  // Function to handle user logout
 export const logout = async () => {
-  const {error} = await supabase.auth.signOut()
-  if (error) return console.log(error)
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    showError(`Logout failed: ${error.message}`)
+    return false
+  }
   /* await authStore.setAuth() */
   return true
 }
