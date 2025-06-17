@@ -74,6 +74,7 @@ declare global {
   const useModel: typeof import('vue')['useModel']
   const usePageStore: typeof import('./src/stores/page')['usePageStore']
   const useProjectsStore: typeof import('./src/stores/loaders/projects')['useProjectsStore']
+  const useRoles: typeof import('./src/composables/roles')['useRoles']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
@@ -93,4 +94,7 @@ declare global {
   // @ts-ignore
   export type { FileUploadItem } from './src/stores/loaders/storage'
   import('./src/stores/loaders/storage')
+  // @ts-ignore
+  export type { Role } from './src/composables/roles'
+  import('./src/composables/roles')
 }
