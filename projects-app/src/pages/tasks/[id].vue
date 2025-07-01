@@ -132,11 +132,74 @@
               </div>
 
               <!-- Show textarea if editing this comment -->
-              <div v-if="editingCommentId === comment.id" class="space-y-2">
+              <div v-if="editingCommentId === comment.id" class="space-y-3">
                 <textarea
                   v-model="editedContent"
                   class="w-full p-2 text-sm border rounded bg-background border-muted"
                 ></textarea>
+
+                <!-- Attachments section with delete buttons -->
+                <div v-if="editingAttachments.length > 0" class="mt-2 border-t border-muted pt-2">
+                  <div class="text-sm font-medium mb-1">Attachments:</div>
+
+                  <!-- Images with delete buttons -->
+                  <div
+                    v-if="editingImages.length > 0"
+                    class="grid grid-cols-2 gap-2 my-2 sm:grid-cols-3"
+                  >
+                    <div
+                      v-for="(image, index) in editingImages"
+                      :key="index"
+                      class="relative group overflow-hidden rounded-md border border-muted aspect-square"
+                    >
+                      <img
+                        :src="image.url"
+                        :alt="image.name"
+                        class="absolute inset-0 w-full h-full object-cover"
+                      />
+                      <button
+                        @click="removeAttachment(index, 'image')"
+                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Remove image"
+                      >
+                        <iconify-icon icon="lucide:x" class="text-xs"></iconify-icon>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Files with delete buttons -->
+                  <div v-if="editingFiles.length > 0" class="space-y-1 my-2">
+                    <div
+                      v-for="(file, index) in editingFiles"
+                      :key="index"
+                      class="flex items-center justify-between p-2 border rounded-md border-muted hover:bg-muted/30 group"
+                    >
+                      <div class="flex items-center gap-2 truncate">
+                        <iconify-icon
+                          :icon="
+                            file.type === 'pdf'
+                              ? 'lucide:file-text'
+                              : file.type === 'document'
+                                ? 'lucide:file-text'
+                                : file.type === 'spreadsheet'
+                                  ? 'lucide:file-spreadsheet'
+                                  : 'lucide:file'
+                          "
+                          class="text-muted-foreground"
+                        ></iconify-icon>
+                        <span class="text-sm truncate">{{ file.name }}</span>
+                      </div>
+                      <button
+                        @click="removeAttachment(index, 'file')"
+                        class="text-red-500 p-1 hover:text-red-700"
+                        title="Remove file"
+                      >
+                        <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="flex gap-2">
                   <Button size="sm" @click="submitEdit(comment.id)">Save</Button>
                   <Button variant="ghost" size="sm" @click="cancelEdit">Cancel</Button>
@@ -571,23 +634,49 @@ const triggerDeleteTask = async () => {
 // Comment editing
 const editingCommentId = ref<string | null>(null)
 const editedContent = ref('')
+interface Attachment {
+  name: string
+  url: string
+  type: string
+}
+
+const editingAttachments = ref<Attachment[]>([])
+const editingImages = computed(() => editingAttachments.value.filter((att) => att.type === 'image'))
+const editingFiles = computed(() => editingAttachments.value.filter((att) => att.type !== 'image'))
 
 // Start editing
 const startEdit = (comment: Comment) => {
   editingCommentId.value = comment.id
-  editedContent.value = comment.content
+  editedContent.value = extractCommentText(comment.content)
+  editingAttachments.value = getAttachmentsFromComment(comment.content)
 }
 
 // Cancel editing
 const cancelEdit = () => {
   editingCommentId.value = null
   editedContent.value = ''
+  editingAttachments.value = []
 }
 
-// Update comment in Supabase
+// Remove an attachment during editing
+const removeAttachment = (index: number, type: 'image' | 'file') => {
+  // Calculate actual index based on filtered arrays
+  const startIndex =
+    type === 'image'
+      ? editingAttachments.value.findIndex((att) => att.type === 'image')
+      : editingAttachments.value.findIndex((att) => att.type !== 'image')
+
+  const actualIndex = type === 'image' ? startIndex + index : startIndex + index
+
+  // Remove from the array
+  if (actualIndex >= 0 && actualIndex < editingAttachments.value.length) {
+    editingAttachments.value.splice(actualIndex, 1)
+  }
+}
+
 // Update comment in Supabase with file cleanup
 const submitEdit = async (commentId: string) => {
-  if (!editedContent.value.trim()) return
+  if (!editedContent.value.trim() && editingAttachments.value.length === 0) return
 
   try {
     const commentToUpdate = comments.value.find((comment) => comment.id === commentId)
@@ -597,19 +686,32 @@ const submitEdit = async (commentId: string) => {
       return
     }
 
-    // Extract files from both original and edited content
+    // Extract files from original content
     const originalAttachments = getAttachmentsFromComment(commentToUpdate.content)
-    const newAttachments = getAttachmentsFromComment(editedContent.value)
 
-    // Find files that were removed in the edit
-    const originalUrls = new Set(originalAttachments.map((a) => a.url))
-    const newUrls = new Set(newAttachments.map((a) => a.url))
-    const removedFiles = originalAttachments.filter((a) => !newUrls.has(a.url))
+    // Find files that were removed during editing
+    const keptUrls = new Set(editingAttachments.value.map((a) => a.url))
+    const removedFiles = originalAttachments.filter((a) => !keptUrls.has(a.url))
+
+    // Prepare new content with remaining attachments
+    let newContent = editedContent.value.trim()
+
+    if (editingAttachments.value.length > 0) {
+      // Format attachment links
+      const attachmentLinks = editingAttachments.value
+        .map((att) => `[${att.name}](${att.url})`)
+        .join('\n')
+
+      // Add attachments section if there's content
+      newContent = newContent
+        ? `${newContent}\n\n**Attachments:**\n${attachmentLinks}`
+        : `**Attachments:**\n${attachmentLinks}`
+    }
 
     // Update comment in database
     const { error } = await supabase
       .from('comments')
-      .update({ content: editedContent.value })
+      .update({ content: newContent })
       .eq('id', commentId)
 
     if (error) {
@@ -628,6 +730,7 @@ const submitEdit = async (commentId: string) => {
       for (const file of removedFiles) {
         try {
           await deleteFileFromStorage(file.url)
+          console.log(`Deleted file: ${file.name}`)
         } catch (fileError) {
           console.error(`Failed to delete file ${file.name}:`, fileError)
         }
@@ -637,7 +740,7 @@ const submitEdit = async (commentId: string) => {
     // Update local state
     const index = comments.value.findIndex((c) => c.id === commentId)
     if (index !== -1) {
-      comments.value[index].content = editedContent.value
+      comments.value[index].content = newContent
     }
 
     cancelEdit()

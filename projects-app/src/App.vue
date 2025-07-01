@@ -18,7 +18,7 @@ const AuthLayout = defineAsyncComponent(() => import('./components/Layout/main/A
 const GuestLayout = defineAsyncComponent(() => import('./components/Layout/main/GuestLayout.vue'))
 
 useMeta({
-  title: 'Todo App'
+  title: 'Projects App'
 })
 </script>
 
