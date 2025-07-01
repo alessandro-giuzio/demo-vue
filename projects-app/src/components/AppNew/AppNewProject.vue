@@ -18,7 +18,19 @@
           placeholder="My new project"
           validation="required|length:1,255"
         />
-        <FormKit
+        <!-- Only for project managers and admins -->
+        <div v-if="authStore.isProjectManager">
+          <FormKit
+            type="select"
+            name="assigned_to"
+            id="assigned_to"
+            label="Assigned to"
+            placeholder="Select a user"
+            :options="selectOptions.users"
+            validation="length:0,255"
+          />
+        </div>
+        <!-- <FormKit
           type="select"
           name="assigned_to"
           id="assigned_to"
@@ -26,7 +38,7 @@
           placeholder="Select a user"
           :options="selectOptions.users"
           validation="length:0,255"
-        />
+        /> -->
         <FormKit
           type="textarea"
           name="description"
@@ -45,19 +57,50 @@
           multiple
           validation="length:0,255"
         />
+        <FormKit
+          type="textarea"
+          name="description"
+          id="description"
+          label="Description"
+          validation="length:0,500"
+        />
+
+        <!-- Admin-only options -->
+        <div v-if="authStore.isAdmin" class="pt-4 mt-4 border-t">
+          <h3 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Admin Options</h3>
+          <FormKit type="checkbox" name="featured" label="Featured Project" />
+          <FormKit
+            type="select"
+            name="priority"
+            label="Priority"
+            :options="[
+              { label: 'Low', value: 'low' },
+              { label: 'Medium', value: 'medium' },
+              { label: 'High', value: 'high' }
+            ]"
+          />
+        </div>
       </FormKit>
     </SheetContent>
   </Sheet>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { getProjectBySlug } from '@/lib/supabaseClient'
 import type { CreateNewProject } from '@/types/CreateNewForm'
 import { usersQuery, createNewProjectQuery, assignUserToProjectQuery } from '@/utils/supaQueries'
 
 const router = useRouter()
 const sheetOpen = defineModel<boolean>()
-
+const authStore = useAuthStore()
+// Ensure roles are loaded
+onMounted(async () => {
+  if (authStore.user && !authStore.userRoles.length) {
+    await authStore.loadUserRoles()
+  }
+})
 type SelectOption = { label: string; value: number | string }
 const selectOptions = ref({
   users: [] as SelectOption[]

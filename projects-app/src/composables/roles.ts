@@ -20,7 +20,7 @@ export function useRoles() {
 
   // Load current user's roles
   const loadUserRoles = async () => {
-    if (!authStore.isAuthenticated || !authStore.user) {
+    if (!authStore.user) {
       userRoles.value = []
       return []
     }

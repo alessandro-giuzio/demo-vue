@@ -3,10 +3,19 @@ import type { Tables } from "database/types"
 import type { Session, User } from "@supabase/supabase-js"
 import { userRegQuery } from "@/utils/supaQueries"
 import { supabase } from "@/lib/supabaseClient"
+import {useRoles} from '@/composables/roles'
 
 
 // Define the authentication store
 export const useAuthStore = defineStore('auth-store', () => {
+  const {
+    userRoles,
+    loadUserRoles,
+    hasRole,
+    isAdmin,
+    isProjectManager,
+    isContributor
+  } = useRoles()
   // State to hold the current user
   const user = ref<null | User>(null)
   // State to hold the user registration details
@@ -42,6 +51,7 @@ export const useAuthStore = defineStore('auth-store', () => {
     // Set the user state and fetch user registration details
     user.value = userSession.user
     await setUserReg()
+    await loadUserRoles()
   }
   // Function to get the current session
   const getSession = async () => {
@@ -60,6 +70,18 @@ export const useAuthStore = defineStore('auth-store', () => {
       },0)
       })
   }
+
+  // Function to logout the user
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      throw new Error(`Logout failed: ${error.message}`)
+    }
+    user.value = null
+    userReg.value = null
+    userRoles.value = []
+  }
+
   // Return the state and functions to be used in the store
   return {
     user,
@@ -67,6 +89,15 @@ export const useAuthStore = defineStore('auth-store', () => {
     setAuth,
     getSession,
     trackAuthChanges,
+    logout,
+
+    // Add these role-related properties
+    userRoles,
+    hasRole,
+    isAdmin,
+    isProjectManager,
+    isContributor,
+    loadUserRoles,
   }
 })
 

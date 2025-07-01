@@ -304,6 +304,70 @@ export const assignUserToProjectQuery = async ({
     ])
     .select()
 }
+// Add this new function to fetch all projects for a user
+export const fetchUserProjectsQuery = async (userId: string) => {
+  try {
+    // First, get projects owned by the user
+    const { data: ownedProjects, error: ownedError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('owner_id', userId);
+
+    if (ownedError) {
+      console.error('Error fetching owned projects:', ownedError);
+      throw ownedError;
+    }
+
+    // Then, get projects assigned to the user
+    const { data: assignedData, error: assignedError } = await supabase
+      .from('user_projects')
+      .select(`
+        project_id,
+        role,
+        status,
+        projects:project_id (*)
+      `)
+      .eq('user_id', userId);
+
+    if (assignedError) {
+      console.error('Error fetching assigned projects:', assignedError);
+      throw assignedError;
+    }
+
+    // Extract project data from assigned projects
+    const assignedProjects = assignedData
+      .filter(item => item.projects) // Filter out any null projects
+      .map(item => ({
+        ...item.projects,
+        user_role: item.role,     // Add role information
+        user_status: item.status  // Add status information
+      }));
+
+    // Combine owned and assigned projects, avoiding duplicates
+    const allProjectIds = new Set();
+    const allProjects = [];
+
+    // Add owned projects first
+    for (const project of ownedProjects || []) {
+      allProjectIds.add(project.id);
+      allProjects.push({ ...project, user_role: 'owner' });
+    }
+
+    // Add assigned projects if not already included
+    for (const project of assignedProjects || []) {
+      if (!allProjectIds.has(project.id)) {
+        allProjectIds.add(project.id);
+        allProjects.push(project);
+      }
+    }
+
+    console.log(`Found ${allProjects.length} projects for user (${ownedProjects?.length || 0} owned, ${assignedProjects?.length || 0} assigned)`);
+    return allProjects;
+  } catch (err) {
+    console.error('Error in fetchUserProjectsQuery:', err);
+    throw err;
+  }
+}
 
 export const taskStatusesQuery = async () => {
 
