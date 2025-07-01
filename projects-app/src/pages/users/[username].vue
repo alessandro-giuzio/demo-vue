@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabaseClient'
 import { fetchUserProjectsQuery } from '@/utils/supaQueries'
-import ProjectCard from '@/components/projects/ProjectCard.vue'
+import ProjectCard from '../../components/projects/ProjectCard.vue'
 import { showError } from '@/utils/toast'
 
 const route = useRoute()
