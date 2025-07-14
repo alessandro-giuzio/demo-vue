@@ -92,13 +92,22 @@ const selectOptions = ref({
  * Each project is added as an option with name as label and id as value
  */
 const getProjectsOptions = async () => {
-  const { data: allProjects } = await projectsQuery
+  selectOptions.value.projects = [] // Clear before populating
+  const { data: allProjects, error } = await projectsQuery
 
-  if (!allProjects) return
+  if (error) {
+    console.error('Failed to fetch projects:', error)
+    return
+  }
+  if (!allProjects || allProjects.length === 0) {
+    console.warn('No projects found.')
+    return
+  }
 
   allProjects.forEach((project) => {
     selectOptions.value.projects.push({ label: project.name, value: project.id })
   })
+  console.log('Loaded projects for dropdown:', selectOptions.value.projects)
 }
 
 /**

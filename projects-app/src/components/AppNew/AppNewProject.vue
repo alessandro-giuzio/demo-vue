@@ -169,19 +169,37 @@ const createProject = async (formData: CreateNewProject) => {
     return
   }
 
+  // Link the owner
   const { error: linkError } = await assignUserToProjectQuery({
     userId: user.value.id,
     projectId: newProject.id,
     role: 'owner',
     status: 'in-progress'
   })
-
   if (linkError) {
-    console.error('Failed to link user to project:', linkError)
+    console.error('Failed to link owner to project:', linkError)
     return
   }
 
-  console.log('Project and user_project link created successfully:', newProject)
+  // Link collaborators (if any)
+  if (formData.collaborators && formData.collaborators.length) {
+    for (const collaboratorId of formData.collaborators) {
+      // Skip if collaborator is the owner
+      if (collaboratorId === user.value.id) continue
+      const { error: collabError } = await assignUserToProjectQuery({
+        userId: collaboratorId,
+        projectId: newProject.id,
+        role: 'member',
+        status: 'in-progress'
+      })
+      if (collabError) {
+        console.error(`Failed to link collaborator ${collaboratorId}:`, collabError)
+        // Optionally, show a toast or continue
+      }
+    }
+  }
+
+  console.log('Project and user_project links created successfully:', newProject)
   sheetOpen.value = false
 
   router.push(`/projects/${newProject.slug}`)
