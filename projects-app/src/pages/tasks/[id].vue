@@ -98,7 +98,7 @@
                 :to="`/users/${collab.username}`"
               >
                 <AvatarImage :src="collab.avatar_url || ''" alt="" />
-                <AvatarFallback> </AvatarFallback>
+                <AvatarFallback>f </AvatarFallback>
               </RouterLink>
             </Avatar>
           </div>
@@ -111,14 +111,12 @@
         <TableCell>
           <!-- Show loading indicator while fetching comments -->
           <div v-if="loading" class="text-sm text-muted-foreground">Loading comments...</div>
-
-          <!-- Render list of comments if any exist -->
           <!-- Render list of comments if any exist -->
           <div v-else-if="comments.length" class="mb-4 space-y-4">
             <div
               v-for="comment in [...comments]"
               :key="comment.id"
-              class="p-3 border rounded-md shadow-sm bg-muted"
+              class="p-3 border border-2 border-red-500 rounded-md shadow-sm bg-muted"
             >
               <div class="flex items-center justify-between mb-1">
                 <!-- Display comment author -->
@@ -139,8 +137,8 @@
                 ></textarea>
 
                 <!-- Attachments section with delete buttons -->
-                <div v-if="editingAttachments.length > 0" class="mt-2 border-t border-muted pt-2">
-                  <div class="text-sm font-medium mb-1">Attachments:</div>
+                <div v-if="editingAttachments.length > 0" class="pt-2 mt-2 border-t border-muted">
+                  <div class="mb-1 text-sm font-medium">Attachments:</div>
 
                   <!-- Images with delete buttons -->
                   <div
@@ -150,16 +148,16 @@
                     <div
                       v-for="(image, index) in editingImages"
                       :key="index"
-                      class="relative group overflow-hidden rounded-md border border-muted aspect-square"
+                      class="relative overflow-hidden border rounded-md group border-muted aspect-square"
                     >
                       <img
                         :src="image.url"
                         :alt="image.name"
-                        class="absolute inset-0 w-full h-full object-cover"
+                        class="absolute inset-0 object-cover w-full h-full"
                       />
                       <button
                         @click="removeAttachment(index, 'image')"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        class="absolute p-1 text-white transition-opacity bg-red-500 rounded-full opacity-0 top-1 right-1 group-hover:opacity-100"
                         title="Remove image"
                       >
                         <iconify-icon icon="lucide:x" class="text-xs"></iconify-icon>
@@ -168,7 +166,7 @@
                   </div>
 
                   <!-- Files with delete buttons -->
-                  <div v-if="editingFiles.length > 0" class="space-y-1 my-2">
+                  <div v-if="editingFiles.length > 0" class="my-2 space-y-1">
                     <div
                       v-for="(file, index) in editingFiles"
                       :key="index"
@@ -191,7 +189,7 @@
                       </div>
                       <button
                         @click="removeAttachment(index, 'file')"
-                        class="text-red-500 p-1 hover:text-red-700"
+                        class="p-1 text-red-500 hover:text-red-700"
                         title="Remove file"
                       >
                         <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
@@ -200,7 +198,7 @@
                   </div>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                   <Button size="sm" @click="submitEdit(comment.id)">Save</Button>
                   <Button variant="ghost" size="sm" @click="cancelEdit">Cancel</Button>
                   <Button
@@ -212,6 +210,25 @@
                     <iconify-icon icon="lucide:trash" class="mr-1" />
                     Delete
                   </Button>
+                  <!-- Reuse upload buttons -->
+                  <div class="flex gap-4 ml-2">
+                    <button
+                      @click="triggerFileUpload"
+                      :disabled="fileUploadStore.isUploading"
+                      class="p-2 rounded hover:bg-gray-100"
+                    >
+                      <iconify-icon icon="lucide:paperclip"></iconify-icon>
+                      <span class="sr-only">Attach file</span>
+                    </button>
+                    <button
+                      @click="triggerImageUpload"
+                      :disabled="fileUploadStore.isUploading"
+                      class="p-2 rounded hover:bg-gray-100"
+                    >
+                      <iconify-icon icon="lucide:image-up"></iconify-icon>
+                      <span class="sr-only">Upload image</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -303,8 +320,6 @@
 
           <!-- Fallback when no comments exist -->
           <div v-else class="mb-4 text-sm italic text-muted-foreground">No comments yet.</div>
-
-          <!-- File upload queue display -->
           <!-- File upload queue display -->
           <div v-if="fileUploadStore.hasFiles" class="mb-4">
             <div class="space-y-2">
@@ -477,13 +492,17 @@ const getFileTypeFromUrl = (url: string, filename: string) => {
   return 'file'
 }
 
-// Separate attachments into images and files
+// Separate attachments into images and files, filter out invalid URLs
 const getImageAttachments = (content: string) => {
-  return getAttachmentsFromComment(content).filter((att) => att.type === 'image')
+  return getAttachmentsFromComment(content).filter(
+    (att) => att.type === 'image' && typeof att.url === 'string' && att.url && att.url !== 'null'
+  )
 }
 
 const getFileAttachments = (content: string) => {
-  return getAttachmentsFromComment(content).filter((att) => att.type !== 'image')
+  return getAttachmentsFromComment(content).filter(
+    (att) => att.type !== 'image' && typeof att.url === 'string' && att.url && att.url !== 'null'
+  )
 }
 
 // Format readable file size
@@ -526,19 +545,46 @@ const triggerImageUpload = () => {
   imageInputRef.value?.click()
 }
 
-const handleFileSelection = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  if (target.files) {
-    const files = Array.from(target.files)
-    const { added, rejected } = fileUploadStore.addFilesWithValidation(files)
+// Helper: upload a file and return its public URL
+const uploadFileAndGetUrl = async (file: File) => {
+  // Use fileUploadStore's uploadSingleFile if available, else upload manually
+  if (typeof fileUploadStore.uploadSingleFile === 'function') {
+    return await fileUploadStore.uploadSingleFile(file)
+  }
+  // fallback: upload to supabase storage directly
+  const { data, error } = await supabase.storage
+    .from('attachments')
+    .upload(`comments/${Date.now()}-${file.name}`, file)
+  if (error) throw error
+  const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(data.path)
+  return urlData.publicUrl
+}
 
+const handleFileSelection = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files) return
+  const files = Array.from(target.files)
+
+  // If editing a comment, add to editingAttachments and upload immediately
+  if (editingCommentId.value) {
+    for (const file of files) {
+      try {
+        const url = await uploadFileAndGetUrl(file)
+        const type = getFileTypeFromUrl(url, file.name)
+        editingAttachments.value.push({ name: file.name, url, type })
+      } catch (err) {
+        console.error('Failed to upload file during edit:', err)
+      }
+    }
+  } else {
+    // Normal add-comment mode: use fileUploadStore
+    const { added, rejected } = fileUploadStore.addFilesWithValidation(files)
     if (rejected.length > 0) {
       console.warn('Some files were rejected:', rejected)
     }
-
-    // Reset input
-    if (target) target.value = ''
   }
+  // Reset input
+  target.value = ''
 }
 
 // Submit new comment with file uploads
@@ -689,9 +735,11 @@ const submitEdit = async (commentId: string) => {
     // Extract files from original content
     const originalAttachments = getAttachmentsFromComment(commentToUpdate.content)
 
-    // Find files that were removed during editing
+    // Find files that were removed during editing, only with valid URLs
     const keptUrls = new Set(editingAttachments.value.map((a) => a.url))
-    const removedFiles = originalAttachments.filter((a) => !keptUrls.has(a.url))
+    const removedFiles = originalAttachments.filter(
+      (a) => !keptUrls.has(a.url) && typeof a.url === 'string' && a.url && a.url !== 'null'
+    )
 
     // Prepare new content with remaining attachments
     let newContent = editedContent.value.trim()
@@ -728,11 +776,13 @@ const submitEdit = async (commentId: string) => {
 
       // Delete each removed file
       for (const file of removedFiles) {
-        try {
-          await deleteFileFromStorage(file.url)
-          console.log(`Deleted file: ${file.name}`)
-        } catch (fileError) {
-          console.error(`Failed to delete file ${file.name}:`, fileError)
+        if (typeof file.url === 'string' && file.url && file.url !== 'null') {
+          try {
+            await deleteFileFromStorage(file.url)
+            console.log(`Deleted file: ${file.name}`)
+          } catch (fileError) {
+            console.error(`Failed to delete file ${file.name}:`, fileError)
+          }
         }
       }
     }
