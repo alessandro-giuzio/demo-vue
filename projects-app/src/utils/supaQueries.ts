@@ -52,7 +52,7 @@ export const uploadFilesToStorage = async (file: File, path: string = 'uploads')
 
     return urlData.publicUrl;
   } catch (error) {
-    console.error('Upload error:', error);
+    showError((error instanceof Error ? error.message : String(error)) || 'Upload error');
     throw error;
   }
 };
@@ -82,14 +82,14 @@ export const deleteFileFromStorage = async (fileUrl: string): Promise<boolean> =
       .remove([filePath]);
 
     if (error) {
-      console.error('Delete error details:', error);
+      showError(`Failed to delete file: ${error.message}`);
       throw new Error(`Failed to delete file: ${error.message}`);
     }
 
     console.log('File successfully deleted');
     return true;
   } catch (error) {
-    console.error('Delete file error:', error);
+    showError((error instanceof Error ? error.message : String(error)) || 'Delete file error');
     return false;
   }
 };
@@ -142,7 +142,7 @@ export const updateProjectQuery = (updatedProject = {}, id: string) => {
 
 export const taskQuery = (id: string) => {
   if (!id) {
-    console.error('Invalid Task ID:', id);
+    showError('Invalid Task ID');
     return null; // Exit early to avoid making an invalid query
   }
   return supabase
@@ -218,7 +218,7 @@ export type Collabs = QueryData<ReturnType<typeof groupedUsersQuery>>
 export const filterProjectsForUser = async (userId: string) => {
   const { data, error } = await projectsQuery.eq('owner_id', userId)
   if (error) {
-    console.error('Error fetching projects:', error)
+    showError(error.message || 'Error fetching projects');
     return []
   }
   return data

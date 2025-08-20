@@ -1,3 +1,4 @@
+import { showError } from '@/utils/toast'
 <template>
   <!-- Hidden file inputs -->
   <input
@@ -573,7 +574,7 @@ const handleFileSelection = async (event: Event) => {
         const type = getFileTypeFromUrl(url, file.name)
         editingAttachments.value.push({ name: file.name, url, type })
       } catch (err) {
-        console.error('Failed to upload file during edit:', err)
+        showError((err instanceof Error ? err.message : String(err)) || 'Failed to upload file during edit')
       }
     }
   } else {
@@ -781,7 +782,10 @@ const submitEdit = async (commentId: string) => {
             await deleteFileFromStorage(file.url)
             console.log(`Deleted file: ${file.name}`)
           } catch (fileError) {
-            console.error(`Failed to delete file ${file.name}:`, fileError)
+            showError(
+              (fileError instanceof Error ? fileError.message : String(fileError)) ||
+                `Failed to delete file ${file.name}`
+            )
           }
         }
       }
@@ -833,7 +837,10 @@ const deleteComment = async (commentId: string, content: string) => {
         try {
           await deleteFileFromStorage(attachment.url)
         } catch (fileError) {
-          console.error(`Failed to delete file ${attachment.name}:`, fileError)
+          showError(
+            (fileError instanceof Error ? fileError.message : String(fileError)) ||
+              `Failed to delete file ${attachment.name}`
+          )
           // Continue with other files even if one fails
         }
       }
