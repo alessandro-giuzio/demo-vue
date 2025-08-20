@@ -37,7 +37,7 @@ export const checkRoutePermissions = async (
     try {
       await authStore.loadUserRoles()
     } catch (error) {
-      console.error('Failed to load user roles:', error)
+  showError((error instanceof Error ? error.message : String(error)) || 'Failed to load user roles')
       showError('Failed to verify permissions')
       return next(meta.fallbackRoute || '/dashboard')
     }

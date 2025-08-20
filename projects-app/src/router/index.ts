@@ -152,7 +152,7 @@ router.beforeEach(async (to, from, next) => {
       // All checks passed, allow access
       next()
     } catch (error) {
-      console.error('Failed to load user roles:', error)
+  showError((error instanceof Error ? error.message : String(error)) || 'Failed to load user roles')
       showError('Failed to verify permissions')
       next('/dashboard')
     }

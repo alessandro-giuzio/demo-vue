@@ -1,12 +1,12 @@
 <template>
-  <nav class="bg-background border-b dark:border-gray-700">
-    <div class="container mx-auto px-4">
+  <nav class="border-b bg-background dark:border-gray-700">
+    <div class="container px-4 mx-auto">
       <div class="flex flex-wrap items-center justify-between py-4">
         <div class="flex items-center">
-          <router-link to="/" class="font-bold text-xl">Projects App</router-link>
+          <router-link to="/" class="text-xl font-bold">Projects App</router-link>
         </div>
 
-        <div class="hidden md:flex space-x-8">
+        <div class="hidden space-x-8 md:flex">
           <!-- Always visible links -->
           <router-link to="/dashboard" class="text-muted-foreground hover:text-foreground">
             Dashboard
@@ -43,7 +43,7 @@
               <span class="text-sm">{{ authStore.user.email }}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4"
+                class="w-4 h-4"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -56,7 +56,7 @@
             </button>
 
             <div
-              class="absolute right-0 mt-2 w-48 bg-background border rounded-md shadow-lg hidden group-hover:block z-10"
+              class="absolute right-0 z-10 hidden w-48 mt-2 border rounded-md shadow-lg bg-background group-hover:block"
             >
               <div class="py-1">
                 <router-link to="/profile" class="block px-4 py-2 text-sm hover:bg-muted">
@@ -64,7 +64,7 @@
                 </router-link>
                 <button
                   @click="logout"
-                  class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-muted"
+                  class="block w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-muted"
                 >
                   Logout
                 </button>
@@ -75,7 +75,7 @@
           <router-link
             v-else
             to="/login"
-            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            class="px-4 py-2 text-white rounded-md bg-primary hover:bg-primary/90"
           >
             Login
           </router-link>
@@ -86,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { showError } from '@/utils/toast'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -107,7 +108,7 @@ const logout = async () => {
     await authStore.logout()
     router.push('/login')
   } catch (error) {
-    console.error('Logout failed:', error)
+    showError((error instanceof Error ? error.message : String(error)) || 'Logout failed')
   }
 }
 </script>

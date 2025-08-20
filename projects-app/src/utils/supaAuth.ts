@@ -22,7 +22,7 @@ export const register = async (formData: RegisterForm) => {
 
   // If the user is successfully created, insert additional user details into the 'users' table
   if (data.user) {
-    const { error } = await supabase.from('users').insert({
+    const { error: userError } = await supabase.from('users').insert({
       id: data.user.id,
       email: formData.email,
       password: formData.password,
@@ -31,8 +31,31 @@ export const register = async (formData: RegisterForm) => {
     })
 
     // Log any errors that occur during the insertion of user details
-    if (error) {
-      showError(`Registration failed: ${error.message}`)
+    if (userError) {
+      showError(`Registration failed: ${userError.message}`)
+      return false
+    }
+
+    // Assign 'contributor' role to the new user
+    // 1. Fetch the role_id for 'contributor'
+    const { data: roleData, error: roleFetchError } = await supabase
+      .from('roles')
+      .select('id')
+      .eq('key', 'contributor')
+      .single()
+
+    if (roleFetchError || !roleData) {
+      showError(`Role lookup failed: ${roleFetchError?.message || 'Role not found'}`)
+      return false
+    }
+
+    // 2. Insert into user_roles
+    const { error: roleAssignError } = await supabase.from('user_roles').insert({
+      user_id: data.user.id,
+      role_id: roleData.id
+    })
+    if (roleAssignError) {
+      showError(`Role assignment failed: ${roleAssignError.message}`)
       return false
     }
   }
