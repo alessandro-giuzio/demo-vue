@@ -80,4 +80,4 @@ export const checkRoutePermissions = async (
 
   // All checks passed, allow access
   next()
-}
+})}
