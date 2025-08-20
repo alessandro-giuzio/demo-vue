@@ -440,6 +440,7 @@ import { showError } from '@/utils/toast'
 </template>
 
 <script setup lang="ts">
+import { showError } from '@/utils/toast'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -571,10 +572,12 @@ const handleFileSelection = async (event: Event) => {
     for (const file of files) {
       try {
         const url = await uploadFileAndGetUrl(file)
-        const type = getFileTypeFromUrl(url, file.name)
-        editingAttachments.value.push({ name: file.name, url, type })
+        const type = getFileTypeFromUrl(url ?? '', file.name)
+        editingAttachments.value.push({ name: file.name, url: url ?? '', type })
       } catch (err) {
-        showError((err instanceof Error ? err.message : String(err)) || 'Failed to upload file during edit')
+        showError(
+          (err instanceof Error ? err.message : String(err)) || 'Failed to upload file during edit'
+        )
       }
     }
   } else {
